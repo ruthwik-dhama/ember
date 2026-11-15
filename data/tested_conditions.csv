@@ -9,12 +9,12 @@ FLEX-2,FLEX2-R374,n-decane,liquid,0.25,50.7,0.0,0.0,burning_rate;cool_flame;exti
 FLEX-2,FLEX2-R377,n-decane,liquid,0.21,50.7,0.0,0.0,burning_rate;cool_flame;extinction_d,NTRS-20140006750,true
 FLEX-2,FLEX2-R379,n-decane,liquid,0.17,50.7,0.0,0.0,burning_rate;cool_flame;extinction_d,NTRS-20140006750,true
 FLEX-2,FLEX2-R383,n-decane,liquid,0.14,50.7,0.0,0.0,burning_rate;cool_flame;extinction_d,NTRS-20140006750,true
-BASS-II,BASSII-B13a,PMMA,solid,0.207,101.3,1.64,0.0,spread_rate_mm_s,doi:10.1038/s41598-017-18398-4 Table S1,false
-BASS-II,BASSII-B6,PMMA,solid,0.189,101.3,2.0,0.0,spread_rate_mm_s,doi:10.1038/s41598-017-18398-4 Table S1,false
-BASS-II,BASSII-B16-hi,PMMA,solid,0.182,101.3,7.55,0.0,spread_rate_mm_s,doi:10.1038/s41598-017-18398-4 Table S1,false
-BASS-II,BASSII-B16-lo,PMMA,solid,0.182,101.3,0.72,0.0,spread_rate_mm_s,doi:10.1038/s41598-017-18398-4 Table S1,false
-BASS-II,BASSII-B19,PMMA,solid,0.175,101.3,1.67,0.0,spread_rate_mm_s,doi:10.1038/s41598-017-18398-4 Table S1,false
-BASS-II,BASSII-B10,PMMA,solid,0.17,101.3,2.0,0.0,spread_rate_mm_s,doi:10.1038/s41598-017-18398-4 Table S1,false
+BASS-II,BASSII-B13a,PMMA,solid,0.207,101.3,1.64,0.0,spread_rate_mm_s,doi:10.1038/s41598-017-18398-4 Table S1,true
+BASS-II,BASSII-B6,PMMA,solid,0.189,101.3,2.0,0.0,spread_rate_mm_s,doi:10.1038/s41598-017-18398-4 Table S1,true
+BASS-II,BASSII-B16-hi,PMMA,solid,0.182,101.3,7.55,0.0,spread_rate_mm_s,doi:10.1038/s41598-017-18398-4 Table S1,true
+BASS-II,BASSII-B16-lo,PMMA,solid,0.182,101.3,0.72,0.0,spread_rate_mm_s,doi:10.1038/s41598-017-18398-4 Table S1,true
+BASS-II,BASSII-B19,PMMA,solid,0.175,101.3,1.67,0.0,spread_rate_mm_s,doi:10.1038/s41598-017-18398-4 Table S1,true
+BASS-II,BASSII-B10,PMMA,solid,0.17,101.3,2.0,0.0,spread_rate_mm_s,doi:10.1038/s41598-017-18398-4 Table S1,true
 GROUND,G-BASSII-209-25,PMMA,solid,0.209,101.3,25.0,1.0,spread_rate_mm_s,doi:10.1038/s41598-017-18398-4 Table S2,false
 GROUND,G-BASSII-209-2,PMMA,solid,0.209,101.3,2.0,1.0,spread_rate_mm_s,doi:10.1038/s41598-017-18398-4 Table S2,false
 GROUND,G-BASSII-180-2,PMMA,solid,0.18,101.3,2.0,1.0,spread_rate_mm_s,doi:10.1038/s41598-017-18398-4 Table S2,false
