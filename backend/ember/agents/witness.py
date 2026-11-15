@@ -51,7 +51,8 @@ SYNONYMS = {"o2": "oxygen", "oxyg": "oxygen", "co2": "carbon", "detector": "dete
             "ventilation": "flow", "airflow": "flow", "velocity": "flow", "ages": "aging", "aged": "aging",
             "age": "aging", "background": "background", "clean": "background", "cleaner": "background",
             "bigger": "grow", "larger": "grow", "grew": "grow", "growth": "grow", "increase": "grow",
-            "increased": "grow", "travel": "transport", "travels": "transport", "move": "transport"}
+            "increased": "grow", "travel": "transport", "travels": "transport", "move": "transport",
+            "big": "diamet", "tiny": "diamet"}
 
 # Names a question may use for each witness. Uppercase-only aliases are matched case-sensitively,
 # so the English word "same" doesn't summon the SAME witness.
