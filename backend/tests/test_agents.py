@@ -66,3 +66,9 @@ def test_liquid_fuel_duel_reports_ghost_flame_false_all_clear():
     r = run_duel(cfg, rounds=1, seed=0, blue_budget=20)["rounds"][0]
     assert r["red"]["worst"]["scenario"]["material"] == "n-heptane" and r["blue"]["suppressant"] == "co2"
     assert r["ghost"]["applicable"] and r["ghost"]["false_all_clear"] and r["ghost"]["citation"]
+
+
+def test_red_vs_random_shape_and_equal_budget():
+    from ember.agents.compare import red_vs_random
+    r = red_vs_random(SimConfig(detectors=[Detector("c", 3, 2, 2.4)]), budget=12, seeds=[0])
+    assert len(r["red_scores"]) == len(r["random_scores"]) == 1 and r["red_median"] >= 300 - 1

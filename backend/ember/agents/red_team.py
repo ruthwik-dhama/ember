@@ -114,7 +114,7 @@ def why_dangerous(scenario: dict, result: dict, cfg: SimConfig) -> str:
 def run_red(base_cfg: SimConfig, budget: int, seed: int, llm_cache=None, top_k: int = 5) -> dict:
     """LLM seeds (cached) -> CMA-ES over scenarios maximizing red_objective(simulate(cfg, frames=False)).
 
-    Returns {"worst": {...}, "top": [...]} where each entry is {scenario, score, result, why}.
+    Returns {"worst": {...}, "top": [...], "evals": n_simulations} where each entry is {scenario, score, result, why}.
     """
     import cma
 
@@ -127,11 +127,16 @@ def run_red(base_cfg: SimConfig, budget: int, seed: int, llm_cache=None, top_k: 
         seen.append((score, s, r))
         return score
 
-    # Spend a few evals on the seeds, then refine the best one with CMA-ES.
+    # Material is categorical, so try every one at both ends of the room (vent flow carries smoke toward the
+    # return wall, so upstream and downstream fires behave very differently), then refine the best seed's
+    # position/size with CMA-ES. Squeezing a categorical into a continuous axis stalled the search.
+    seeds = seeds + [{"material": m, "x": x, "y": y, "z": z, "droplet_d_mm": 3.0}
+                     for m in MATERIALS for x, y, z in ((0.5, 0.5, 0.2), (ROOM_M[0] - 0.5, ROOM_M[1] - 0.5, 0.3))]
     seeds = seeds[:max(1, budget // 4)]
     best_seed = max(seeds, key=evaluate)
     es = cma.CMAEvolutionStrategy(encode(best_seed), 0.3, {"seed": seed, "maxfevals": max(budget - len(seeds), 1),
                                                            "bounds": [_LO.tolist(), _HI.tolist()],
+                                                           "CMA_stds": [*(_HI - _LO)[:3], 0.02, *(_HI - _LO)[4:]],  # axes differ in units; material stays put
                                                            "popsize": 6, "verbose": -9})
     while not es.stop():
         xs = es.ask()
@@ -146,7 +151,7 @@ def run_red(base_cfg: SimConfig, budget: int, seed: int, llm_cache=None, top_k: 
         ranked.append({"scenario": s, "score": score, "result": r, "why": why_dangerous(s, r, base_cfg)})
         if len(ranked) == top_k:
             break
-    return {"worst": ranked[0], "top": ranked}
+    return {"worst": ranked[0], "top": ranked, "evals": len(seen)}
 
 
 def fixed_red(cfg: SimConfig, top_k: int = 5) -> dict:
