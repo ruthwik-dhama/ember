@@ -3,20 +3,20 @@ engine.dx_m,0.25,m,model choice (coarse grid so optimizers can run hundreds of s
 engine.vent_speed,0.10,m/s,habitat-spec placeholder (cabin ventilation order of 0.1 m/s),assumed
 engine.diffusivity,0.01,m2/s,placeholder until calibrated vs SAME mixing-dominated transport,assumed
 engine.w_b_earth,0.15,m/s,placeholder smoke rise speed at 1 g; scaled by g^(1/3),assumed
-engine.u_b_earth,30.0,cm/s,placeholder flame-zone buoyant velocity at 1 g; fit vs BASS ground vs flight,assumed
+engine.u_b_earth,30.0,cm/s,Link et al. 2018 Sci Rep 8:120 doi:10.1038/s41598-017-18398-4: flame-induced buoyant flow ~30 cm/s in 1 g (stated approx.),measured
 engine.smoke_scale,1.0,-,placeholder until calibrated vs SAME-R,assumed
 engine.frame_dt_s,2.0,s,payload limit (1 frame per 2 s of sim time keeps a 300 s run near 4 MB; interpolate in 3D),assumed
 engine.frame_min_conc,0.02,-,payload limit (sparse voxels; 0.4x single-detector threshold),assumed
 flame.x_ref,0.21,-,reference O2 mole fraction (Earth air),measured
-flame.o2_exponent,1.0,-,placeholder until fit to BASS-II,assumed
-flame.u_q,2.0,cm/s,placeholder low-flow quench scale until BASS,assumed
-flame.u_bo,100.0,cm/s,placeholder blowoff scale until BASS,assumed
-flame.n,2.0,-,placeholder blowoff exponent,assumed
+flame.o2_exponent,4.56,-,fit (+/-0.91) to Link et al. 2018 Sci Rep 8:120 doi:10.1038/s41598-017-18398-4 Table S1 ISS 0.64 cm PMMA X_O2 17-18.9%; 1 g Table S2 gives ~7; extrapolated above 21%,fitted
+flame.u_q,0.28,cm/s,fit (+/-0.19) to Link et al. 2018 Sci Rep 8:120 doi:10.1038/s41598-017-18398-4 Table S1,fitted
+flame.u_bo,12.6,cm/s,fit (+/-3.9) to Link et al. 2018 Sci Rep 8:120 doi:10.1038/s41598-017-18398-4 Table S1 at X_O2 17-18.9% (blowoff speed likely higher at higher O2),fitted
+flame.n,2.0,-,fixed in fit (blowoff exponent),assumed
 flame.r0_m,0.02,m,ignition patch radius,assumed
 material.cotton.v0,1.0,mm/s,placeholder until BASS/BASS-II,assumed
 material.cotton.smoke_yield,1.0,-,placeholder until SAME,assumed
 material.cotton.r_cap,0.5,m,placeholder max fire radius,assumed
-material.pmma.v0,0.5,mm/s,placeholder until BASS/BASS-II,assumed
+material.pmma.v0,0.171,mm/s,fit (+/-0.028) to Link et al. 2018 Sci Rep 8:120 doi:10.1038/s41598-017-18398-4 Table S1 (0.64 cm black PMMA rod; thicker rods spread slower),fitted
 material.pmma.smoke_yield,0.6,-,placeholder until SAME,assumed
 material.pmma.r_cap,0.5,m,placeholder max fire radius,assumed
 material.n-heptane.v0,5.0,mm/s,placeholder (liquid pool spread) until FLEX,assumed
@@ -32,7 +32,21 @@ smoke.d0_nm,300,nm,NTRS-20130000422 (SAME-R most average sizes 200-400 nm),measu
 smoke.tau_s,300,s,placeholder aging time scale; calibrate to SAME-R aging 11-1800 s,assumed
 dust.d_nm,3000,nm,placeholder regolith dust size until DAFT,assumed
 dust.conc_per_mg,0.01,-/mg,placeholder dust obscuration per mg released until DAFT,assumed
-suppress.co2_extinction_frac,0.16,-,placeholder limiting O2 fraction with CO2 until FLEX (droplet-scale),assumed
-suppress.he_extinction_frac,0.14,-,placeholder limiting O2 fraction with He until FLEX (droplet-scale),assumed
+suppress.co2_extinction_frac,0.17,-,Dietrich et al. 2014 Microgravity Sci Technol 26:65-76 doi:10.1007/s12217-014-9372-2: heptane droplet LOI with CO2 in air 1 atm; applied to solids = extrapolation,assumed
+suppress.he_extinction_frac,0.15,-,Dietrich et al. 2014 Microgravity Sci Technol 26:65-76 doi:10.1007/s12217-014-9372-2: heptane droplet LOI with He in air 1 atm; applied to solids = extrapolation,assumed
 suppress.dilution_frac,0.40,-,placeholder O2 dilution from cabin flooding,assumed
 suppress.response_s,10.0,s,placeholder delay from first alarm to suppressant release,assumed
+flame.u_ext,0.6,cm/s,Link et al. 2018 Sci Rep 8:120 doi:10.1038/s41598-017-18398-4: no flame spread observed below 0.6 cm/s opposed flow in microgravity,measured
+flame.x_loc_ug,0.17,-,Link et al. 2018 Sci Rep 8:120 doi:10.1038/s41598-017-18398-4: PMMA spread sustained down to 17% O2 in microgravity vs 18% in 1 g,measured
+suppress.co2.n-heptane,0.17,-,Dietrich et al. 2014 Microgravity Sci Technol 26:65-76 doi:10.1007/s12217-014-9372-2: LOI 0.17 (0.17/0.63/0.20 O2/N2/CO2) droplet-scale,measured
+suppress.co2.methanol,0.14,-,Dietrich et al. 2014 Microgravity Sci Technol 26:65-76 doi:10.1007/s12217-014-9372-2: LOI 0.14 (0.14/0.56/0.30 O2/N2/CO2) droplet-scale,measured
+suppress.he.n-heptane,0.15,-,Dietrich et al. 2014 Microgravity Sci Technol 26:65-76 doi:10.1007/s12217-014-9372-2: LOI ~0.15 with He dispersed into air 1 atm droplet-scale,measured
+suppress.he.methanol,0.14,-,Dietrich et al. 2014 Microgravity Sci Technol 26:65-76 doi:10.1007/s12217-014-9372-2: LOI ~0.14 with He dispersed into air 1 atm droplet-scale,measured
+suppress.loi_air.n-heptane,0.15,-,Dietrich et al. 2014 Microgravity Sci Technol 26:65-76 doi:10.1007/s12217-014-9372-2: LOI in O2/N2,measured
+suppress.loi_air.methanol,0.12,-,Dietrich et al. 2014 Microgravity Sci Technol 26:65-76 doi:10.1007/s12217-014-9372-2: LOI in O2/N2,measured
+ghost.critical_d_mm,2.4,mm,NASA Glenn release JR12-009 (2012-09-13): no two-stage burning in heptane droplets < 2.4 mm,measured
+ghost.cool_flame_temp_c,600,C,NASA Glenn release JR12-009 (2012-09-13): cool flame burns at about 600 C,measured
+ghost.o2_min,0.14,-,Nayagam et al. 2014 NTRS 20140006750: cool-flame tests O2 14-25%,measured
+ghost.o2_max,0.25,-,Nayagam et al. 2014 NTRS 20140006750: cool-flame tests O2 14-25%,measured
+ghost.p_min_kpa,50.7,kPa,Nayagam et al. 2014 NTRS 20140006750: tests at 0.5 0.7 and 1.0 atm,measured
+ghost.p_max_kpa,101.3,kPa,Nayagam et al. 2014 NTRS 20140006750: tests at 0.5 0.7 and 1.0 atm,measured

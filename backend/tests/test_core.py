@@ -109,3 +109,30 @@ def test_gravity_sweep_order_vents_off_ceiling_detector():
     s = gravity_sweep(SimConfig(vent_on=False, fires=[fire()], detectors=[ceiling_det()]))
     assert s["earth"]["delay_s"] < s["mars"]["delay_s"] < s["moon"]["delay_s"]
     assert s["moon"]["partial_g"] and not s["earth"]["partial_g"]
+
+
+def test_flex_limits_are_per_fuel_and_droplet_scale():
+    # FLEX (Dietrich et al. 2014): CO2 LOI 0.17 heptane, 0.14 methanol; solids fall back to the generic value.
+    from ember.sim.suppression import extinguished, limiting_o2
+    assert limiting_o2("co2", "n-heptane") == 0.17 and limiting_o2("co2", "methanol") == 0.14
+    assert extinguished(0.16, "co2", "n-heptane") and not extinguished(0.18, "co2", "n-heptane")
+    assert not extinguished(0.10, "none", "n-heptane")
+
+
+def test_ghost_flame_params_feed_the_auditor():
+    from ember.sim.suppression import ghost_flame_params
+    p = ghost_flame_params()
+    big = fire("n-heptane", "liquid", droplet_d_mm=3.0)
+    small = fire("n-heptane", "liquid", droplet_d_mm=1.5)
+    cond = {"o2_frac": 0.21, "pressure_kpa": 101.3}
+    assert ghost_flame_check(big, cond, p)["false_all_clear"] is True
+    assert ghost_flame_check(small, cond, p)["false_all_clear"] is False
+
+
+def test_no_flame_spread_below_bass_ii_cutoff():
+    # BASS-II: no spread below 0.6 cm/s in microgravity.
+    from ember.data_io import cal
+    from ember.sim.engine import _p_flame
+    from ember.sim.flame import spread_rate
+    assert spread_rate(1.0, 0.21, 0.5, _p_flame()) == 0.0
+    assert spread_rate(1.0, 0.21, cal("flame.u_ext") + 1.0, _p_flame()) > 0.0
