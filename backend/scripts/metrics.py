@@ -17,8 +17,8 @@ from pathlib import Path
 import numpy as np
 
 from ember.agents.blue_team import default_cfg, run_duel
+from ember.agents.compare import red_vs_random
 from ember.agents.ghost_flame import ghost_flame_check, ghost_params
-from ember.agents.red_team import _HI, _LO, decode, red_objective, to_cfg
 from ember.config import ROOM_M, Detector, DustEvent, FireSpec, Mission, SimConfig
 from ember.data_io import load_calibration
 from ember.envelope.guard import EnvelopeGuard
@@ -52,36 +52,28 @@ def _mission_cfg() -> SimConfig:
     return default_cfg(SimConfig(o2_frac=m.o2_frac, pressure_kpa=m.pressure_kpa, g=m.g, vent_on=m.vent_on))
 
 
-def _random_search_worst(base_cfg: SimConfig, budget: int, seed: int) -> float:
-    """Same search space and budget as Red's CMA-ES, but uniform random sampling -- the fairness baseline."""
-    rng = np.random.default_rng(seed)
-    best = -float("inf")
-    for _ in range(budget):
-        x = rng.uniform(_LO, _HI)
-        r = simulate(to_cfg(base_cfg, decode(x)), frames=False)
-        best = max(best, red_objective(r))
-    return best
+def metric_red_vs_random(guard: EnvelopeGuard) -> dict:
+    """Kartavya's agents/compare.py: random search gets exactly as many evals as Red actually used per seed."""
+    cfg = _mission_cfg()
+    result = red_vs_random(cfg, budget=RED_BLUE_BUDGET, seeds=SEEDS)
+    # Positive = Red's CMA-ES search finds meaningfully more dangerous fires than random search, same budget.
+    delta = result["red_median"] - result["random_median"]
+    return {"red_vs_random_median_s": entry(round(delta, 1), guard.check(cfg)["badge"], PHYSICS_STATUS)}
 
 
 def metric_duel(guard: EnvelopeGuard) -> dict:
-    """Red vs. random, and baseline (before Blue) vs. Blue detection delay. One duel run per seed gives both:
-    round 1's Red search is exactly what a standalone run_red(budget) call would do."""
+    """Baseline (before Blue) vs. Blue detection delay, median and worst-case over 5 seeds."""
     cfg = _mission_cfg()
     badge = guard.check(cfg)["badge"]
 
-    red_scores, random_scores, before_delays, after_delays = [], [], [], []
+    before_delays, after_delays = [], []
     for seed in SEEDS:
         run = run_duel(cfg, rounds=1, seed=seed, red_budget=RED_BLUE_BUDGET, blue_budget=RED_BLUE_BUDGET)
         r = run["rounds"][0]
-        red_scores.append(r["red"]["worst"]["score"])
-        random_scores.append(_random_search_worst(cfg, RED_BLUE_BUDGET, seed))
         before_delays.append(r["before"]["delay_s"] if r["before"]["delay_s"] is not None else T_MAX)
         after_delays.append(r["after"]["delay_s"] if r["after"]["delay_s"] is not None else T_MAX)
 
-    # Positive = Red's CMA-ES search finds meaningfully more dangerous fires than random search, same budget.
-    red_vs_random = statistics.median(red_scores) - statistics.median(random_scores)
     return {
-        "red_vs_random_median_s": entry(round(red_vs_random, 1), badge, PHYSICS_STATUS),
         "baseline_mean_delay_s": entry(round(statistics.mean(before_delays), 1), badge, PHYSICS_STATUS),
         "baseline_worst_case_delay_s": entry(round(max(before_delays), 1), badge, PHYSICS_STATUS),
         "blue_mean_delay_s": entry(round(statistics.mean(after_delays), 1), badge, PHYSICS_STATUS),
@@ -148,6 +140,7 @@ def metric_ghost_flame() -> dict:
 def main():
     guard = EnvelopeGuard()
     numbers = {}
+    numbers.update(metric_red_vs_random(guard))
     numbers.update(metric_duel(guard))
     numbers.update(metric_gravity(guard))
     numbers.update(metric_dust_false_alarms(guard))
