@@ -15,7 +15,26 @@ Core principle: **every number shows how much real data backs it.**
 | 🟡 Interpolated | Between tested conditions (including **all** partial-g results between the 0 g and 1 g data) |
 | 🔴 Extrapolated | Outside every tested condition |
 
-> **Status (Sun 15 Nov):** the skeleton is in: folders, shared contracts, CI, and a working app shell. `simulate()` is a **stub** that returns placeholder data in the real contract shape (`"stub": true`), and routes that aren't built yet return HTTP 501 naming their owner. Each lane now fills in its own folder. **Final deadline: tonight, 11:59 PM.**
+> **Final deadline: tonight (Sun 15 Nov), 11:59 PM.** Routes that aren't built yet return HTTP 501 naming their owner.
+
+## What's on `main` now
+
+Merged so far: skeleton, physics engine (PR #3), Envelope Guard (#1), rank and report (#5), data lane (#4), and FLEX/BASS-II calibration (#6). **37 tests pass.**
+
+| Component | Status | Owner | Where |
+|---|---|---|---|
+| Physics engine | ✅ Live, calibrated where papers allow | Ruthwik | `backend/ember/sim/` |
+| Envelope Guard (`check`, `distance_to`, `gap_map`) | ✅ Live | Sibi | `backend/ember/envelope/` |
+| Data: conditions, calibration, summaries, witness docs | ✅ 43 condition rows, 57 constants, 5 witness docs | Sibi, Ruthwik | `data/` |
+| Rank + compare | ✅ Live (`/api/rank`, `/api/compare`) | Kishan | `backend/ember/rank/` |
+| Insights report | ✅ Live. Risk/fix sections say "not built yet" until the duel exists | Kishan | `backend/ember/report/` |
+| `/api/gap_map` route | ⏳ 501. `guard.gap_map()` works; the route isn't wired to it yet | Kishan | `backend/ember/api.py` |
+| Red / Blue duel | ⏳ 501 (`run_red`, `run_blue`, `run_duel` are stubs) | Kartavya | `backend/ember/agents/` |
+| Ghost Flame Auditor | ✅ `ghost_flame_check()` works with `sim.suppression.ghost_flame_params()` | Kartavya | `agents/ghost_flame.py` |
+| Witnesses / Ask EMBER | ⏳ 501 (`witness.ask` is a stub) | Sibi | `agents/witness.py` |
+| Frontend | 🟡 Shell: 6 tabs, explorer and simulate wired; other screens are placeholders | Kishan, Kartavya, Ruthwik, Sibi | `frontend/src/` |
+| Gravity panel | ⏳ Placeholder (`gravity_sweep()` is ready in the backend) | Ruthwik | `frontend/src/panels/gravity/` |
+| `metrics.py` | ⏳ Writes `deck_numbers.json` with null values only | Kishan | `backend/scripts/` |
 
 ---
 
@@ -89,7 +108,7 @@ Tests:
 pytest backend/tests -q
 ```
 
-Contract tests run now. The physics behaviour tests are skipped until `backend/ember/sim/engine.py` sets `IS_STUB = False`. Shared loaders for everything in `data/` live in `backend/ember/data_io.py`, so read constants through `cal("name")` and never hard-code them.
+The suite covers contracts, physics behaviour, Envelope Guard (`test_envelope.py`), data-file checks (`test_data.py`) and rank/report, and should take about 6 s. Shared loaders for everything in `data/` live in `backend/ember/data_io.py`, so read constants through `cal("name")` and never hard-code them.
 
 Optional: copy `.env.example` to `.env` and set `ANTHROPIC_API_KEY` to enable live LLM calls (Red seeds, "why" text, witness phrasing). Without it, EMBER uses cached responses (offline mode).
 
@@ -144,6 +163,22 @@ Optional: copy `.env.example` to `.env` and set `ANTHROPIC_API_KEY` to enable li
 ### Physics in one paragraph
 
 This is a **reduced-order model** calibrated to PSI data, not CFD. Smoke and dust move on a 3D grid by advection and diffusion: `∂c/∂t + (u_vent + w_b(g) ẑ)·∇c = D∇²c + S_fire + S_dust`. Buoyant velocity scales as `u_b(g) ≈ u_b(1g) · g^(1/3)`, which gives about 0.55× Earth on the Moon and 0.72× on Mars. Flame spread is fit to BASS/BASS-II: `v_f = v0 · (X_O2/X_ref)^a · F(u_eff)`, where `F` has an oxygen-starvation branch at low flow and a blowoff branch at high flow. That's the *ventilation dilemma*. There are two detector types. **Single-measurement** detectors alarm on mass concentration and can't tell smoke from dust. **Two-moment** detectors estimate particle size, so smoke (hundreds of nm, growing as it ages) can be told apart from regolith dust (microns). Suppression uses FLEX/FLEX-2 CO₂ and He dilution thresholds. Those are **droplet-scale** measurements, so applying them to a whole cabin is badged 🟡/🔴.
+
+**How the engine is implemented** (`backend/ember/sim/`):
+
+| Piece | What it does | Calibrated from |
+|---|---|---|
+| `engine.py` | 0.25 m grid over `ROOM_M` (24×16×10). Vent flow runs from the inlet wall to the return wall, and smoke leaving the return counts as `smoke_escaped`. Buoyancy applies to smoke only; dust doesn't rise. Smoke pools under the no-flux ceiling. The step size is set automatically for numerical stability. | SAME-R smoke size and aging (Sibi's fit); vent speed and mixing are still `assumed` |
+| `flame.py` | Spread rate with the BASS-II fit. Below `flame.u_ext` = 0.6 cm/s there is no spread. The quench term uses forced + buoyant flow, and blowoff uses **forced flow only**, matching BASS-II's 1 g data. | BASS-II ISS Table S1 (PMMA rods) |
+| `materials.py` | Cotton, PMMA, n-heptane and methanol. Values come from `calibration.csv` rows `material.<name>.{v0, smoke_yield, r_cap}`. | PMMA `v0` fitted; the rest `assumed` |
+| `suppression.py` | The agent floods the cabin `suppress.response_s` after the first alarm. The fire goes out if diluted O₂ is below FLEX's **per-fuel** limiting O₂. Solids fall back to the heptane value, which is an extrapolation. `ghost_flame_params()` feeds the Ghost Flame Auditor. | FLEX LOI values; cutoff and envelope from NASA Glenn JR12-009 and Nayagam et al. 2014 |
+| `sweeps.py` | `gravity_sweep(cfg)` runs the same fire at ISS / Moon / Mars / Earth g. | — |
+
+**What the papers have shown so far** (measured values, not simulation outputs):
+- FLEX limiting O₂ for droplets: heptane 0.15 in air, 0.17 with CO₂ and 0.15 with He; methanol 0.12, 0.14 and 0.14.
+- BASS-II: in microgravity, PMMA spread **rises and then falls** as airflow increases, stops below 0.6 cm/s, and is sustained down to 17% O₂ (18% at 1 g).
+- FLEX-2 burned n-decane droplets at **0.5 atm**, and ACME tested flames at 21–40% O₂ (some at 57 kPa). With both in `data/`, Moon-base conditions (30% O₂, 70.3 kPa, 0.165 g) badge **🟡**: inside every tested range, and partial gravity is 🟡 by rule. Caveat: the guard pools all investigations, so the 30% O₂ coverage comes from ACME gas flames, not from solid flame-spread data (BASS-II only reaches 21%).
+- At 30% O₂, a CO₂ flood that would work in Earth air may leave O₂ above heptane's limit. The cabin dilution fraction is still `assumed`, so treat this as a hypothesis, not a result.
 
 ---
 
@@ -294,23 +329,38 @@ stub:              bool       # true only for placeholder engines
 
 `simulate(cfg, frames=False)` is the **fast mode** for Red/Blue/metrics: no voxel frames, and it stops at the first alarm (about 0.04 s per run). Voxel `(i, j, k)` index a 0.25 m grid over `ROOM_M` (x = vent inlet→return, z = up). `backend/ember/sim/sweeps.py::gravity_sweep(cfg)` runs the same fire at ISS / Moon / Mars / Earth g.
 
-(The last three fields are needed by Red's objective and the gravity panel. They're additive, so nothing else breaks.)
+**Other shared functions on `main`:**
+
+| Function | Returns | Owner |
+|---|---|---|
+| `EnvelopeGuard.check(conditions)` | `{badge, distance, nearest, outside_axes}`; accepts a dict, `SimConfig` or `Mission` | Sibi |
+| `EnvelopeGuard.distance_to(mission, row)` | normalized distance from a mission to one tested row (used by ranking) | Sibi |
+| `EnvelopeGuard.gap_map(pressure_kpa, g)` | `{pressure_kpa, g, o2_values, flow_values, cells[i][j], nearest[i][j], counts}` on a 13×13 O₂ (0.15–0.45) × flow (0–30 cm/s) grid | Sibi |
+| `rank(mission, investigations, guard, pillar=None)` | `[{id, score, why}]`, best first. Score = 1/(1 + nearest distance) + 0.2 if fuel phase matches | Kishan |
+| `compare(a, b)` | `{same: [...], different: [...]}` over hardware, fuel phase, g, pillars, sensors | Kishan |
+| `build_report(mission)` | `{mission, top_investigations, top_risks, recommended_fixes, data_gaps, earth_applications}`. Sections whose lane isn't built return `{available: false, reason}` | Kishan |
+| `gravity_sweep(cfg)` | `{iss\|moon\|mars\|earth: {g, detected, delay_s, spread_rate_mm_s, partial_g}}` | Ruthwik |
+| `ghost_flame_params()` | `{cool_flame_fuels, critical_d_mm, cool_flame_envelope, source}` for `ghost_flame_check()` | Ruthwik |
+| `suppression.limiting_o2(agent, material)` | FLEX limiting O₂ for that fuel, else the generic (extrapolated) value | Ruthwik |
+
+Known placeholder: `envelope/guard.py` assumes `DEFAULT_FLOW_CM_S = 10.0` because `Mission` has no flow field yet.
 
 ## API
 
-| Method | Path | Owner | Screen |
-|---|---|---|---|
-| POST | `/api/mission` | Kishan | Mission setup |
-| GET | `/api/investigations` | Kishan (data: Sibi) | Explorer |
-| GET | `/api/investigations/{id}` | Kishan (data: Sibi) | Explorer |
-| GET | `/api/compare?a=&b=` | Kishan | Compare |
-| GET | `/api/rank?pillar=` | Kishan | Ranking |
-| POST | `/api/simulate` | Kishan (engine: Ruthwik) | Habitat |
-| POST | `/api/duel/run` | Kishan (agents: Kartavya) | Habitat / duel panel |
-| GET | `/api/duel/{run_id}` | Kishan | Duel panel |
-| POST | `/api/ask` | Kishan (witnesses: Sibi) | Ask EMBER |
-| GET | `/api/gap_map` | Kishan (guard: Sibi) | Gap map |
-| GET | `/api/report` | Kishan | Report |
+| Method | Path | Owner | Screen | Status |
+|---|---|---|---|---|
+| GET | `/api/health` | Kishan | — | ✅ |
+| POST | `/api/mission` | Kishan | Mission setup | ✅ stores the mission used by rank/report |
+| GET | `/api/investigations` | Kishan (data: Sibi) | Explorer | ✅ |
+| GET | `/api/investigations/{id}` | Kishan (data: Sibi) | Explorer | ✅ |
+| GET | `/api/compare?a=&b=` | Kishan | Compare | ✅ |
+| GET | `/api/rank?pillar=` | Kishan | Ranking | ✅ |
+| POST | `/api/simulate` | Kishan (engine: Ruthwik) | Habitat | ✅ adds `envelope` badge |
+| POST | `/api/duel/run` | Kishan (agents: Kartavya) | Habitat / duel panel | ⏳ 501 |
+| GET | `/api/duel/{run_id}` | Kishan | Duel panel | ⏳ 501 |
+| POST | `/api/ask` | Kishan (witnesses: Sibi) | Ask EMBER | ⏳ 501 |
+| GET | `/api/gap_map` | Kishan (guard: Sibi) | Gap map | ⏳ 501 (wire to `guard.gap_map()`) |
+| GET | `/api/report` | Kishan | Report | ✅ partial until the duel exists |
 
 ## Frontend screens (user flow)
 
@@ -329,24 +379,38 @@ stub:              bool       # true only for placeholder engines
 
 ```csv
 investigation,test_id,fuel,fuel_phase,o2_frac,pressure_kpa,flow_cm_s,g,measured_outputs,citation,verified
-FLEX,FLEX-001,n-heptane,liquid,0.21,101.3,0.0,0.0,"burn_rate;extinction_d_mm",NTRS-XXXXXXX,false
+FLEX,FLEX-LOI-HEP-CO2,n-heptane,liquid,0.17,101.3,0.0,0.0,limiting_oxygen_index;co2_frac=0.20,doi:10.1007/s12217-014-9372-2,true
 ```
 
 - `verified=false` until the owner has checked the row against the source.
 - `g` is in Earth-g units (0, 0.165, 0.38, 1.0).
-- Placeholder citations (`NTRS-XXXXXXX`) **must be replaced before Checkpoint 2.**
+- No placeholder citations remain. `test_data.py` checks this for the data lane's rows.
 
-**`calibration.csv`**: the single source of truth for every physical constant in the simulator. `status` is `measured`, `fitted` or `assumed`, and the UI and deck badges are generated from it.
+**Current coverage (43 rows):**
+
+| Investigation | Rows | What they cover | Owner |
+|---|---|---|---|
+| SAME-R | 12 | smoke from 6 materials at 0, 2 and 8 cm/s, 21% O₂, 1 atm | Sibi |
+| SAME | 5 | SAME-1 smoke from 5 materials, 8 cm/s | Sibi |
+| ACME | 7 | BRE ethylene/methane flames (emulated solids), **21–40% O₂**, 57–101 kPa | Sibi |
+| FLEX | 6 | heptane/methanol limiting-O₂ conditions (air, CO₂, He), 1 atm | Ruthwik |
+| FLEX-2 | 4 | n-decane cool-flame tests at **0.5 atm**, 14–25% O₂ | Ruthwik |
+| BASS-II | 6 | ISS PMMA spread, 17–20.7% O₂, 0.7–7.6 cm/s | Ruthwik |
+| GROUND | 3 | BASS-II 1 g PMMA references | Ruthwik |
+
+**Open data gaps:** BASS-II rows are `verified=false` because the paper doesn't state test pressure. BASS, CFI, SPICE and SLICE have no `sources` in `investigations.json` yet, and DAFT has a summary and witness doc but no condition rows. Solid flame-spread data (BASS-II) stops at 21% O₂, so spread rates at 30% are an extrapolation of the fit even though the pooled envelope badges them 🟡.
+
+**`calibration.csv`**: the single source of truth for every physical constant in the simulator. `status` is `measured`, `fitted` or `assumed`, and the UI and deck badges are generated from it. Currently 57 constants: **21 measured, 7 fitted, 29 assumed.** The `assumed` ones are mostly vent speed, mixing, cotton and liquid spread rates, detector thresholds and dust values.
 
 ```csv
 name,value,unit,source,status
-smoke.d0_nm,300,nm,NTRS-20130000422,measured
-flame.o2_exponent,0.0,-,fit:BASS-II,fitted
+smoke.d0_nm,258,nm,NTRS-20130000422 Table 1: median diameter of average mass (D30) of unaged baseline smoke ...,fitted
+suppress.co2.n-heptane,0.17,-,Dietrich et al. 2014 ...: LOI 0.17 (0.17/0.63/0.20 O2/N2/CO2) droplet-scale,measured
 ```
 
 **`investigations.json`**: one object per investigation (`id, name, objective, hardware, fuel{names, phase, shape, size}, conditions{o2_frac, pressure_atm, diluents, g}, varied, held_constant, sensors, pillars, key_findings, sources`). It feeds the explorer and compare screens.
 
-**`witness_docs/<ID>.md`**: one file per investigation with 5–15 facts, each with a real citation in brackets. Witnesses retrieve only from their own file and drop any uncited claim.
+**`witness_docs/<ID>.md`**: one file per investigation with 5–15 facts, each with a real citation in brackets. Witnesses retrieve only from their own file and drop any uncited claim. Files so far: `ACME.md`, `BASS.md`, `DAFT.md`, `FLEX.md`, `SAME.md`.
 
 **Investigations in scope:** BASS / BASS-II (solid flame spread vs. O₂ and flow, prevention); SAME / SAME-R (smoke particle size and aging, detection); DAFT / DAFT-2 (dust signature, false alarms); FLEX / FLEX-2 and CFI (droplet extinction, cool flames, suppression); ACME (gaseous flames, high-O₂ tests); SPICE / SLICE (smoke point, liftoff); 1 g ground references (upper bound for gravity interpolation).
 
@@ -398,18 +462,26 @@ flame.o2_exponent,0.0,-,fit:BASS-II,fitted
 
 ## Use of AI
 
-The EMBER idea, science framing and design are the team's own. This README was drafted with Claude (Anthropic) from the team's design document and reviewed by the team. Mark any other AI-assisted file with a one-line header comment, and list in-app LLM use here (Red seeds, "why" text, witness phrasing via the Claude API). Any AI-generated image or video must carry a visible watermark.
+The EMBER idea, science framing and design are the team's own. This README, the repo skeleton, the physics engine and the FLEX/BASS-II calibration (paper reading, value extraction, and the PMMA spread fit) were drafted with Claude (Anthropic) and reviewed by the team; every extracted value cites its source in `data/`. AI-assisted source files say so in their first-line header comment. Mark any other AI-assisted file with a one-line header comment, and list in-app LLM use here (Red seeds, "why" text, witness phrasing via the Claude API). Any AI-generated image or video must carry a visible watermark.
 
 ## Sources
 
 - PSI Data Repository, Combustion Science: https://psi.nasa.gov/physci/repo/search?q=combustion
 - NASA Combustion Science: https://www.nasa.gov/glenn/glenn-expertise-space-exploration/physical-sciences-program/combustion-science/
 - A Researcher's Guide to ISS Combustion Science: https://www.nasa.gov/missions/station/a-researchers-guide-to-combustion-science/
-- Nayagam et al., FLEX results overview, *Microgravity Sci. Technol.*: https://link.springer.com/doi/10.1007/s12217-014-9372-2
+- Dietrich, Nayagam, Hicks et al. (2014), "Droplet Combustion Experiments Aboard the International Space Station" (FLEX overview), *Microgravity Sci. Technol.* 26:65–76: https://doi.org/10.1007/s12217-014-9372-2
+- Nayagam, Dietrich, Hicks, Williams (2013), "Methanol Droplet Combustion in Oxygen-Inert Environments in Microgravity" (FLEX): https://ntrs.nasa.gov/citations/20130014061
+- Link, Huang, Fernandez-Pello, Olson, Ferkul (2018), "The Effect of Gravity on Flame Spread over PMMA Cylinders" (BASS-II), *Sci. Rep.* 8:120, with supplementary Tables S1/S2: https://doi.org/10.1038/s41598-017-18398-4
+- Urban et al. (2009), SAE ICES 2009 (SAME): https://doi.org/10.4271/2009-01-2468
+- Urban et al. (2007), ISDC 2007 (DAFT, ISS cabin background aerosol): https://ntrs.nasa.gov/citations/20070031686
+- Sheredy (2004), NASA Research and Technology 2004 (DAFT): https://ntrs.nasa.gov/citations/20050215648
+- Stocker (2021), 33rd JASMAC (ACME): https://ntrs.nasa.gov/citations/20210021781
+- Wright (2021), UMD thesis (ACME): https://hdl.handle.net/1903/27484
+- Dehghani (2022), UMD dissertation (ACME): https://hdl.handle.net/1903/29303
 - NASA ISS Science Blog, "Cool Flames on the International Space Station": https://blogs.nasa.gov/ISS_Science_Blog/2013/11/25/cool-flames-on-the-international-space-station-an-anatomy-of-discovery/
 - Nayagam, APS abstract on cool-flame extinction: https://archive.aps.org/oss/2021/b05/1
 - Nayagam et al., "Cool-flame extinction during n-alkane droplet combustion in microgravity": https://ntrs.nasa.gov/api/citations/20140006750/downloads/20140006750.pdf
-- ISS Program Science Office, "An Old Theory Goes Up in Cool Flames": https://press-news.org/71098-an-old-theory-goes-up-in-cool-flames.html
+- NASA Glenn Research Center release JR12-009 (2012), "An Old Theory Goes Up in Cool Flames" (2.4 mm cutoff, ~600 °C cool flames): https://press-news.org/71098-an-old-theory-goes-up-in-cool-flames.html
 - Yang et al. (2015), Smoke characterization and feasibility of the moment method for spacecraft fire detection, *Aerosol Sci. Technol.* 49: https://www.nist.gov/publications/smoke-characterization-and-feasibility-moment-method-spacecraft-fire-detection
 - SAME final report (NASA TM): https://www.nist.gov/node/1863886
 - Particle Morphology and Size Results from SAME-2 (NTRS 20130000422): https://ntrs.nasa.gov/citations/20130000422
