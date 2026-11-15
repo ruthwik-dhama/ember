@@ -14,7 +14,7 @@ const LEVELS = [
 ]; // mirrors config.py GRAVITY_PRESETS
 
 const DEFAULT_SCENE = {
-  fires: [{ material: "cotton", phase: "solid", x: 3, y: 2, z: 0.5 }],
+  fires: [{ material: "pmma", phase: "solid", x: 3, y: 2, z: 0.5 }], // PMMA: spread fitted to BASS-II (cotton is still a placeholder)
   detectors: [{ id: "ceil", x: 3, y: 2, z: 2.4 }],
 };
 

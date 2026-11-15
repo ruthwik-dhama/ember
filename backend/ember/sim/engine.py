@@ -103,7 +103,9 @@ def simulate(cfg: SimConfig, frames: bool = True) -> dict:
     for f in cfg.fires:
         m = get_material(f.material)
         fires.append({"spec": f, "mat": m, "ijk": _ijk((f.x, f.y, f.z), shape, dx), "r": 0.0,
-                      "v_mm_s": 0.0, "out_at": None})
+                      "v_mm_s": 0.0, "out_at": None, "full_at": None})
+    burn_cm2_s = 0.0       # time-integrated burning area: keeps growing after a fire reaches full size
+    smoke_produced = 0.0   # total smoke emitted (same units as smoke_escaped)
     det_ijk = [_ijk((d.x, d.y, d.z), shape, dx) for d in cfg.detectors]
     airlock = _ijk(AIRLOCK_M, shape, dx)
     dust_pending = sorted(cfg.dust, key=lambda e: e.t_s)
@@ -143,8 +145,12 @@ def simulate(cfg: SimConfig, frames: bool = True) -> dict:
             u_eff = math.hypot(u_forced, u_b_flame)
             fr["v_mm_s"] = spread_rate(m.v0, x_o2, u_eff, p_flame, u_forced=u_forced)
             fr["r"] = min(fr["r"] + fr["v_mm_s"] / 1000.0 * dt, m.r_cap)
+            if fr["full_at"] is None and fr["r"] >= m.r_cap:
+                fr["full_at"] = round(t, 2)
             rate = m.smoke_yield * math.pi * fr["r"] ** 2 * smoke_scale  # amount / s
             smoke[fr["ijk"]] += rate * dt / vol
+            burn_cm2_s += math.pi * fr["r"] ** 2 * 1e4 * dt
+            smoke_produced += rate * dt
 
         # Dust puffs at the airlock.
         while dust_pending and dust_pending[0].t_s <= t:
@@ -208,9 +214,14 @@ def simulate(cfg: SimConfig, frames: bool = True) -> dict:
         "frames": out_frames,
         "fire_area_cm2": area_cm2,
         "smoke_escaped": escaped,
+        # Severity signals that don't saturate when a fire reaches r_cap (for Red's tiebreak / report):
+        "burn_area_cm2_s": burn_cm2_s,          # integral of burning area over the run
+        "smoke_produced": smoke_produced,       # total smoke emitted
+        "t_full_size_s": min((fr["full_at"] for fr in fires if fr["full_at"] is not None), default=None),
         "spread_rate_mm_s": max((fr["v_mm_s"] for fr in fires), default=0.0),
         "fires": [{"material": fr["mat"].name, "phase": fr["mat"].phase, "radius_m": fr["r"],
                    "area_cm2": math.pi * fr["r"] ** 2 * 1e4, "extinguished_at_s": fr["out_at"],
+                   "full_size_at_s": fr["full_at"],
                    "calibration_status": fr["mat"].status} for fr in fires],
         "dt_s": dt,
     }
