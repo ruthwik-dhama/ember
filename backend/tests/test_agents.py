@@ -47,3 +47,12 @@ def test_duel_shape_and_cache_roundtrip():
     assert load_duel(run["run_id"])["run_id"] == run["run_id"]
     with pytest.raises(KeyError):
         load_duel("../etc")
+
+
+def test_api_duel_run_and_fetch():
+    from fastapi.testclient import TestClient
+    from ember.api import app
+    c = TestClient(app)
+    run = c.post("/api/duel/run", json={}).json()
+    assert run["rounds"] and c.get(f"/api/duel/{run['run_id']}").json()["run_id"] == run["run_id"]
+    assert c.get("/api/duel/nope").status_code == 404
