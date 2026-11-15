@@ -8,6 +8,13 @@ cool_flame_envelope, source) come from Ruthwik's FLEX extraction.
 from __future__ import annotations
 
 
+def ghost_params() -> dict:
+    """FLEX regime (README 5.3). PLACEHOLDER until Ruthwik's FLEX rows land in calibration.csv."""
+    return {"cool_flame_fuels": ["n-heptane"], "critical_d_mm": 2.4,
+            "cool_flame_envelope": {"o2_frac": (0.1, 0.4), "pressure_kpa": (70.9, 303.9)},
+            "source": "FLEX: Nayagam et al., doi:10.1007/s12217-014-9372-2"}
+
+
 def in_range(conditions: dict, envelope: dict) -> bool:
     """envelope = {axis: (lo, hi)}, e.g. {"o2_frac": (0.1, 0.4)}."""
     return all(lo <= conditions[k] <= hi for k, (lo, hi) in envelope.items())
