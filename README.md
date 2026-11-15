@@ -284,11 +284,15 @@ detected:          bool
 delay_s:           float | None                 # time to first alarm
 alarms:            [{detector_id, t_s, reason}]
 conditions:        {o2_frac, pressure_kpa, flow_cm_s, g}   # fed to the Envelope Guard
-frames:            [{t_s, voxels: [[i, j, k, concentration, smokeFrac], ...]}]   # sparse, ~2 fps
+frames:            [{t_s, voxels: [[i, j, k, concentration, smokeFrac], ...]}]   # sparse, 1 frame / 2 s (~4 MB per 300 s run)
 fire_area_cm2:     float      # Red's tiebreak for undetected fires
 smoke_escaped:     float      # Red's tiebreak for undetected fires
 spread_rate_mm_s:  float      # gravity comparison panel
+fires:             [{material, phase, radius_m, area_cm2, extinguished_at_s, calibration_status}]
+stub:              bool       # true only for placeholder engines
 ```
+
+`simulate(cfg, frames=False)` is the **fast mode** for Red/Blue/metrics: no voxel frames, and it stops at the first alarm (about 0.04 s per run). Voxel `(i, j, k)` index a 0.25 m grid over `ROOM_M` (x = vent inlet→return, z = up). `backend/ember/sim/sweeps.py::gravity_sweep(cfg)` runs the same fire at ISS / Moon / Mars / Earth g.
 
 (The last three fields are needed by Red's objective and the gravity panel. They're additive, so nothing else breaks.)
 
