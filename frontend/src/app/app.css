@@ -13,6 +13,10 @@ main { padding: 16px; max-width: 1100px; }
 pre { background: #161920; padding: 12px; border-radius: 6px; overflow-x: auto; font-size: 13px; }
 button.primary { background: var(--accent); color: #111; border: 0; border-radius: 6px; padding: 8px 14px; cursor: pointer; font-weight: 600; }
 
+.cite-marker { background: none; border: none; color: var(--accent); cursor: pointer; font: inherit; padding: 0 1px; }
+.cite-marker:hover { text-decoration: underline; }
+.cite-flash { background: rgba(255, 122, 61, 0.25); border-radius: 3px; }
+
 /* Wide pages (Habitat simulation + Ask EMBER) use more of the screen. */
 main.wide { max-width: 1440px; }
 .simulate-ask { display: grid; grid-template-columns: minmax(0, 2fr) minmax(300px, 1fr); gap: 16px; align-items: start; }

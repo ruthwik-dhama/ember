@@ -19,7 +19,7 @@ DATA_DIR = Path(__file__).resolve().parents[2] / "data"
 def load_calibration() -> Dict[str, dict]:
     """{name: {value: float, unit, source, status}}. status is measured | fitted | assumed."""
     out = {}
-    with open(DATA_DIR / "calibration.csv", newline="") as f:
+    with open(DATA_DIR / "calibration.csv", newline="", encoding="utf-8") as f:
         for row in csv.DictReader(f):
             row["value"] = float(row["value"])
             out[row["name"]] = row
@@ -35,7 +35,7 @@ def cal(name: str) -> float:
 def load_tested_conditions() -> List[dict]:
     """One dict per real test condition (data/tested_conditions.csv), numeric columns as floats."""
     rows = []
-    with open(DATA_DIR / "tested_conditions.csv", newline="") as f:
+    with open(DATA_DIR / "tested_conditions.csv", newline="", encoding="utf-8") as f:
         for row in csv.DictReader(f):
             for k in ("o2_frac", "pressure_kpa", "flow_cm_s", "g"):
                 row[k] = float(row[k])
@@ -46,9 +46,9 @@ def load_tested_conditions() -> List[dict]:
 
 @lru_cache(maxsize=None)
 def load_investigations() -> List[dict]:
-    with open(DATA_DIR / "investigations.json") as f:
+    with open(DATA_DIR / "investigations.json", encoding="utf-8") as f:
         return json.load(f)
 
 
 def load_witness_doc(investigation_id: str) -> str:
-    return (DATA_DIR / "witness_docs" / f"{investigation_id}.md").read_text()
+    return (DATA_DIR / "witness_docs" / f"{investigation_id}.md").read_text(encoding="utf-8")
