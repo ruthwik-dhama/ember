@@ -19,7 +19,7 @@ Core principle: **every number shows how much real data backs it.**
 
 ## What's on `main` now
 
-Merged so far: skeleton, physics engine (PR #3), Envelope Guard (#1), rank and report (#5), data lane (#4), FLEX/BASS-II calibration (#6), witnesses (#7), Red/Blue duel + Ghost Flame + 3D playback (#8), duel routes (#10), `/api/ask` + `/api/gap_map` + gap-map panel (#12), gravity panel (#14), Habitat + Ask EMBER on one page (#15), data verification sheet (#16), ranking fixes (#17, #18), deck metrics (#19), BASS-II verification (#20), Ghost Flame demo (#21), click-to-place fire (#22), vents/airflow/airlock in 3D (#23), Red search fixes + `red_vs_random` (#24), real BRE and SAME-1 test points (#25), engine severity signals + `physics_metrics()` + sourced vent speed and CO₂ dilution (#26), cotton calibrated from BASS fabric data + BASS summary + BASS-II pressure confirmed (#27), and README updates (#9, #11, #13). **69 tests pass** (about 15 s with a warm duel cache, about 80 s cold, because the agent tests run real CMA-ES searches). **Every API route now returns real data**; nothing returns 501. No PRs are open. No PRs are open.
+Merged so far: skeleton, physics engine (PR #3), Envelope Guard (#1), rank and report (#5), data lane (#4), FLEX/BASS-II calibration (#6), witnesses (#7), Red/Blue duel + Ghost Flame + 3D playback (#8), duel routes (#10), `/api/ask` + `/api/gap_map` + gap-map panel (#12), gravity panel (#14), Habitat + Ask EMBER on one page (#15), data verification sheet (#16), ranking fixes (#17, #18), deck metrics (#19), BASS-II verification (#20), Ghost Flame demo (#21), click-to-place fire (#22), vents/airflow/airlock in 3D (#23), Red search fixes + `red_vs_random` (#24), real BRE and SAME-1 test points (#25), engine severity signals + `physics_metrics()` + sourced vent speed and CO₂ dilution (#26), cotton calibrated from BASS fabric data + BASS summary + BASS-II pressure confirmed (#27), `metrics.py` + `deck_numbers.json` + Ask EMBER chat screen (#28), and README updates (#9, #11, #13). **69 tests pass** (about 15 s with a warm duel cache, about 80 s cold, because the agent tests run real CMA-ES searches). **Every API route now returns real data**; nothing returns 501. No PRs are open. No PRs are open.
 
 | Component | Status | Owner | Where |
 |---|---|---|---|
@@ -31,10 +31,10 @@ Merged so far: skeleton, physics engine (PR #3), Envelope Guard (#1), rank and r
 | Gap map | ✅ `/api/gap_map` route and the gap-map panel on the Habitat page (#12) | Kishan, Sibi | `api.py`, `frontend/src/panels/data/` |
 | Red / Blue duel | ✅ Live: `run_red`, `run_blue`, `run_duel`, and the `/api/duel/run` + `/api/duel/{run_id}` routes (#10). The report uses it too. A duel request that names a fire skips Red's search and Blue defends that fire (#21). ⚠️ **Red currently ties random search** (#24): see Known findings | Kartavya | `backend/ember/agents/` |
 | Ghost Flame Auditor | ✅ `ghost_flame_check()` + `ghost_params()` (reads the `ghost.*` FLEX rows); runs inside the duel | Kartavya | `agents/ghost_flame.py` |
-| Witnesses / Ask EMBER | ✅ Backend live: `/api/ask` returns cited answers (offline retrieval; Claude phrasing if a key is set), 15-question eval. ⏳ The **chat UI** (`dashboard/AskEmber.jsx`) is still a placeholder | Sibi (backend), Kishan (chat UI) | `agents/witness.py` |
-| Frontend | 🟡 5 tabs. Explorer wired. **Habitat simulation and Ask EMBER share one page** (#15): 3D frame playback, click the floor to move the fire and re-run (#22), inlet/return vents, airflow arrows and airlock marker (#23; arrows are static), working "Run duel" plus a "Liquid-fuel demo (Ghost Flame)" button (#21), gravity comparison and gap-map panels, with the Ask EMBER column beside them. Still placeholders: Mission setup, Ranking, the Ask EMBER chat and the Report screen (their APIs all work) | Kishan, Kartavya, Ruthwik, Sibi | `frontend/src/` |
+| Witnesses / Ask EMBER | ✅ Live end to end: `/api/ask` returns cited answers (offline retrieval; Claude phrasing if a key is set), 15-question eval, and the **chat screen** (#28) shows answers with clickable `[n]` citations beside the habitat | Sibi (backend), Kishan (chat UI) | `agents/witness.py`, `dashboard/AskEmber.jsx` |
+| Frontend | 🟡 5 tabs. Explorer wired. **Habitat simulation and Ask EMBER share one page** (#15): 3D frame playback, click the floor to move the fire and re-run (#22), inlet/return vents, airflow arrows and airlock marker (#23; arrows are static), working "Run duel" plus a "Liquid-fuel demo (Ghost Flame)" button (#21), gravity comparison and gap-map panels, with the Ask EMBER column beside them. Still placeholders: Mission setup, Ranking and the Report screen (their APIs all work) | Kishan, Kartavya, Ruthwik, Sibi | `frontend/src/` |
 | Gravity panel | ✅ Same fire at ISS / Moon / Mars / Earth, vents on/off, badge per level (#14). About 10 s per comparison, because `/api/simulate` always returns voxel frames | Ruthwik | `frontend/src/panels/gravity/` |
-| `metrics.py` | ⏳ Still writes `deck_numbers.json` with null values only. **None of the ready functions are called yet**: Sibi's `deck_metrics()` (#19), Kartavya's `agents.compare.red_vs_random()` (#24), Ruthwik's `sim.metrics.physics_metrics()` (#26). Wiring them is about 5 lines | Kishan (Sibi: `envelope/metrics.py`) | `backend/scripts/` |
+| `metrics.py` | ✅ Implemented (#28): writes all 17 entries of `deck_numbers.json` from `red_vs_random()`, the duel, the Ghost Flame sweep, `physics_metrics()` and `deck_metrics()`. Takes about 3 min. ⚠️ The **committed `deck_numbers.json` is stale**: it was generated before #27, which changed cotton's spread rate and the calibration counts, so the Blue-detection and badge-coverage entries differ on the current `main`. **Regenerate before anything goes on a slide** | Kishan | `backend/scripts/` |
 
 ---
 
@@ -458,6 +458,14 @@ suppress.co2.n-heptane,0.17,-,Dietrich et al. 2014 ...: LOI 0.17 (0.17/0.63/0.20
 | False all-clear rate (cool flame still active) | Liquid fuels only |
 | Badge coverage (% 🟢 / 🟡 / 🔴) | From `calibration.csv` and the Envelope Guard |
 | Witness accuracy and citation rate vs. no-retrieval baseline | Same ~15 questions |
+
+Regenerate with `cd backend && python -m scripts.metrics` (about 3 min) and commit `deck_numbers.json` from the frozen build.
+
+**Reading the entries correctly** (so slides don't misstate them):
+- `red_vs_random_median_s` is **Red's median minus random's median**, so 0 means a tie (see Known findings).
+- In the baseline/Blue delay entries, an **undetected run is counted as 300 s** (the cap). A baseline of 300 s means "never detected within 300 s", not "detected at 300 s".
+- `gravity_delay_s_0g` is `null` because that fire isn't detected within 300 s on the ISS; the entry's `note` says so.
+- Badges and statuses differ between entries: the duel entries are labelled `fitted`, while the physics entries are `assumed` because mixing and detector thresholds are still placeholders. Quote the badge with the number.
 
 ---
 
