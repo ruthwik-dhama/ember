@@ -11,6 +11,7 @@ async function req(method, path, body) {
 }
 
 export const health = () => req("GET", "/api/health");
+export const getMission = () => req("GET", "/api/mission");
 export const setMission = (mission) => req("POST", "/api/mission", mission);
 export const listInvestigations = () => req("GET", "/api/investigations");
 export const getInvestigation = (id) => req("GET", `/api/investigations/${id}`);

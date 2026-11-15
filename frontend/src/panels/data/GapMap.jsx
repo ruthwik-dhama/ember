@@ -38,6 +38,7 @@ export default function GapMap({ data, refreshKey }) {
       <p style={{ color: "var(--muted)", margin: "0 0 12px", fontSize: 13 }}>
         How much real PSI data backs each O₂ × airflow condition at {gm.pressure_kpa} kPa and {gm.g} g.
         {gm.g > 0 && gm.g < 1 && " Partial gravity has no PSI data, so nothing here can be green."}
+        {" "}🔴 cells are conditions no PSI experiment has tested: where future experiments (LUCI, FM2) are needed.
       </p>
 
       <div style={{ overflowX: "auto" }}>
