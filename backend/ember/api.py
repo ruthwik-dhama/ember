@@ -13,7 +13,8 @@ from fastapi import FastAPI, HTTPException
 from .config import GRAVITY_PRESETS, ROOM_M, Mission, SimConfig
 from .data_io import load_investigations
 from .envelope.guard import EnvelopeGuard
-from .rank import compare
+from .rank import compare, rank
+from .report import build_report
 from .sim.engine import simulate
 
 app = FastAPI(title="EMBER")
@@ -56,7 +57,7 @@ def api_compare(a: str, b: str):
 
 @app.get("/api/rank")
 def api_rank(pillar: Optional[str] = None):
-    todo("Kishan: rank/")
+    return rank(state["mission"], load_investigations(), guard, pillar)
 
 
 @app.post("/api/simulate")
@@ -88,4 +89,4 @@ def api_gap_map():
 
 @app.get("/api/report")
 def api_report():
-    todo("Kishan: report/")
+    return build_report(state["mission"])
