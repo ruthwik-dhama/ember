@@ -26,12 +26,20 @@ def test_daft_no_longer_scores_zero():
         assert "no tested conditions logged" not in daft["why"]
 
 
-def test_dust_bonus_only_on_dusty_habitats():
+def test_dust_bonus_only_on_dusty_habitats_under_detection():
     invs = load_investigations()
-    moon = _row(rank(Mission(habitat="moon_base"), invs, guard), "DAFT")
-    iss = _row(rank(Mission(habitat="iss"), invs, guard), "DAFT")  # same g/O2/pressure, no dust
+    moon = _row(rank(Mission(habitat="moon_base"), invs, guard, pillar="detection"), "DAFT")
+    iss = _row(rank(Mission(habitat="iss"), invs, guard, pillar="detection"), "DAFT")  # same conditions, no dust
     assert abs((moon["score"] - iss["score"]) - DUST_BONUS) < 1e-3
     assert "airlock" in moon["why"] and "airlock" not in iss["why"]
+
+
+def test_no_dust_bonus_in_overall_ranking():
+    invs = load_investigations()
+    overall = rank(Mission(habitat="moon_base"), invs, guard)
+    plain = _row(rank(Mission(habitat="iss"), invs, guard), "DAFT")
+    assert _row(overall, "DAFT")["score"] == plain["score"]
+    assert overall[0]["id"] != "DAFT"
 
 
 def test_flight_suffixed_rows_count_for_their_investigation():

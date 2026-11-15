@@ -8,6 +8,7 @@ from ..envelope.guard import DEFAULT_FLOW_CM_S
 COMPARE_KEYS = ["hardware", "fuel.phase", "conditions.g", "pillars", "sensors"]
 HABITAT_BONUS = 0.2
 # Habitats where regolith dust comes in through the airlock, so dust/false-alarm data (DAFT) matters more.
+# Applied only when ranking with pillar="detection".
 DUST_HABITATS = {"moon_base", "mars_base", "rover"}
 DUST_BONUS = 0.2
 ATM_TO_KPA = 101.325
@@ -87,7 +88,9 @@ def rank(mission, investigations, guard, pillar=None) -> list:
         if distance is None:
             distance = _summary_distance(mission, inv, guard)
         habitat_bonus = HABITAT_BONUS if inv["fuel"]["phase"] in mission.fuel_phases else 0.0
-        dust_bonus = DUST_BONUS if inv["fuel"]["phase"] == "dust" and mission.habitat in DUST_HABITATS else 0.0
+        # Only under the detection filter, so the overall list keeps fire investigations on top.
+        dust_bonus = (DUST_BONUS if pillar == "detection" and inv["fuel"]["phase"] == "dust"
+                      and mission.habitat in DUST_HABITATS else 0.0)
         score = (1.0 / (1.0 + distance) if distance is not None else 0.0) + habitat_bonus + dust_bonus
         out.append({
             "id": inv["id"],
