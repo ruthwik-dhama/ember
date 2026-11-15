@@ -7,6 +7,16 @@ cool_flame_envelope, source) come from Ruthwik's FLEX extraction.
 """
 from __future__ import annotations
 
+from ..data_io import cal, load_calibration
+
+
+def ghost_params() -> dict:
+    """FLEX cool-flame regime from data/calibration.csv (ghost.* rows, Ruthwik's FLEX extraction)."""
+    return {"cool_flame_fuels": ["n-heptane"], "critical_d_mm": cal("ghost.critical_d_mm"),
+            "cool_flame_envelope": {"o2_frac": (cal("ghost.o2_min"), cal("ghost.o2_max")),
+                                    "pressure_kpa": (cal("ghost.p_min_kpa"), cal("ghost.p_max_kpa"))},
+            "source": load_calibration()["ghost.critical_d_mm"]["source"]}
+
 
 def in_range(conditions: dict, envelope: dict) -> bool:
     """envelope = {axis: (lo, hi)}, e.g. {"o2_frac": (0.1, 0.4)}."""
