@@ -40,7 +40,7 @@ function Smoke({ frame }) {
 }
 
 // alarmed: set of detector ids whose alarm time <= current t.
-export default function HabitatView({ frames, t = 0, detectors = [], fires = [], alarmed = new Set() }) {
+export default function HabitatView({ frames, t = 0, detectors = [], fires = [], alarmed = new Set(), onPlaceFire }) {
   const frame = frameAt(frames, t);
   return (
     <div style={{ height: 380, border: "1px solid var(--line)", borderRadius: 8 }}>
@@ -51,6 +51,14 @@ export default function HabitatView({ frames, t = 0, detectors = [], fires = [],
           <meshBasicMaterial color="#ff7a3d" wireframe />
         </mesh>
         <gridHelper args={[Math.max(L, W), 12, "#444", "#2a2e35"]} />
+        {/* click the floor to place the fire; ignore drags (those orbit the camera) */}
+        {onPlaceFire && (
+          <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, 0.01, 0]}
+            onClick={(e) => { if (e.delta > 4) return; e.stopPropagation(); onPlaceFire(e.point.x + L / 2, e.point.z + W / 2); }}>
+            <planeGeometry args={[L, W]} />
+            <meshBasicMaterial color="#ff7a3d" transparent opacity={0.08} />
+          </mesh>
+        )}
         {fires.map((f, n) => (
           <mesh key={`f${n}`} position={toThree(f.x, f.y, f.z)}>
             <sphereGeometry args={[0.15, 16, 16]} />
