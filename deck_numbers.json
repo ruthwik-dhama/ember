@@ -1,0 +1,92 @@
+{
+  "red_vs_random_median_s": {
+    "value": -68.7,
+    "badge": "yellow",
+    "calibration_status": "fitted"
+  },
+  "baseline_mean_delay_s": {
+    "value": 300.0,
+    "badge": "yellow",
+    "calibration_status": "fitted"
+  },
+  "baseline_worst_case_delay_s": {
+    "value": 300.0,
+    "badge": "yellow",
+    "calibration_status": "fitted"
+  },
+  "blue_mean_delay_s": {
+    "value": 37.8,
+    "badge": "yellow",
+    "calibration_status": "fitted"
+  },
+  "blue_worst_case_delay_s": {
+    "value": 52.0,
+    "badge": "yellow",
+    "calibration_status": "fitted"
+  },
+  "gravity_delay_s_0g": {
+    "value": null,
+    "badge": "yellow",
+    "calibration_status": "fitted"
+  },
+  "gravity_delay_s_moon": {
+    "value": 19.0,
+    "badge": "yellow",
+    "calibration_status": "fitted"
+  },
+  "gravity_delay_s_mars": {
+    "value": 15.5,
+    "badge": "yellow",
+    "calibration_status": "fitted"
+  },
+  "gravity_delay_s_1g": {
+    "value": 12.5,
+    "badge": "yellow",
+    "calibration_status": "fitted"
+  },
+  "dust_false_alarm_rate_single": {
+    "value": 0.7,
+    "badge": "yellow",
+    "calibration_status": "assumed"
+  },
+  "dust_false_alarm_rate_two_moment": {
+    "value": 0.0,
+    "badge": "yellow",
+    "calibration_status": "assumed"
+  },
+  "false_all_clear_rate": {
+    "value": 0.26,
+    "badge": "yellow",
+    "calibration_status": "measured"
+  },
+  "badge_coverage_green_pct": {
+    "value": 36.8,
+    "badge": "green",
+    "calibration_status": "measured",
+    "note": "calibration.csv: 21 measured, 7 fitted, 29 assumed of 57 constants (measured=green, fitted=yellow, assumed=red)"
+  },
+  "badge_coverage_yellow_pct": {
+    "value": 12.3,
+    "badge": "green",
+    "calibration_status": "measured",
+    "note": "calibration.csv: 21 measured, 7 fitted, 29 assumed of 57 constants (measured=green, fitted=yellow, assumed=red)"
+  },
+  "badge_coverage_red_pct": {
+    "value": 50.9,
+    "badge": "green",
+    "calibration_status": "measured",
+    "note": "calibration.csv: 21 measured, 7 fitted, 29 assumed of 57 constants (measured=green, fitted=yellow, assumed=red)"
+  },
+  "witness_accuracy": {
+    "value": 1.0,
+    "badge": "green",
+    "calibration_status": "measured",
+    "note": "top witness is the expected one; offline keyword retrieval on data/witness_eval.json (15 questions); no-retrieval LLM baseline not run; expected-fact recall 0.93"
+  },
+  "witness_citation_rate": {
+    "value": 1.0,
+    "badge": "green",
+    "calibration_status": "measured",
+    "note": "share of answers where every fact carries a citation; offline keyword retrieval on data/witness_eval.json (15 questions); no-retrieval LLM baseline not run"
+  }
+}
