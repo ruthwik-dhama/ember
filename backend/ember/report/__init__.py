@@ -40,14 +40,6 @@ def _duel_sections(mission):
     return result.get("top_risks", []), result.get("recommended_fixes", [])
 
 
-def _data_gaps(mission, guard: EnvelopeGuard):
-    """Red regions of the gap map show where LUCI/FM2 are needed. Not built yet (Sibi) -> degrade, don't crash."""
-    try:
-        return guard.gap_map(mission.pressure_kpa, mission.g)
-    except NotImplementedError as e:
-        return _unavailable(f"gap_map not built yet ({e})")
-
-
 def build_report(mission) -> dict:
     """Assembles the Insights report screen. Sections whose upstream lane isn't built yet report
     {"available": False, "reason": ...} instead of failing, so /api/report always returns something real."""
@@ -58,6 +50,6 @@ def build_report(mission) -> dict:
         "top_investigations": rank(mission, load_investigations(), guard),
         "top_risks": top_risks,
         "recommended_fixes": recommended_fixes,
-        "data_gaps": _data_gaps(mission, guard),
+        "data_gaps": guard.gap_map(mission.pressure_kpa, mission.g),  # Envelope Guard (Sibi): red cells = where LUCI/FM2 are needed
         "earth_applications": EARTH_APPLICATIONS,
     }

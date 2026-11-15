@@ -67,8 +67,9 @@ def test_api_rank_and_report_return_data():
 
     report = c.get("/api/report").json()
     assert report["top_investigations"] == ranked
-    for section in ("top_risks", "recommended_fixes", "data_gaps"):
+    for section in ("top_risks", "recommended_fixes"):
         assert report[section]["available"] is False and "reason" in report[section]
+    assert set(report["data_gaps"]) >= {"cells", "counts", "o2_values", "flow_values"}
     assert report["earth_applications"]
 
 
