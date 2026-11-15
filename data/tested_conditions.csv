@@ -1,6 +1,23 @@
 investigation,test_id,fuel,fuel_phase,o2_frac,pressure_kpa,flow_cm_s,g,measured_outputs,citation,verified
-FLEX,FLEX-001,n-heptane,liquid,0.21,101.3,0.0,0.0,burn_rate;extinction_d_mm,NTRS-XXXXXXX,false
-GROUND,G-BASS-01,PMMA,solid,0.21,101.3,0.0,1.0,spread_rate_mm_s,NTRS-XXXXXXX,false
+FLEX,FLEX-LOI-HEP-N2,n-heptane,liquid,0.15,101.3,0.0,0.0,limiting_oxygen_index,doi:10.1007/s12217-014-9372-2,true
+FLEX,FLEX-LOI-HEP-CO2,n-heptane,liquid,0.17,101.3,0.0,0.0,limiting_oxygen_index;co2_frac=0.20,doi:10.1007/s12217-014-9372-2,true
+FLEX,FLEX-LOI-HEP-HE,n-heptane,liquid,0.15,101.3,0.0,0.0,limiting_oxygen_index;helium,doi:10.1007/s12217-014-9372-2,true
+FLEX,FLEX-LOI-MEOH-N2,methanol,liquid,0.12,101.3,0.0,0.0,limiting_oxygen_index,doi:10.1007/s12217-014-9372-2,true
+FLEX,FLEX-LOI-MEOH-CO2,methanol,liquid,0.14,101.3,0.0,0.0,limiting_oxygen_index;co2_frac=0.30,doi:10.1007/s12217-014-9372-2,true
+FLEX,FLEX-LOI-MEOH-HE,methanol,liquid,0.14,101.3,0.0,0.0,limiting_oxygen_index;helium,doi:10.1007/s12217-014-9372-2,true
+FLEX-2,FLEX2-R374,n-decane,liquid,0.25,50.7,0.0,0.0,burning_rate;cool_flame;extinction_d,NTRS-20140006750,true
+FLEX-2,FLEX2-R377,n-decane,liquid,0.21,50.7,0.0,0.0,burning_rate;cool_flame;extinction_d,NTRS-20140006750,true
+FLEX-2,FLEX2-R379,n-decane,liquid,0.17,50.7,0.0,0.0,burning_rate;cool_flame;extinction_d,NTRS-20140006750,true
+FLEX-2,FLEX2-R383,n-decane,liquid,0.14,50.7,0.0,0.0,burning_rate;cool_flame;extinction_d,NTRS-20140006750,true
+BASS-II,BASSII-B13a,PMMA,solid,0.207,101.3,1.64,0.0,spread_rate_mm_s,doi:10.1038/s41598-017-18398-4 Table S1,false
+BASS-II,BASSII-B6,PMMA,solid,0.189,101.3,2.0,0.0,spread_rate_mm_s,doi:10.1038/s41598-017-18398-4 Table S1,false
+BASS-II,BASSII-B16-hi,PMMA,solid,0.182,101.3,7.55,0.0,spread_rate_mm_s,doi:10.1038/s41598-017-18398-4 Table S1,false
+BASS-II,BASSII-B16-lo,PMMA,solid,0.182,101.3,0.72,0.0,spread_rate_mm_s,doi:10.1038/s41598-017-18398-4 Table S1,false
+BASS-II,BASSII-B19,PMMA,solid,0.175,101.3,1.67,0.0,spread_rate_mm_s,doi:10.1038/s41598-017-18398-4 Table S1,false
+BASS-II,BASSII-B10,PMMA,solid,0.17,101.3,2.0,0.0,spread_rate_mm_s,doi:10.1038/s41598-017-18398-4 Table S1,false
+GROUND,G-BASSII-209-25,PMMA,solid,0.209,101.3,25.0,1.0,spread_rate_mm_s,doi:10.1038/s41598-017-18398-4 Table S2,false
+GROUND,G-BASSII-209-2,PMMA,solid,0.209,101.3,2.0,1.0,spread_rate_mm_s,doi:10.1038/s41598-017-18398-4 Table S2,false
+GROUND,G-BASSII-180-2,PMMA,solid,0.18,101.3,2.0,1.0,spread_rate_mm_s,doi:10.1038/s41598-017-18398-4 Table S2,false
 SAME-R,SAMER-TEFL-08,Teflon,pyrolysis,0.21,101.3,8.0,0.0,d10_nm;d30_nm;d_gm_nm;sigma_g;age_s,NTRS-20130000422,false
 SAME-R,SAMER-KAPT-08,Kapton,pyrolysis,0.21,101.3,8.0,0.0,d10_nm;d30_nm;d_gm_nm;sigma_g;age_s,NTRS-20130000422,false
 SAME-R,SAMER-PYRE-08,Pyrell,pyrolysis,0.21,101.3,8.0,0.0,d10_nm;d30_nm;d_gm_nm;sigma_g;age_s,NTRS-20130000422,false
