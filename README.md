@@ -32,7 +32,7 @@ Merged so far: skeleton, physics engine (PR #3), Envelope Guard (#1), rank and r
 | Red / Blue duel | ✅ Live: `run_red`, `run_blue`, `run_duel`, and the `/api/duel/run` + `/api/duel/{run_id}` routes (#10). The report uses it too | Kartavya | `backend/ember/agents/` |
 | Ghost Flame Auditor | ✅ `ghost_flame_check()` + `ghost_params()` (reads the `ghost.*` FLEX rows); runs inside the duel | Kartavya | `agents/ghost_flame.py` |
 | Witnesses / Ask EMBER | ✅ Built: offline cited retrieval, optional Claude phrasing, 15-question eval. ⏳ `/api/ask` still 501 on `main`; PR #12 wires it to `ask_ember()` | Sibi | `agents/witness.py` |
-| Frontend | 🟡 6 tabs. Explorer wired; Habitat screen plays simulation frames in 3D and has a working "Run duel" panel. PR #12 adds the gap-map panel. Mission, Ranking, Ask and Report screens are placeholders | Kishan, Kartavya, Ruthwik, Sibi | `frontend/src/` |
+| Frontend | 🟡 5 tabs. Explorer wired. **Habitat simulation and Ask EMBER share one page**: the 3D habitat (frame playback, working "Run duel" panel) sits beside the Ask EMBER chat. PR #12 adds the gap-map panel. Mission, Ranking, Ask and Report contents are still placeholders | Kishan, Kartavya, Ruthwik, Sibi | `frontend/src/` |
 | Gravity panel | ⏳ Placeholder (`gravity_sweep()` is ready in the backend) | Ruthwik | `frontend/src/panels/gravity/` |
 | `metrics.py` | ⏳ Writes `deck_numbers.json` with null values only | Kishan | `backend/scripts/` |
 
@@ -63,7 +63,7 @@ The O₂ *partial pressure* is almost the same as on Earth, so breathing feels n
 | Summarize findings | Experiment explorer: objective, fuel, sample shape/size, conditions, variables, sensors |
 | Compare investigations | Side-by-side compare (similarities and differences) |
 | Rank findings | Relevance ranking for your mission, filterable by prevention / detection / suppression |
-| Interpret findings | Simulation, Red/Blue duel, Ghost Flame Auditor, Ask EMBER chat |
+| Interpret findings | Simulation, Red/Blue duel, Ghost Flame Auditor, and the Ask EMBER chat beside the simulation |
 | Relevant habitats | Spacecraft, space station, Moon base, Mars base, pressurized rover |
 | Predictive modeling | Calibrated reduced-order physics with explicit uncertainty badges |
 | Next-gen equipment | Detector placement, two-moment smoke/dust discrimination, extinguishment verification |
@@ -207,7 +207,7 @@ ember/
 │   ├── investigations.json
 │   └── witness_docs/*.md
 ├── frontend/src/
-│   ├── app/                       # Kishan (routing, layout)
+│   ├── app/                       # Kishan (routing, layout; SimulateAndAsk.jsx = habitat + chat page)
 │   ├── api.js                     # Kishan
 │   ├── dashboard/                 # Kishan
 │   ├── habitat/                   # Kartavya
@@ -374,9 +374,10 @@ Known placeholder: `envelope/guard.py` assumes `DEFAULT_FLOW_CM_S = 10.0` becaus
 1. **Mission setup:** habitat type, gravity, O₂, pressure, materials, ventilation. Every other screen updates from this.
 2. **Experiment explorer:** a summary card for each investigation, plus side-by-side compare.
 3. **Ranking:** ranked list with prevention / detection / suppression filters and a one-line "why".
-4. **Habitat simulation:** 3D habitat, smoke playback, Red/Blue duel, gravity toggle, badges on every number.
-5. **Ask EMBER:** chat with clickable citations.
-6. **Insights report:** risks, fixes, data gaps, Earth applications; export.
+4. **Habitat simulation + Ask EMBER (one page):** the 3D habitat (smoke playback, Red/Blue duel, gravity comparison, gap map, badges on every number) on the left, and the **Ask EMBER** chat with clickable citations on the right. That way you can ask the witnesses about what you're watching without switching tabs. The chat stays in view while you scroll the habitat, and stacks below it on screens narrower than 1000 px.
+5. **Insights report:** risks, fixes, data gaps, Earth applications; export.
+
+The combined page lives in `frontend/src/app/SimulateAndAsk.jsx`. It only arranges the two screens: `habitat/HabitatScreen.jsx` (Kartavya) and `dashboard/AskEmber.jsx` (Kishan, witnesses: Sibi) keep their owners and can still be built independently.
 
 ---
 
