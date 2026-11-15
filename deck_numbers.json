@@ -24,58 +24,64 @@
     "badge": "yellow",
     "calibration_status": "fitted"
   },
-  "gravity_delay_s_0g": {
-    "value": null,
-    "badge": "yellow",
-    "calibration_status": "fitted"
-  },
-  "gravity_delay_s_moon": {
-    "value": 19.0,
-    "badge": "yellow",
-    "calibration_status": "fitted"
-  },
-  "gravity_delay_s_mars": {
-    "value": 15.5,
-    "badge": "yellow",
-    "calibration_status": "fitted"
-  },
-  "gravity_delay_s_1g": {
-    "value": 12.5,
-    "badge": "yellow",
-    "calibration_status": "fitted"
-  },
-  "dust_false_alarm_rate_single": {
-    "value": 0.7,
-    "badge": "yellow",
-    "calibration_status": "assumed"
-  },
-  "dust_false_alarm_rate_two_moment": {
-    "value": 0.0,
-    "badge": "yellow",
-    "calibration_status": "assumed"
-  },
   "false_all_clear_rate": {
     "value": 0.26,
     "badge": "yellow",
     "calibration_status": "measured"
   },
+  "gravity_delay_s_0g": {
+    "value": null,
+    "badge": "yellow",
+    "calibration_status": "assumed",
+    "note": "iss (0.0 g): not detected within 300 s. PMMA fire mid-floor, ceiling detector above it, vents on, 30% O2, 70.3 kPa. PMMA spread fitted to BASS-II; vent speed, mixing and detector threshold are assumed"
+  },
+  "gravity_delay_s_moon": {
+    "value": 253.5,
+    "badge": "yellow",
+    "calibration_status": "assumed",
+    "note": "moon (0.165 g): first alarm at 253.5 s. PMMA fire mid-floor, ceiling detector above it, vents on, 30% O2, 70.3 kPa. PMMA spread fitted to BASS-II; vent speed, mixing and detector threshold are assumed"
+  },
+  "gravity_delay_s_mars": {
+    "value": 187.5,
+    "badge": "yellow",
+    "calibration_status": "assumed",
+    "note": "mars (0.38 g): first alarm at 187.5 s. PMMA fire mid-floor, ceiling detector above it, vents on, 30% O2, 70.3 kPa. PMMA spread fitted to BASS-II; vent speed, mixing and detector threshold are assumed"
+  },
+  "gravity_delay_s_1g": {
+    "value": 132.5,
+    "badge": "yellow",
+    "calibration_status": "assumed",
+    "note": "earth (1.0 g): first alarm at 132.5 s. PMMA fire mid-floor, ceiling detector above it, vents on, 30% O2, 70.3 kPa. PMMA spread fitted to BASS-II; vent speed, mixing and detector threshold are assumed"
+  },
+  "dust_false_alarm_rate_single": {
+    "value": 0.056,
+    "badge": "red",
+    "calibration_status": "assumed",
+    "note": "4/72 detector-event pairs alarmed with no fire: 4 dust-only puffs (10, 25, 50, 100 mg) at the airlock (0.5, 2.0, 1.0) m, 18 single detectors on a fixed grid. Dust load and detector thresholds are assumed until DAFT/SAME"
+  },
+  "dust_false_alarm_rate_two_moment": {
+    "value": 0.0,
+    "badge": "red",
+    "calibration_status": "assumed",
+    "note": "0/72 detector-event pairs alarmed with no fire: 4 dust-only puffs (10, 25, 50, 100 mg) at the airlock (0.5, 2.0, 1.0) m, 18 two_moment detectors on a fixed grid. Dust load and detector thresholds are assumed until DAFT/SAME"
+  },
   "badge_coverage_green_pct": {
-    "value": 36.8,
+    "value": 38.6,
     "badge": "green",
     "calibration_status": "measured",
-    "note": "calibration.csv: 21 measured, 7 fitted, 29 assumed of 57 constants (measured=green, fitted=yellow, assumed=red)"
+    "note": "calibration.csv: 22 measured, 7 fitted, 28 assumed of 57 constants (measured=green, fitted=yellow, assumed=red)"
   },
   "badge_coverage_yellow_pct": {
     "value": 12.3,
     "badge": "green",
     "calibration_status": "measured",
-    "note": "calibration.csv: 21 measured, 7 fitted, 29 assumed of 57 constants (measured=green, fitted=yellow, assumed=red)"
+    "note": "calibration.csv: 22 measured, 7 fitted, 28 assumed of 57 constants (measured=green, fitted=yellow, assumed=red)"
   },
   "badge_coverage_red_pct": {
-    "value": 50.9,
+    "value": 49.1,
     "badge": "green",
     "calibration_status": "measured",
-    "note": "calibration.csv: 21 measured, 7 fitted, 29 assumed of 57 constants (measured=green, fitted=yellow, assumed=red)"
+    "note": "calibration.csv: 22 measured, 7 fitted, 28 assumed of 57 constants (measured=green, fitted=yellow, assumed=red)"
   },
   "witness_accuracy": {
     "value": 1.0,

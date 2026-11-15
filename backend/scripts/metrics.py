@@ -11,7 +11,6 @@ from __future__ import annotations
 
 import json
 import statistics
-from dataclasses import replace
 from pathlib import Path
 
 import numpy as np
@@ -19,22 +18,17 @@ import numpy as np
 from ember.agents.blue_team import default_cfg, run_duel
 from ember.agents.compare import red_vs_random
 from ember.agents.ghost_flame import ghost_flame_check, ghost_params
-from ember.config import ROOM_M, Detector, DustEvent, FireSpec, Mission, SimConfig
+from ember.config import FireSpec, Mission, SimConfig
 from ember.data_io import load_calibration
 from ember.envelope.guard import EnvelopeGuard
 from ember.envelope.metrics import deck_metrics
-from ember.sim.engine import simulate
-from ember.sim.sweeps import gravity_sweep
+from ember.sim.metrics import physics_metrics
 
 OUT = Path(__file__).resolve().parents[2] / "deck_numbers.json"
 
 SEEDS = [0, 1, 2, 3, 4]              # "5+ seeds" fairness rule
 RED_BLUE_BUDGET = 60                 # matches blue_team.run_duel's own default: same budget everywhere
 T_MAX = 300.0                        # red_team.T_MAX; undetected trials count as this for mean/worst-case
-DUST_TRIALS = 20
-
-GRAVITY_KEYS = {"iss": "gravity_delay_s_0g", "moon": "gravity_delay_s_moon",
-                "mars": "gravity_delay_s_mars", "earth": "gravity_delay_s_1g"}
 PHYSICS_STATUS = "fitted"  # reduced-order model calibrated to PSI data; see README > Physics in one paragraph
 
 
@@ -81,45 +75,6 @@ def metric_duel(guard: EnvelopeGuard) -> dict:
     }
 
 
-def metric_gravity(guard: EnvelopeGuard) -> dict:
-    """Same fire at every gravity preset. Partial-g (moon, mars) comes back yellow from the guard's own rule:
-    PSI has no partial-gravity data, so 0<g<1 can never be green."""
-    # Mirrors backend/tests/test_core.py's fire()/ceiling_det() setup for a known-detectable scenario.
-    cfg = replace(_mission_cfg(), vent_on=False,
-                  fires=[FireSpec("cotton", "solid", 3.0, 2.0, 0.5)],
-                  detectors=[Detector("ceil", 3.0, 2.0, 2.4)])
-    sweep = gravity_sweep(cfg)
-    out = {}
-    for name, key in GRAVITY_KEYS.items():
-        point = sweep[name]
-        conditions = {"o2_frac": cfg.o2_frac, "pressure_kpa": cfg.pressure_kpa,
-                      "flow_cm_s": 0.0 if cfg.vent_on else 10.0, "g": point["g"]}
-        out[key] = entry(point["delay_s"], guard.check(conditions)["badge"], PHYSICS_STATUS)
-    return out
-
-
-def metric_dust_false_alarms(guard: EnvelopeGuard) -> dict:
-    """Pure dust (no fire) near the airlock: how often does each detector kind false-alarm, varying the
-    puff mass and the detector's distance from the airlock."""
-    cfg = _mission_cfg()
-    badge = guard.check(cfg)["badge"]
-    rng = np.random.default_rng(7)
-    single_hits = two_moment_hits = 0
-    for _ in range(DUST_TRIALS):
-        mass = float(rng.uniform(20.0, 100.0))
-        x = float(rng.uniform(0.5, ROOM_M[0] - 0.5))
-        dust_cfg = replace(cfg, fires=[], dust=[DustEvent(t_s=2.0, mass_mg=mass)])
-        single_hits += simulate(replace(dust_cfg, detectors=[Detector("d", x, 2.0, 1.0, kind="single")]),
-                                 frames=False)["detected"]
-        two_moment_hits += simulate(replace(dust_cfg, detectors=[Detector("d", x, 2.0, 1.0, kind="two_moment")]),
-                                     frames=False)["detected"]
-    status = cal_status("detector.two_moment.size_cut_nm")  # both thresholds are "assumed" pending real DAFT data
-    return {
-        "dust_false_alarm_rate_single": entry(round(single_hits / DUST_TRIALS, 2), badge, status),
-        "dust_false_alarm_rate_two_moment": entry(round(two_moment_hits / DUST_TRIALS, 2), badge, status),
-    }
-
-
 def metric_ghost_flame() -> dict:
     """False all-clear rate: across n-heptane droplet suppressions spanning FLEX's measured O2/pressure range
     plus a bit beyond it, how often would camera-only confirmation miss a continuing cool flame."""
@@ -142,10 +97,9 @@ def main():
     numbers = {}
     numbers.update(metric_red_vs_random(guard))
     numbers.update(metric_duel(guard))
-    numbers.update(metric_gravity(guard))
-    numbers.update(metric_dust_false_alarms(guard))
     numbers.update(metric_ghost_flame())
-    numbers.update(deck_metrics())  # badge coverage + witness eval (Sibi: envelope/metrics.py)
+    numbers.update(physics_metrics())  # gravity + dust false-alarms (Ruthwik: sim/metrics.py)
+    numbers.update(deck_metrics())     # badge coverage + witness eval (Sibi: envelope/metrics.py)
     OUT.write_text(json.dumps(numbers, indent=2) + "\n")
     print(f"wrote {OUT} ({len(numbers)} metrics)")
 
