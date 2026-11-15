@@ -19,7 +19,7 @@ Core principle: **every number shows how much real data backs it.**
 
 ## What's on `main` now
 
-Merged so far: skeleton, physics engine (PR #3), Envelope Guard (#1), rank and report (#5), data lane (#4), FLEX/BASS-II calibration (#6), witnesses (#7), Red/Blue duel + Ghost Flame + 3D playback (#8), duel routes (#10), `/api/ask` + `/api/gap_map` + gap-map panel (#12), gravity panel (#14), Habitat + Ask EMBER on one page (#15), data verification sheet (#16), ranking fixes (#17, #18), and README updates (#9, #11, #13). **60 tests pass** (about 15 s with a warm duel cache, about 80 s cold, because the agent tests run real CMA-ES searches). **Every API route now returns real data**; nothing returns 501. Open: **#19** (Sibi), adding badge coverage and witness accuracy to `deck_numbers.json`.
+Merged so far: skeleton, physics engine (PR #3), Envelope Guard (#1), rank and report (#5), data lane (#4), FLEX/BASS-II calibration (#6), witnesses (#7), Red/Blue duel + Ghost Flame + 3D playback (#8), duel routes (#10), `/api/ask` + `/api/gap_map` + gap-map panel (#12), gravity panel (#14), Habitat + Ask EMBER on one page (#15), data verification sheet (#16), ranking fixes (#17, #18), and README updates (#9, #11, #13). **60 tests pass** (about 15 s with a warm duel cache, about 80 s cold, because the agent tests run real CMA-ES searches). **Every API route now returns real data**; nothing returns 501. Open: **#19** (Sibi), adding badge coverage and witness accuracy to `deck_numbers.json`; **#20** (Ruthwik), verifying the 6 BASS-II ISS rows.
 
 | Component | Status | Owner | Where |
 |---|---|---|---|
@@ -407,7 +407,7 @@ FLEX,FLEX-LOI-HEP-CO2,n-heptane,liquid,0.17,101.3,0.0,0.0,limiting_oxygen_index;
 | BASS-II | 6 | ISS PMMA spread, 17–20.7% O₂, 0.7–7.6 cm/s | Ruthwik |
 | GROUND | 3 | BASS-II 1 g PMMA references | Ruthwik |
 
-**Open data gaps:** BASS-II rows are `verified=false` because the paper doesn't state test pressure (they could follow the ISS cabin-nominal rule if the team extends it to BASS-II). SAME-1, ACME and GROUND rows are also still unverified. BASS, CFI, SPICE and SLICE have no `sources` in `investigations.json` yet, and DAFT has a summary and witness doc but no condition rows. Solid flame-spread data (BASS-II) stops at 21% O₂, so spread rates at 30% are an extrapolation of the fit even though the pooled envelope badges them 🟡.
+**Open data gaps:** the 6 BASS-II ISS rows are verified in PR **#20**, which extends the ISS cabin-nominal rule to their pressure only (O₂ is measured per test); see `VERIFICATION.md` section 8, which also notes that Table S1 mislabels half its spread rates as mm/s when they're cm/s. Once #20 merges, 28 of 43 rows are verified. The 3 GROUND rows (1 g, UC Berkeley lab) stay unverified. SAME-1, ACME and GROUND rows are also still unverified. BASS, CFI, SPICE and SLICE have no `sources` in `investigations.json` yet, and DAFT has a summary and witness doc but no condition rows. Solid flame-spread data (BASS-II) stops at 21% O₂, so spread rates at 30% are an extrapolation of the fit even though the pooled envelope badges them 🟡.
 
 **`calibration.csv`**: the single source of truth for every physical constant in the simulator. `status` is `measured`, `fitted` or `assumed`, and the UI and deck badges are generated from it. Currently 57 constants: **21 measured, 7 fitted, 29 assumed.** The `assumed` ones are mostly vent speed, mixing, cotton and liquid spread rates, detector thresholds and dust values.
 
