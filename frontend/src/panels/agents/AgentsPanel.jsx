@@ -6,15 +6,21 @@ import Badge from "../../components/Badge.jsx";
 
 const fmt = (d) => (d == null ? "never detected" : `${d} s`);
 
+// Ghost Flame demo: heptane droplet inside the FLEX cool-flame range (14-25% O2, 50.7-101.3 kPa), CO2 suppression.
+const LIQUID_DEMO = {
+  o2_frac: 0.21, pressure_kpa: 101.3, suppressant: "co2",
+  fires: [{ material: "n-heptane", phase: "liquid", x: 3, y: 2, z: 0.1, droplet_d_mm: 3.0 }],
+};
+
 export default function AgentsPanel({ onDuel, gravity = 0.165 }) {
   const [run, setRun] = useState(null);
   const [busy, setBusy] = useState(false);
   const [err, setErr] = useState(null);
 
-  const start = async () => {
+  const start = async (cfg = {}) => {
     setBusy(true); setErr(null);
     try {
-      const res = await runDuel({ g: gravity });
+      const res = await runDuel({ g: gravity, ...cfg });
       setRun(res);
       const last = res.rounds[res.rounds.length - 1];
       const s = last.red.worst.scenario;
@@ -34,7 +40,8 @@ export default function AgentsPanel({ onDuel, gravity = 0.165 }) {
   return (
     <section>
       <h3>Red vs Blue duel</h3>
-      <button className="primary" onClick={start} disabled={busy}>{busy ? "Running…" : "Run duel"}</button>
+      <button className="primary" onClick={() => start()} disabled={busy}>{busy ? "Running…" : "Run duel"}</button>{" "}
+      <button onClick={() => start(LIQUID_DEMO)} disabled={busy}>Liquid-fuel demo (Ghost Flame)</button>
       {err && <p>{err}</p>}
       {run && (
         <>

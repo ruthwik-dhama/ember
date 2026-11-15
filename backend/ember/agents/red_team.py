@@ -147,3 +147,14 @@ def run_red(base_cfg: SimConfig, budget: int, seed: int, llm_cache=None, top_k: 
         if len(ranked) == top_k:
             break
     return {"worst": ranked[0], "top": ranked}
+
+
+def fixed_red(cfg: SimConfig, top_k: int = 5) -> dict:
+    """Red's role when the request already names the fire (e.g. the liquid-fuel Ghost Flame demo): no search."""
+    f = cfg.fires[0]
+    s = {"material": f.material, "x": f.x, "y": f.y, "z": f.z, "t_ignite_s": f.t_ignite_s}
+    if f.droplet_d_mm:
+        s["droplet_d_mm"] = f.droplet_d_mm
+    r = simulate(cfg, frames=False)
+    entry = {"scenario": s, "score": red_objective(r), "result": r, "why": why_dangerous(s, r, cfg)}
+    return {"worst": entry, "top": [entry]}
