@@ -4,22 +4,20 @@ import React, { useState } from "react";
 import MissionSetup from "../dashboard/MissionSetup.jsx";
 import Explorer from "../dashboard/Explorer.jsx";
 import Ranking from "../dashboard/Ranking.jsx";
-import AskEmber from "../dashboard/AskEmber.jsx";
 import Report from "../dashboard/Report.jsx";
-import HabitatScreen from "../habitat/HabitatScreen.jsx";
+import SimulateAndAsk from "./SimulateAndAsk.jsx";
 
 const SCREENS = [
   ["Mission setup", MissionSetup],
   ["Experiment explorer", Explorer],
   ["Ranking", Ranking],
-  ["Habitat simulation", HabitatScreen],
-  ["Ask EMBER", AskEmber],
+  ["Habitat simulation + Ask EMBER", SimulateAndAsk, "wide"],
   ["Insights report", Report],
 ];
 
 export default function App() {
   const [tab, setTab] = useState(0);
-  const Screen = SCREENS[tab][1];
+  const [, Screen, width] = SCREENS[tab];
   return (
     <div className="app">
       <header>
@@ -32,7 +30,7 @@ export default function App() {
           ))}
         </nav>
       </header>
-      <main><Screen /></main>
+      <main className={width === "wide" ? "wide" : ""}><Screen /></main>
     </div>
   );
 }
