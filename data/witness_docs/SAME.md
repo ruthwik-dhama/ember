@@ -8,7 +8,7 @@
 - Smoke was held in an aging chamber for 11 to 1800 s to simulate transport time from the source to a detector. [NTRS 20130000422]
 - Most average smoke particle sizes were in the 200 to 400 nm range, and some quiescent cases produced substantially larger particles. [NTRS 20130000422]
 - In baseline runs, the unaged diameter of average mass was 101 nm for Kapton, 170 nm for Teflon, 258 nm for lamp wick, 384 nm for Pyrell and 465 nm for silicone. [NTRS 20130000422, Table 1]
-- After 720 s of aging, the diameter of average mass grew to 161 nm for Kapton, 232 nm for Teflon, 398 nm for lamp wick, 539 nm for Pyrell and 619 nm for silicone. [NTRS 20130000422, Table 1]
+- Smoke particles grew as the smoke aged: after 720 s of aging, the diameter of average mass grew to 161 nm for Kapton, 232 nm for Teflon, 398 nm for lamp wick, 539 nm for Pyrell and 619 nm for silicone. [NTRS 20130000422, Table 1]
 - Teflon and Kapton smoke particles were very small, which makes them hard to detect with light-scattering detectors such as the ISS smoke detector. [NTRS 20130000422]
 - The diameter of average mass was 30 to 40% larger in zero-flow tests than in flow tests, so smoke trapped in an avionics enclosure is expected to be larger than smoke released in ventilated areas. [NTRS 20130000422]
 - SAME used the moment method: the zeroth (number), first (diameter) and third (mass) moments, with a lognormal assumption to derive the geometric mean diameter and geometric standard deviation. [Yang et al., Aerosol Sci. Technol. 49 (2015), doi:10.1080/02786826.2015.1025124]

@@ -1,0 +1,20 @@
+{
+  "description": "Witness eval questions (owner: Sibi). Each question has one expected witness and a phrase from the fact that answers it. Used by witness.evaluate() and backend/scripts/metrics.py (witness accuracy and citation rate vs a no-retrieval baseline). Phrased like a crew member or mission planner would ask, not copied from the facts.",
+  "questions": [
+    {"id": "q01", "question": "How big are smoke particles from overheated spacecraft materials in microgravity?", "expected_witness": "SAME", "expected_fact_contains": "200 to 400 nm"},
+    {"id": "q02", "question": "Which materials make smoke that is too small for the ISS light-scattering smoke detector to see well?", "expected_witness": "SAME", "expected_fact_contains": "Teflon and Kapton smoke particles were very small"},
+    {"id": "q03", "question": "Does smoke get bigger the longer it travels before reaching a detector?", "expected_witness": "SAME", "expected_fact_contains": "After 720 s of aging"},
+    {"id": "q04", "question": "What happens to smoke particle size when there is no airflow, like inside a closed avionics box?", "expected_witness": "SAME", "expected_fact_contains": "zero-flow"},
+    {"id": "q05", "question": "Can a two-moment detector tell smoke apart from large dust particles?", "expected_witness": "SAME", "expected_fact_contains": "MPASS"},
+    {"id": "q06", "question": "How clean is the air in the ISS cabin?", "expected_witness": "DAFT", "expected_fact_contains": "below 0.005 mg/m3"},
+    {"id": "q07", "question": "Does ripping open Velcro create particles that could set off a smoke alarm?", "expected_witness": "DAFT", "expected_fact_contains": "Velcro"},
+    {"id": "q08", "question": "Does the P-Trak particle counter work in microgravity?", "expected_witness": "DAFT", "expected_fact_contains": "modified P-Trak works in low gravity"},
+    {"id": "q09", "question": "What is the smallest particle the P-Trak can count?", "expected_witness": "DAFT", "expected_fact_contains": "20 nm"},
+    {"id": "q10", "question": "Below what oxygen concentration do BRE flames put themselves out?", "expected_witness": "ACME", "expected_fact_contains": "below about 25%"},
+    {"id": "q11", "question": "In 21% oxygen, how long did the 25 mm ethylene burner flames last?", "expected_witness": "ACME", "expected_fact_contains": "within 40 s"},
+    {"id": "q12", "question": "Does cabin pressure change how long a BRE flame burns before extinction?", "expected_witness": "ACME", "expected_fact_contains": "did not depend on pressure"},
+    {"id": "q13", "question": "Are enriched-oxygen spacecraft atmospheres a fire hazard according to the Burning Rate Emulator?", "expected_witness": "ACME", "expected_fact_contains": "enriched-oxygen"},
+    {"id": "q14", "question": "Can a droplet keep burning invisibly after the visible flame goes out?", "expected_witness": "FLEX", "expected_fact_contains": "cool flames"},
+    {"id": "q15", "question": "How small does a heptane droplet have to be before two-stage cool flame burning stops happening?", "expected_witness": "FLEX", "expected_fact_contains": "2.4 mm"}
+  ]
+}
