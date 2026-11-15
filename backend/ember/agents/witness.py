@@ -98,7 +98,7 @@ def parse_facts(witness: str, markdown: str) -> List[Fact]:
 
 @lru_cache(maxsize=None)
 def load_witnesses() -> Dict[str, List[Fact]]:
-    return {p.stem: parse_facts(p.stem, p.read_text()) for p in sorted(WITNESS_DIR.glob("*.md"))}
+    return {p.stem: parse_facts(p.stem, p.read_text(encoding="utf-8")) for p in sorted(WITNESS_DIR.glob("*.md"))}
 
 
 @lru_cache(maxsize=None)
@@ -148,7 +148,7 @@ def _cache_key(witness: str, question: str, facts: List[Fact]) -> str:
 
 def _read_cache() -> dict:
     try:
-        return json.loads(CACHE_PATH.read_text())
+        return json.loads(CACHE_PATH.read_text(encoding="utf-8"))
     except (FileNotFoundError, json.JSONDecodeError):
         return {}
 
@@ -157,7 +157,7 @@ def _write_cache(key: str, value: str) -> None:
     cache = _read_cache()
     cache[key] = value
     CACHE_PATH.parent.mkdir(parents=True, exist_ok=True)
-    CACHE_PATH.write_text(json.dumps(cache, indent=2, sort_keys=True) + "\n")
+    CACHE_PATH.write_text(json.dumps(cache, indent=2, sort_keys=True) + "\n", encoding="utf-8")
 
 
 def keep_cited_sentences(text: str, n_facts: int) -> str:
@@ -260,7 +260,7 @@ def evaluate(questions: Optional[list] = None) -> dict:
     citation_rate: share of answers where every fact carries a citation (1.0 by construction; reported for the deck).
     """
     if questions is None:
-        questions = json.loads(EVAL_PATH.read_text())["questions"]
+        questions = json.loads(EVAL_PATH.read_text(encoding="utf-8"))["questions"]
     rows = []
     for q in questions:
         hits = ask(q["question"])
