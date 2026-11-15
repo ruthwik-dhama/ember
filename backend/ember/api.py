@@ -10,11 +10,12 @@ from typing import Optional
 
 from fastapi import FastAPI, HTTPException
 
+from .agents.blue_team import load_duel, run_duel
 from .config import GRAVITY_PRESETS, ROOM_M, Mission, SimConfig
 from .data_io import load_investigations
 from .envelope.guard import EnvelopeGuard
 from .rank import compare, rank
-from .report import build_report
+from .report import DUEL_ROUNDS, DUEL_SEED, build_report
 from .sim.engine import simulate
 
 app = FastAPI(title="EMBER")
@@ -69,12 +70,15 @@ def api_simulate(cfg: SimConfig):
 
 @app.post("/api/duel/run")
 def api_duel_run(cfg: SimConfig):
-    todo("Kartavya: agents/blue_team.run_duel")
+    return run_duel(cfg, DUEL_ROUNDS, DUEL_SEED)  # cached by input, so repeat calls are instant
 
 
 @app.get("/api/duel/{run_id}")
 def api_duel(run_id: str):
-    todo("Kishan + Kartavya")
+    try:
+        return load_duel(run_id)
+    except KeyError:
+        raise HTTPException(status_code=404, detail=f"unknown duel run {run_id}")
 
 
 @app.post("/api/ask")
