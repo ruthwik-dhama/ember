@@ -19,7 +19,7 @@ Core principle: **every number shows how much real data backs it.**
 
 ## What's on `main` now
 
-Merged so far: skeleton, physics engine (PR #3), Envelope Guard (#1), rank and report (#5), data lane (#4), FLEX/BASS-II calibration (#6), witnesses (#7), Red/Blue duel + Ghost Flame + 3D playback (#8), duel routes (#10), `/api/ask` + `/api/gap_map` + gap-map panel (#12), gravity panel (#14), Habitat + Ask EMBER on one page (#15), data verification sheet (#16), ranking fixes (#17, #18), and README updates (#9, #11, #13). **60 tests pass** (about 15 s with a warm duel cache, about 80 s cold, because the agent tests run real CMA-ES searches). **Every API route now returns real data**; nothing returns 501. Open: **#19** (Sibi), adding badge coverage and witness accuracy to `deck_numbers.json`; **#20** (Ruthwik), verifying the 6 BASS-II ISS rows.
+Merged so far: skeleton, physics engine (PR #3), Envelope Guard (#1), rank and report (#5), data lane (#4), FLEX/BASS-II calibration (#6), witnesses (#7), Red/Blue duel + Ghost Flame + 3D playback (#8), duel routes (#10), `/api/ask` + `/api/gap_map` + gap-map panel (#12), gravity panel (#14), Habitat + Ask EMBER on one page (#15), data verification sheet (#16), ranking fixes (#17, #18), deck metrics (#19), BASS-II verification (#20), and README updates (#9, #11, #13). **63 tests pass** (about 15 s with a warm duel cache, about 80 s cold, because the agent tests run real CMA-ES searches). **Every API route now returns real data**; nothing returns 501. No PRs are open.
 
 | Component | Status | Owner | Where |
 |---|---|---|---|
@@ -34,7 +34,7 @@ Merged so far: skeleton, physics engine (PR #3), Envelope Guard (#1), rank and r
 | Witnesses / Ask EMBER | ✅ Backend live: `/api/ask` returns cited answers (offline retrieval; Claude phrasing if a key is set), 15-question eval. ⏳ The **chat UI** (`dashboard/AskEmber.jsx`) is still a placeholder | Sibi (backend), Kishan (chat UI) | `agents/witness.py` |
 | Frontend | 🟡 5 tabs. Explorer wired. **Habitat simulation and Ask EMBER share one page** (#15): 3D frame playback, working "Run duel", gravity comparison and gap-map panels, with the Ask EMBER column beside them. Still placeholders: Mission setup, Ranking, the Ask EMBER chat and the Report screen (their APIs all work) | Kishan, Kartavya, Ruthwik, Sibi | `frontend/src/` |
 | Gravity panel | ✅ Same fire at ISS / Moon / Mars / Earth, vents on/off, badge per level (#14). About 10 s per comparison, because `/api/simulate` always returns voxel frames | Ruthwik | `frontend/src/panels/gravity/` |
-| `metrics.py` | ⏳ Writes `deck_numbers.json` with null values only | Kishan | `backend/scripts/` |
+| `metrics.py` | ⏳ Still writes `deck_numbers.json` with null values only. Sibi's `deck_metrics()` (#19) is ready but **not called yet**: add `numbers.update(deck_metrics())` in `metrics.py` | Kishan (Sibi: `envelope/metrics.py`) | `backend/scripts/` |
 
 ---
 
@@ -108,7 +108,7 @@ Tests:
 pytest backend/tests -q
 ```
 
-The suite covers contracts, physics behaviour, Envelope Guard (`test_envelope.py`), data-file checks (`test_data.py`), agents (`test_agents.py`), witnesses (`test_witness.py`), the data-lane API routes (`test_api_data_lane.py`), DAFT ranking (`test_rank_daft.py`) and rank/report. It takes about 80 s on a cold run (the agent tests run real searches) and about 15 s once the duel cache exists. Shared loaders for everything in `data/` live in `backend/ember/data_io.py`, so read constants through `cal("name")` and never hard-code them.
+The suite covers contracts, physics behaviour, Envelope Guard (`test_envelope.py`), data-file checks (`test_data.py`), agents (`test_agents.py`), witnesses (`test_witness.py`), the data-lane API routes (`test_api_data_lane.py`), DAFT ranking (`test_rank_daft.py`), deck metrics (`test_deck_metrics.py`) and rank/report. It takes about 80 s on a cold run (the agent tests run real searches) and about 15 s once the duel cache exists. Shared loaders for everything in `data/` live in `backend/ember/data_io.py`, so read constants through `cal("name")` and never hard-code them.
 
 Optional: copy `.env.example` to `.env` and set `ANTHROPIC_API_KEY` to enable live LLM calls (Red seeds, "why" text, witness phrasing). Without it, EMBER uses cached responses (offline mode).
 
@@ -348,6 +348,7 @@ stub:              bool       # true only for placeholder engines
 | `witness.evaluate()` | witness accuracy and citation rate on `data/witness_eval.json` (offline, no LLM) | Sibi |
 | `gravity_sweep(cfg)` | `{iss\|moon\|mars\|earth: {g, detected, delay_s, spread_rate_mm_s, partial_g}}` | Ruthwik |
 | `ghost_flame_params()` | `{cool_flame_fuels, critical_d_mm, cool_flame_envelope, source}` for `ghost_flame_check()` | Ruthwik |
+| `envelope.metrics.deck_metrics()` | badge coverage (% of `calibration.csv` constants measured / fitted / assumed) and witness accuracy + citation rate, in the `deck_numbers.json` shape plus a `note` for slide footnotes. Runs offline | Sibi |
 | `suppression.limiting_o2(agent, material)` | FLEX limiting O₂ for that fuel, else the generic (extrapolated) value | Ruthwik |
 
 Known placeholder: `envelope/guard.py` assumes `DEFAULT_FLOW_CM_S = 10.0` because `Mission` has no flow field yet.
@@ -390,8 +391,8 @@ investigation,test_id,fuel,fuel_phase,o2_frac,pressure_kpa,flow_cm_s,g,measured_
 FLEX,FLEX-LOI-HEP-CO2,n-heptane,liquid,0.17,101.3,0.0,0.0,limiting_oxygen_index;co2_frac=0.20,doi:10.1007/s12217-014-9372-2,true
 ```
 
-- `verified=false` until the owner has checked the row against the source. **22 of 43 rows are verified** (FLEX 6, FLEX-2 4, SAME-R 12).
-- `data/VERIFICATION.md` (Sibi) records, per row group, what each source confirms and what was inferred. It also records the team rule **"ISS cabin nominal = 0.21 O₂ / 101.3 kPa"** for tests whose papers don't state the atmosphere (accepted for SAME, SAME-R and DAFT).
+- `verified=false` until the owner has checked the row against the source. **28 of 43 rows are verified** (FLEX 6, FLEX-2 4, SAME-R 12, BASS-II 6).
+- `data/VERIFICATION.md` (Sibi) records, per row group, what each source confirms and what was inferred. It also records the team rule **"ISS cabin nominal = 0.21 O₂ / 101.3 kPa"** for tests whose papers don't state the atmosphere (accepted for SAME, SAME-R and DAFT, and extended to BASS-II **pressure only** in section 8, since BASS-II measured O₂ per test).
 - `g` is in Earth-g units (0, 0.165, 0.38, 1.0).
 - No placeholder citations remain. `test_data.py` checks this for the data lane's rows.
 
@@ -407,7 +408,7 @@ FLEX,FLEX-LOI-HEP-CO2,n-heptane,liquid,0.17,101.3,0.0,0.0,limiting_oxygen_index;
 | BASS-II | 6 | ISS PMMA spread, 17–20.7% O₂, 0.7–7.6 cm/s | Ruthwik |
 | GROUND | 3 | BASS-II 1 g PMMA references | Ruthwik |
 
-**Open data gaps:** the 6 BASS-II ISS rows are verified in PR **#20**, which extends the ISS cabin-nominal rule to their pressure only (O₂ is measured per test); see `VERIFICATION.md` section 8, which also notes that Table S1 mislabels half its spread rates as mm/s when they're cm/s. Once #20 merges, 28 of 43 rows are verified. The 3 GROUND rows (1 g, UC Berkeley lab) stay unverified. SAME-1, ACME and GROUND rows are also still unverified. BASS, CFI, SPICE and SLICE have no `sources` in `investigations.json` yet, and DAFT has a summary and witness doc but no condition rows. Solid flame-spread data (BASS-II) stops at 21% O₂, so spread rates at 30% are an extrapolation of the fit even though the pooled envelope badges them 🟡.
+**Open data gaps:** 15 rows are still unverified: SAME-1 (5; flow not stated in the abstract), ACME (7) and GROUND (3; 1 g UC Berkeley lab, so the ISS cabin rule can't cover their pressure). `VERIFICATION.md` section 8 notes that BASS-II Table S1 labels half its spread rates mm/s when they're cm/s; the PMMA fit uses cm/s. SAME-1, ACME and GROUND rows are also still unverified. BASS, CFI, SPICE and SLICE have no `sources` in `investigations.json` yet, and DAFT has a summary and witness doc but no condition rows. Solid flame-spread data (BASS-II) stops at 21% O₂, so spread rates at 30% are an extrapolation of the fit even though the pooled envelope badges them 🟡.
 
 **`calibration.csv`**: the single source of truth for every physical constant in the simulator. `status` is `measured`, `fitted` or `assumed`, and the UI and deck badges are generated from it. Currently 57 constants: **21 measured, 7 fitted, 29 assumed.** The `assumed` ones are mostly vent speed, mixing, cotton and liquid spread rates, detector thresholds and dust values.
 
