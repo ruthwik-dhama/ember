@@ -8,7 +8,7 @@ Not CFD. Each term traces to one investigation, and every constant comes from da
     - w_b(g) = w_b_earth * g^(1/3), applied to SMOKE only (hot); dust is not buoyant. Ceiling is no-flux,
       so smoke pools there.
     - D: effective mixing diffusivity (SAME: transport is mixing-dominated in microgravity)
-  fire: radius grows at v_f = spread_rate(v0, X_O2, u_eff) (flame.py), u_eff = sqrt(u_vent^2 + u_b(g)^2),
+  fire: radius grows at v_f = spread_rate(v0, X_O2, u_eff) (flame.py), u_eff = sqrt(u_vent^2 + u_b(g)^2) (blowoff uses vent flow only),
     capped at r_cap; smoke source = smoke_yield * area * smoke_scale.
   detectors: single alarms on total concentration; two_moment also needs estimated size < size_cut,
     where smoke size grows with age d0 (1 + t/tau)^(1/3) (t = time since first ignition) and dust ~ microns.
@@ -68,7 +68,7 @@ def _advect_z_up(c, w, dx):
 
 def _p_flame():
     return {"x_ref": cal("flame.x_ref"), "a": cal("flame.o2_exponent"), "u_q": cal("flame.u_q"),
-            "u_bo": cal("flame.u_bo"), "n": cal("flame.n")}
+            "u_bo": cal("flame.u_bo"), "n": cal("flame.n"), "u_ext": cal("flame.u_ext")}
 
 
 def simulate(cfg: SimConfig, frames: bool = True) -> dict:
@@ -129,7 +129,7 @@ def simulate(cfg: SimConfig, frames: bool = True) -> dict:
             x_o2 = diluted_o2(cfg.o2_frac)
             suppress_at = None
             for fr in fires:
-                if fr["out_at"] is None and fr["r"] > 0 and extinguished(x_o2, cfg.suppressant):
+                if fr["out_at"] is None and fr["r"] > 0 and extinguished(x_o2, cfg.suppressant, fr["mat"].name):
                     fr["out_at"] = t
 
         # Fires grow and emit smoke.
@@ -139,8 +139,9 @@ def simulate(cfg: SimConfig, frames: bool = True) -> dict:
                 continue
             if fr["r"] == 0.0:
                 fr["r"] = r0
-            u_eff = math.hypot(vent_now * 100.0, u_b_flame)  # cm/s
-            fr["v_mm_s"] = spread_rate(m.v0, x_o2, u_eff, p_flame)
+            u_forced = vent_now * 100.0  # cm/s
+            u_eff = math.hypot(u_forced, u_b_flame)
+            fr["v_mm_s"] = spread_rate(m.v0, x_o2, u_eff, p_flame, u_forced=u_forced)
             fr["r"] = min(fr["r"] + fr["v_mm_s"] / 1000.0 * dt, m.r_cap)
             rate = m.smoke_yield * math.pi * fr["r"] ** 2 * smoke_scale  # amount / s
             smoke[fr["ijk"]] += rate * dt / vol
