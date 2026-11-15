@@ -1,4 +1,27 @@
 investigation,test_id,fuel,fuel_phase,o2_frac,pressure_kpa,flow_cm_s,g,measured_outputs,citation,verified
-FLEX,FLEX-001,n-heptane,liquid,0.21,101.3,0.0,0.0,"burn_rate;extinction_d_mm",NTRS-XXXXXXX,false
-SAME-R,SAMER-014,silicone,pyrolysis,0.21,101.3,8.0,0.0,"d_gm_nm;sigma_g;age_s",NTRS-20130000422,false
-GROUND,G-BASS-01,PMMA,solid,0.21,101.3,0.0,1.0,"spread_rate_mm_s",NTRS-XXXXXXX,false
+FLEX,FLEX-001,n-heptane,liquid,0.21,101.3,0.0,0.0,burn_rate;extinction_d_mm,NTRS-XXXXXXX,false
+GROUND,G-BASS-01,PMMA,solid,0.21,101.3,0.0,1.0,spread_rate_mm_s,NTRS-XXXXXXX,false
+SAME-R,SAMER-TEFL-08,Teflon,pyrolysis,0.21,101.3,8.0,0.0,d10_nm;d30_nm;d_gm_nm;sigma_g;age_s,NTRS-20130000422,false
+SAME-R,SAMER-KAPT-08,Kapton,pyrolysis,0.21,101.3,8.0,0.0,d10_nm;d30_nm;d_gm_nm;sigma_g;age_s,NTRS-20130000422,false
+SAME-R,SAMER-PYRE-08,Pyrell,pyrolysis,0.21,101.3,8.0,0.0,d10_nm;d30_nm;d_gm_nm;sigma_g;age_s,NTRS-20130000422,false
+SAME-R,SAMER-SILI-08,silicone rubber,pyrolysis,0.21,101.3,8.0,0.0,d10_nm;d30_nm;d_gm_nm;sigma_g;age_s,NTRS-20130000422,false
+SAME-R,SAMER-CELL-08,cellulose lampwick,pyrolysis,0.21,101.3,8.0,0.0,d10_nm;d30_nm;d_gm_nm;sigma_g;age_s,NTRS-20130000422,false
+SAME-R,SAMER-DIBU-08,dibutyl phthalate,pyrolysis,0.21,101.3,8.0,0.0,d10_nm;d30_nm;d_gm_nm;sigma_g;age_s,NTRS-20130000422,false
+SAME-R,SAMER-TEFL-02,Teflon,pyrolysis,0.21,101.3,2.0,0.0,d10_nm;d30_nm;d_gm_nm;sigma_g,NTRS-20130000422,false
+SAME-R,SAMER-TEFL-00,Teflon,pyrolysis,0.21,101.3,0.0,0.0,d10_nm;d30_nm;d_gm_nm;sigma_g,NTRS-20130000422,false
+SAME-R,SAMER-KAPT-02,Kapton,pyrolysis,0.21,101.3,2.0,0.0,d10_nm;d30_nm;d_gm_nm;sigma_g,NTRS-20130000422,false
+SAME-R,SAMER-KAPT-00,Kapton,pyrolysis,0.21,101.3,0.0,0.0,d10_nm;d30_nm;d_gm_nm;sigma_g,NTRS-20130000422,false
+SAME-R,SAMER-CELL-02,cellulose lampwick,pyrolysis,0.21,101.3,2.0,0.0,d10_nm;d30_nm;d_gm_nm;sigma_g,NTRS-20130000422,false
+SAME-R,SAMER-CELL-00,cellulose lampwick,pyrolysis,0.21,101.3,0.0,0.0,d10_nm;d30_nm;d_gm_nm;sigma_g,NTRS-20130000422,false
+SAME,SAME1-TEFL-08,Teflon,pyrolysis,0.21,101.3,8.0,0.0,d10_nm;d30_nm;age_s,doi:10.4271/2009-01-2468,false
+SAME,SAME1-KAPT-08,Kapton,pyrolysis,0.21,101.3,8.0,0.0,d10_nm;d30_nm;age_s,doi:10.4271/2009-01-2468,false
+SAME,SAME1-CELL-08,cellulose,pyrolysis,0.21,101.3,8.0,0.0,d10_nm;d30_nm;age_s,doi:10.4271/2009-01-2468,false
+SAME,SAME1-SILI-08,silicone rubber,pyrolysis,0.21,101.3,8.0,0.0,d10_nm;d30_nm;age_s,doi:10.4271/2009-01-2468,false
+SAME,SAME1-DIBU-08,dibutyl phthalate,pyrolysis,0.21,101.3,8.0,0.0,d10_nm;d30_nm;age_s,doi:10.4271/2009-01-2468,false
+ACME,BRE-C2H4-25-210,ethylene+N2 (emulated solid),gas,0.21,101.3,0.0,0.0,heat_flux;extinction_time_s,hdl:1903/29303,false
+ACME,BRE-C2H4-25-265,ethylene+N2 (emulated solid),gas,0.265,101.3,0.0,0.0,heat_flux;extinction_time_s,hdl:1903/29303,false
+ACME,BRE-C2H4-25-340,ethylene+N2 (emulated solid),gas,0.34,101.3,0.0,0.0,heat_flux;extinction_time_s,hdl:1903/29303,false
+ACME,BRE-C2H4-25-400,ethylene+N2 (emulated solid),gas,0.4,101.3,0.0,0.0,heat_flux;extinction_time_s,hdl:1903/29303,false
+ACME,BRE-C2H4-25-340-LP,ethylene+N2 (emulated solid),gas,0.34,57.0,0.0,0.0,extinction_time_s,hdl:1903/27484,false
+ACME,BRE-CH4-50-210-LP,methane+N2 (emulated solid),gas,0.21,57.0,0.0,0.0,extinction_time_s,hdl:1903/27484,false
+ACME,BRE-CH4-50-400,methane+N2 (emulated solid),gas,0.4,100.0,0.0,0.0,extinction_time_s,hdl:1903/27484,false
