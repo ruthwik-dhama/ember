@@ -5,6 +5,7 @@ import { Canvas } from "@react-three/fiber";
 import { OrbitControls } from "@react-three/drei";
 import * as THREE from "three";
 import { ROOM_M, DX_M } from "./room.js";
+import RoomProps from "./RoomProps.jsx";
 
 const [L, W, H] = ROOM_M;
 // backend (x, y, z) -> three (x - L/2, z, y - W/2), so the room box sits centred on the grid.
@@ -64,6 +65,7 @@ export default function HabitatView({ frames, t = 0, detectors = [], fires = [],
           </mesh>
         ))}
         <Smoke frame={frame} />
+        <RoomProps />
         <OrbitControls />
       </Canvas>
     </div>
