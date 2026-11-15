@@ -56,3 +56,13 @@ def test_api_duel_run_and_fetch():
     run = c.post("/api/duel/run", json={}).json()
     assert run["rounds"] and c.get(f"/api/duel/{run['run_id']}").json()["run_id"] == run["run_id"]
     assert c.get("/api/duel/nope").status_code == 404
+
+
+def test_liquid_fuel_duel_reports_ghost_flame_false_all_clear():
+    # Setup: named heptane fire (3 mm droplet) at 21% O2 / 101.3 kPa, inside FLEX's cool-flame range, CO2 kept.
+    from ember.config import FireSpec
+    cfg = SimConfig(o2_frac=0.21, pressure_kpa=101.3, suppressant="co2",
+                    fires=[FireSpec("n-heptane", "liquid", 3.0, 2.0, 0.1, droplet_d_mm=3.0)])
+    r = run_duel(cfg, rounds=1, seed=0, blue_budget=20)["rounds"][0]
+    assert r["red"]["worst"]["scenario"]["material"] == "n-heptane" and r["blue"]["suppressant"] == "co2"
+    assert r["ghost"]["applicable"] and r["ghost"]["false_all_clear"] and r["ghost"]["citation"]

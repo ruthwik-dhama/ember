@@ -15,7 +15,7 @@ import numpy as np
 from ..config import ROOM_M, Detector, DustEvent, SimConfig
 from ..sim.engine import simulate
 from .ghost_flame import ghost_flame_check, ghost_params
-from .red_team import red_objective, run_red, to_cfg
+from .red_team import fixed_red, red_objective, run_red, to_cfg
 
 SUPPRESSANTS = ["none", "co2", "he"]
 N_DETECTORS = 2
@@ -32,10 +32,11 @@ def default_cfg(base_cfg: SimConfig) -> SimConfig:
     return replace(base_cfg, detectors=[Detector("ceil", ROOM_M[0] / 2, ROOM_M[1] / 2, ROOM_M[2] - 0.1)])
 
 
-def apply_blue(cfg: SimConfig, x) -> SimConfig:
+def apply_blue(cfg: SimConfig, x, keep_suppressant: bool = False) -> SimConfig:
     x = np.clip(x, _LO, _HI)
+    supp = cfg.suppressant if keep_suppressant else SUPPRESSANTS[int(round(x[-1]))]
     dets = [Detector(f"b{i}", *map(float, x[3 * i:3 * i + 3]), kind="two_moment") for i in range(N_DETECTORS)]
-    return replace(cfg, detectors=dets, vent_off_at_s=float(x[-2]), suppressant=SUPPRESSANTS[int(round(x[-1]))])
+    return replace(cfg, detectors=dets, vent_off_at_s=float(x[-2]), suppressant=supp)
 
 
 def _score(cfg: SimConfig) -> float:
@@ -45,8 +46,11 @@ def _score(cfg: SimConfig) -> float:
     return s + (DUST_FALSE_ALARM_PENALTY if simulate(dust_only, frames=False)["detected"] else 0.0)
 
 
-def run_blue(red_worst: dict, base_cfg: SimConfig, budget: int, seed: int) -> dict:
-    """CMA-ES over detector positions, vent shutoff time, suppressant against Red's worst scenario."""
+def run_blue(red_worst: dict, base_cfg: SimConfig, budget: int, seed: int, keep_suppressant: bool = False) -> dict:
+    """CMA-ES over detector positions, vent shutoff time, suppressant against Red's worst scenario.
+
+    keep_suppressant: use base_cfg.suppressant as given instead of optimizing it (Ghost Flame demo).
+    """
     import cma
 
     red_cfg = to_cfg(base_cfg, red_worst["scenario"])
@@ -57,12 +61,12 @@ def run_blue(red_worst: dict, base_cfg: SimConfig, budget: int, seed: int) -> di
     best_x, best = None, float("inf")
     while not es.stop():
         xs = es.ask()
-        scores = [_score(apply_blue(red_cfg, x)) for x in xs]
+        scores = [_score(apply_blue(red_cfg, x, keep_suppressant)) for x in xs]
         for x, s in zip(xs, scores):
             if s < best:
                 best_x, best = x, s
         es.tell(xs, scores)
-    cfg = apply_blue(red_cfg, best_x)
+    cfg = apply_blue(red_cfg, best_x, keep_suppressant)
     return {"cfg": cfg, "score": best, "detectors": [asdict(d) for d in cfg.detectors],
             "vent_off_at_s": cfg.vent_off_at_s, "suppressant": cfg.suppressant}
 
@@ -89,11 +93,13 @@ def run_duel(base_cfg: SimConfig, rounds: int, seed: int, red_budget: int = 60, 
         pass
     guard = EnvelopeGuard()
     cfg = default_cfg(base_cfg)
+    fixed = bool(base_cfg.fires)  # the request names the fire: Red doesn't search, Blue defends against it
+    keep = fixed and base_cfg.suppressant != "none"
     out = []
     for n in range(rounds):
-        red = run_red(cfg, red_budget, seed + n)
+        red = fixed_red(cfg) if fixed else run_red(cfg, red_budget, seed + n)
         before = red["worst"]["result"]
-        blue = run_blue(red["worst"], cfg, blue_budget, seed + n)
+        blue = run_blue(red["worst"], cfg, blue_budget, seed + n, keep_suppressant=keep)
         after = simulate(blue["cfg"], frames=(n == rounds - 1))
         fire = blue["cfg"].fires[0]
         ghost = (ghost_flame_check(fire, after["conditions"], ghost_params()) if blue["cfg"].suppressant != "none"
@@ -103,7 +109,7 @@ def run_duel(base_cfg: SimConfig, rounds: int, seed: int, red_budget: int = 60, 
                            "before": {k: v for k, v in before.items() if k != "frames"},
                            "blue": {k: v for k, v in blue.items() if k != "cfg"},
                            "after": after, "ghost": ghost, "envelope": guard.check(after["conditions"])}))
-        cfg = replace(blue["cfg"], fires=[])  # next round Red searches against Blue's layout
+        cfg = blue["cfg"] if fixed else replace(blue["cfg"], fires=[])  # next round Red searches against Blue's layout
     last = out[-1]
     badge = last["envelope"]["badge"]
     run = {"run_id": run_id, "rounds": out,
