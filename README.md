@@ -19,7 +19,7 @@ Core principle: **every number shows how much real data backs it.**
 
 ## What's on `main` now
 
-Merged so far: skeleton, physics engine (PR #3), Envelope Guard (#1), rank and report (#5), data lane (#4), FLEX/BASS-II calibration (#6), witnesses (#7), Red/Blue duel + Ghost Flame + 3D playback (#8), duel routes (#10), `/api/ask` + `/api/gap_map` + gap-map panel (#12), gravity panel (#14), Habitat + Ask EMBER on one page (#15), data verification sheet (#16), ranking fixes (#17, #18), deck metrics (#19), BASS-II verification (#20), and README updates (#9, #11, #13). **63 tests pass** (about 15 s with a warm duel cache, about 80 s cold, because the agent tests run real CMA-ES searches). **Every API route now returns real data**; nothing returns 501. No PRs are open.
+Merged so far: skeleton, physics engine (PR #3), Envelope Guard (#1), rank and report (#5), data lane (#4), FLEX/BASS-II calibration (#6), witnesses (#7), Red/Blue duel + Ghost Flame + 3D playback (#8), duel routes (#10), `/api/ask` + `/api/gap_map` + gap-map panel (#12), gravity panel (#14), Habitat + Ask EMBER on one page (#15), data verification sheet (#16), ranking fixes (#17, #18), deck metrics (#19), BASS-II verification (#20), Ghost Flame demo (#21), click-to-place fire (#22), vents/airflow/airlock in 3D (#23), Red search fixes + `red_vs_random` (#24), and README updates (#9, #11, #13). **65 tests pass** (about 15 s with a warm duel cache, about 80 s cold, because the agent tests run real CMA-ES searches). **Every API route now returns real data**; nothing returns 501. No PRs are open.
 
 | Component | Status | Owner | Where |
 |---|---|---|---|
@@ -29,12 +29,12 @@ Merged so far: skeleton, physics engine (PR #3), Envelope Guard (#1), rank and r
 | Rank + compare | ✅ Live (`/api/rank`, `/api/compare`). Counts flight rows (SAME-R, BASS-II, FLEX-2) under their base investigation and ranks DAFT from its summary conditions (#17) | Kishan, Sibi | `backend/ember/rank/` |
 | Insights report | ✅ Live, including Red's top risks and Blue's fixes from the duel | Kishan | `backend/ember/report/` |
 | Gap map | ✅ `/api/gap_map` route and the gap-map panel on the Habitat page (#12) | Kishan, Sibi | `api.py`, `frontend/src/panels/data/` |
-| Red / Blue duel | ✅ Live: `run_red`, `run_blue`, `run_duel`, and the `/api/duel/run` + `/api/duel/{run_id}` routes (#10). The report uses it too | Kartavya | `backend/ember/agents/` |
+| Red / Blue duel | ✅ Live: `run_red`, `run_blue`, `run_duel`, and the `/api/duel/run` + `/api/duel/{run_id}` routes (#10). The report uses it too. A duel request that names a fire skips Red's search and Blue defends that fire (#21). ⚠️ **Red currently ties random search** (#24): see Known findings | Kartavya | `backend/ember/agents/` |
 | Ghost Flame Auditor | ✅ `ghost_flame_check()` + `ghost_params()` (reads the `ghost.*` FLEX rows); runs inside the duel | Kartavya | `agents/ghost_flame.py` |
 | Witnesses / Ask EMBER | ✅ Backend live: `/api/ask` returns cited answers (offline retrieval; Claude phrasing if a key is set), 15-question eval. ⏳ The **chat UI** (`dashboard/AskEmber.jsx`) is still a placeholder | Sibi (backend), Kishan (chat UI) | `agents/witness.py` |
-| Frontend | 🟡 5 tabs. Explorer wired. **Habitat simulation and Ask EMBER share one page** (#15): 3D frame playback, working "Run duel", gravity comparison and gap-map panels, with the Ask EMBER column beside them. Still placeholders: Mission setup, Ranking, the Ask EMBER chat and the Report screen (their APIs all work) | Kishan, Kartavya, Ruthwik, Sibi | `frontend/src/` |
+| Frontend | 🟡 5 tabs. Explorer wired. **Habitat simulation and Ask EMBER share one page** (#15): 3D frame playback, click the floor to move the fire and re-run (#22), inlet/return vents, airflow arrows and airlock marker (#23; arrows are static), working "Run duel" plus a "Liquid-fuel demo (Ghost Flame)" button (#21), gravity comparison and gap-map panels, with the Ask EMBER column beside them. Still placeholders: Mission setup, Ranking, the Ask EMBER chat and the Report screen (their APIs all work) | Kishan, Kartavya, Ruthwik, Sibi | `frontend/src/` |
 | Gravity panel | ✅ Same fire at ISS / Moon / Mars / Earth, vents on/off, badge per level (#14). About 10 s per comparison, because `/api/simulate` always returns voxel frames | Ruthwik | `frontend/src/panels/gravity/` |
-| `metrics.py` | ⏳ Still writes `deck_numbers.json` with null values only. Sibi's `deck_metrics()` (#19) is ready but **not called yet**: add `numbers.update(deck_metrics())` in `metrics.py` | Kishan (Sibi: `envelope/metrics.py`) | `backend/scripts/` |
+| `metrics.py` | ⏳ Still writes `deck_numbers.json` with null values only. Ready but **not called yet**: Sibi's `deck_metrics()` (#19) and Kartavya's `red_vs_random()` (#24) | Kishan (Sibi: `envelope/metrics.py`) | `backend/scripts/` |
 
 ---
 
@@ -173,6 +173,10 @@ This is a **reduced-order model** calibrated to PSI data, not CFD. Smoke and dus
 | `materials.py` | Cotton, PMMA, n-heptane and methanol. Values come from `calibration.csv` rows `material.<name>.{v0, smoke_yield, r_cap}`. | PMMA `v0` fitted; the rest `assumed` |
 | `suppression.py` | The agent floods the cabin `suppress.response_s` after the first alarm. The fire goes out if diluted O₂ is below FLEX's **per-fuel** limiting O₂. Solids fall back to the heptane value, which is an extrapolation. `ghost_flame_params()` feeds the Ghost Flame Auditor. | FLEX LOI values; cutoff and envelope from NASA Glenn JR12-009 and Nayagam et al. 2014 |
 | `sweeps.py` | `gravity_sweep(cfg)` runs the same fire at ISS / Moon / Mars / Earth g. | — |
+
+**Known findings from the team's own runs** (simulation behaviour, not deck numbers):
+- **Don't claim "Red beats random" yet** (#24). After Kartavya's fixes Red reliably finds the worst fire, but random search with the same budget finds an equally bad one. The objective saturates: every undetected fire grows to its material's maximum size (`r_cap`) and scores the same, so nothing separates them. Cotton hits its cap fastest because its spread rate is still an `assumed` placeholder, multiplied by the steep O₂ fit at 30% O₂. Fixing this needs a richer severity signal from the engine and/or a different `red_objective`. That's a team decision.
+- **The Ghost Flame overrule only fires inside FLEX's measured cool-flame range** (14–25% O₂, 0.5–1 atm). At Moon-base 30% O₂ it correctly makes no cool-flame claim, so the demo uses a dedicated liquid-fuel scenario at 21% O₂ (#21).
 
 **What the papers have shown so far** (measured values, not simulation outputs):
 - FLEX limiting O₂ for droplets: heptane 0.15 in air, 0.17 with CO₂ and 0.15 with He; methanol 0.12, 0.14 and 0.14.
@@ -339,10 +343,12 @@ stub:              bool       # true only for placeholder engines
 | `rank(mission, investigations, guard, pillar=None)` | `[{id, score, why}]`, best first. Score = 1/(1 + nearest distance) + 0.2 if the fuel phase matches + 0.2 dust bonus for DAFT in airlock habitats (Moon, Mars, rover), applied **only with `pillar=detection`** (#18), so fire investigations stay on top overall (BASS is #1 for the Moon base). Rows labelled `<ID>-…` (e.g. `SAME-R`, `BASS-II`) count toward `<ID>`. Investigations with no rows (DAFT) use the conditions in `investigations.json` | Kishan, Sibi |
 | `compare(a, b)` | `{same: [...], different: [...]}` over hardware, fuel phase, g, pillars, sensors | Kishan |
 | `build_report(mission)` | `{mission, top_investigations, top_risks, recommended_fixes, data_gaps, earth_applications}`. Any section whose lane fails returns `{available: false, reason}` instead of crashing | Kishan |
-| `run_red(base_cfg, budget, seed, llm_cache=None, top_k=5)` | Red's worst scenarios. LLM seeds (cached), else hand-written fallback seeds, refined by CMA-ES on `red_objective(simulate(cfg, frames=False))` | Kartavya |
-| `run_blue(red_worst, base_cfg, budget, seed)` | CMA-ES over detector positions, vent shutoff time and suppressant against Red's worst scenario | Kartavya |
+| `run_red(base_cfg, budget, seed, llm_cache=None, top_k=5)` | `{worst, top, evals}`. Seeds every material at both room ends (plus LLM or fallback seeds), then refines position and size with CMA-ES (per-axis step sizes) on `red_objective(simulate(cfg, frames=False))` | Kartavya |
+| `run_blue(red_worst, base_cfg, budget, seed, keep_suppressant=False)` | CMA-ES over detector positions, vent shutoff time and suppressant against Red's worst scenario | Kartavya |
 | `run_duel(base_cfg, rounds, seed, red_budget=60, blue_budget=60)` | Red attacks the layout Blue left each round; Envelope Guard and Ghost Flame run on the results; only the last round carries voxel frames. Deterministic id per input, cached by `save_duel` / `load_duel` | Kartavya |
 | `ghost_params()` | Ghost Flame regime from the `ghost.*` rows in `calibration.csv` | Kartavya |
+| `fixed_red(cfg)` | Red's entry when the request already names the fire (no search), used by the Ghost Flame demo | Kartavya |
+| `agents.compare.red_vs_random(cfg, budget=60, seeds=range(5))` | `{red_median, random_median, red_scores, random_scores, budget, seeds, red_wins}`. Random search gets exactly as many sims as Red used per seed, scored with the same `red_objective` | Kartavya |
 | `witness.ask(question, investigation_id=None)` | `[{witness, answer, citations: [{n, source, fact}], facts, score, mode}]`, best witness first; empty list = no cited data | Sibi |
 | `witness.ask_ember(question)` | `{question, answers, mode}`: the intended `POST /api/ask` body | Sibi |
 | `witness.evaluate()` | witness accuracy and citation rate on `data/witness_eval.json` (offline, no LLM) | Sibi |
