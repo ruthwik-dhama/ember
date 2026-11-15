@@ -95,7 +95,11 @@ def test_ghost_flame_not_applicable_to_solids():
 def test_more_oxygen_spreads_faster():
     base = SimConfig(o2_frac=0.21, g=0.0, fires=[fire()], detectors=[ceiling_det()])
     rich = replace(base, o2_frac=0.30)
-    assert simulate(rich)["fire_area_cm2"] > simulate(base)["fire_area_cm2"]
+    # Compare spread rate and burned-area integral, not final area: with cotton fitted to BASS data both fires
+    # reach r_cap before t_max, so final area saturates and can't show which spread faster.
+    r_base, r_rich = simulate(base, frames=False), simulate(rich, frames=False)
+    assert r_rich["spread_rate_mm_s"] > r_base["spread_rate_mm_s"]
+    assert r_rich["burn_area_cm2_s"] > r_base["burn_area_cm2_s"]
 
 
 @needs_engine

@@ -13,9 +13,12 @@ flame.u_q,0.28,cm/s,fit (+/-0.19) to Link et al. 2018 Sci Rep 8:120 doi:10.1038/
 flame.u_bo,12.6,cm/s,fit (+/-3.9) to Link et al. 2018 Sci Rep 8:120 doi:10.1038/s41598-017-18398-4 Table S1 at X_O2 17-18.9% (blowoff speed likely higher at higher O2),fitted
 flame.n,2.0,-,fixed in fit (blowoff exponent),assumed
 flame.r0_m,0.02,m,ignition patch radius,assumed
-material.cotton.v0,1.0,mm/s,placeholder until BASS/BASS-II,assumed
+material.cotton.v0,6.07,mm/s,fit (+/-0.17) to Zhao T'ien Ferkul Olson 2015 NTRS 20150008962 Fig. 4 (DIGITIZED; 2.2 cm SIBAL cotton-fiberglass; ISS concurrent flow 2.4-10 cm/s; 16.9-21% O2; 1 atm); narrower samples spread slower so wider cabin fabric may be faster,fitted
 material.cotton.smoke_yield,1.0,-,placeholder until SAME,assumed
 material.cotton.r_cap,0.5,m,placeholder max fire radius,assumed
+material.cotton.o2_exponent,2.08,-,fit (+/-0.06) to Zhao T'ien Ferkul Olson 2015 NTRS 20150008962 Fig. 4 (DIGITIZED; 2.2 cm SIBAL cotton-fiberglass; ISS concurrent flow 2.4-10 cm/s; 16.9-21% O2; 1 atm); extrapolated above 21%,fitted
+material.cotton.u_q,12.3,cm/s,fit (+/-0.6) to Zhao T'ien Ferkul Olson 2015 NTRS 20150008962 Fig. 4 (DIGITIZED; 2.2 cm SIBAL cotton-fiberglass; ISS concurrent flow 2.4-10 cm/s; 16.9-21% O2; 1 atm),fitted
+material.cotton.u_bo,1000,cm/s,"effectively no blowoff: NTRS 20150008962 appendix records no blow-off up to 29-53 cm/s at 16.9-18.7% O2 (one 1.2 cm sample blew off at 47 cm/s, 17.2%)",assumed
 material.pmma.v0,0.171,mm/s,fit (+/-0.028) to Link et al. 2018 Sci Rep 8:120 doi:10.1038/s41598-017-18398-4 Table S1 (0.64 cm black PMMA rod; thicker rods spread slower),fitted
 material.pmma.smoke_yield,0.6,-,placeholder until SAME,assumed
 material.pmma.r_cap,0.5,m,placeholder max fire radius,assumed

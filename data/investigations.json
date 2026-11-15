@@ -2,28 +2,64 @@
   {
     "id": "BASS",
     "name": "Burning and Suppression of Solids (BASS, BASS-II)",
-    "objective": "Flame spread vs. O2 and flow",
-    "hardware": "MSG, SPICE flow duct",
+    "objective": "Measure flame spread, growth and extinction over solid materials on the ISS as oxygen concentration and flow speed vary, including low-speed quenching limits",
+    "hardware": "Small flow duct (7.6 cm x 7.6 cm, fan-driven, flow 1-55 cm/s) inside the Microgravity Science Glovebox; nitrogen dilution of the glovebox sets O2",
     "fuel": {
-      "names": [],
+      "names": [
+        "SIBAL cotton-fiberglass fabric (75/25)",
+        "cast black PMMA rods"
+      ],
       "phase": "solid",
-      "shape": null,
-      "size": null
+      "shape": "flat fabric strips (concurrent flow); cylindrical rods (opposed flow)",
+      "size": "fabric 1.2 or 2.2 cm wide x 10 cm; rods 6.4, 9.5, 12.7 mm diameter x 57.2 mm"
     },
     "conditions": {
-      "o2_frac": null,
-      "pressure_atm": null,
-      "diluents": [],
-      "g": 0.0
+      "o2_frac": [
+        0.16,
+        0.21
+      ],
+      "pressure_atm": [
+        1.0,
+        1.0
+      ],
+      "diluents": [
+        "N2"
+      ],
+      "g": 0.0,
+      "flow_cm_s": [
+        0.4,
+        55
+      ]
     },
-    "varied": [],
-    "held_constant": [],
-    "sensors": [],
+    "varied": [
+      "O2 fraction",
+      "flow speed",
+      "sample width or rod diameter",
+      "flow direction (concurrent / opposed)"
+    ],
+    "held_constant": [
+      "1 atm pressure",
+      "microgravity",
+      "flow duct hardware"
+    ],
+    "sensors": [
+      "side-view video camera",
+      "top-view digital still camera",
+      "thermopile radiometer",
+      "hot-wire anemometer"
+    ],
     "pillars": [
       "prevention"
     ],
-    "key_findings": [],
-    "sources": [],
+    "key_findings": [
+      "Concurrent spread over SIBAL fabric slowed at lower flow and lower O2; low-speed quenching occurred between 1 and 5 cm/s, higher at lower O2",
+      "Opposed spread over PMMA rods first increased then decreased with flow, and stopped below 0.6 cm/s",
+      "PMMA spread was sustained down to 17% O2 in microgravity vs 18% in 1 g"
+    ],
+    "sources": [
+      "NTRS-20150008962 (Zhao, T'ien, Ferkul, Olson, 9th US National Combustion Meeting 2015)",
+      "doi:10.1038/s41598-017-18398-4 (Link, Huang, Fernandez-Pello, Olson, Ferkul, Sci. Rep. 8:120, 2018)"
+    ],
     "verified": false
   },
   {
@@ -72,9 +108,9 @@
       "MSG hardware"
     ],
     "sensors": [
-      "P-Trak condensation nuclei counter (zeroth moment, 20 nm to 1 µm)",
+      "P-Trak condensation nuclei counter (zeroth moment, 20 nm to 1 \u00b5m)",
       "ionization chamber from a residential smoke detector (first moment)",
-      "DustTrak light scattering (third moment, 1 µm and 10 µm impactors)",
+      "DustTrak light scattering (third moment, 1 \u00b5m and 10 \u00b5m impactors)",
       "MPASS two-angle scattering sensor, a prototype two-moment detector (SAME-2)",
       "ISS and Space Shuttle smoke detectors",
       "thermal precipitator TEM grids"
