@@ -19,14 +19,14 @@ Core principle: **every number shows how much real data backs it.**
 
 ## What's on `main` now
 
-Merged so far: skeleton, physics engine (PR #3), Envelope Guard (#1), rank and report (#5), data lane (#4), FLEX/BASS-II calibration (#6), witnesses (#7), Red/Blue duel + Ghost Flame + 3D playback (#8), duel routes (#10), `/api/ask` + `/api/gap_map` + gap-map panel (#12), gravity panel (#14), Habitat + Ask EMBER on one page (#15), data verification sheet (#16), and README updates (#9, #11, #13). **55 tests pass** (about 15 s with a warm duel cache, about 80 s cold, because the agent tests run real CMA-ES searches). **Every API route now returns real data**; nothing returns 501. No PRs are open.
+Merged so far: skeleton, physics engine (PR #3), Envelope Guard (#1), rank and report (#5), data lane (#4), FLEX/BASS-II calibration (#6), witnesses (#7), Red/Blue duel + Ghost Flame + 3D playback (#8), duel routes (#10), `/api/ask` + `/api/gap_map` + gap-map panel (#12), gravity panel (#14), Habitat + Ask EMBER on one page (#15), data verification sheet (#16), ranking fixes (#17), and README updates (#9, #11, #13). **59 tests pass** (about 15 s with a warm duel cache, about 80 s cold, because the agent tests run real CMA-ES searches). **Every API route now returns real data**; nothing returns 501. Open: **#18** (Sibi), which applies the DAFT dust bonus only under the detection filter. Until it merges, the overall Moon-base ranking puts DAFT first.
 
 | Component | Status | Owner | Where |
 |---|---|---|---|
 | Physics engine | ✅ Live, calibrated where papers allow | Ruthwik | `backend/ember/sim/` |
 | Envelope Guard (`check`, `distance_to`, `gap_map`) | ✅ Live | Sibi | `backend/ember/envelope/` |
 | Data: conditions, calibration, summaries, witness docs | ✅ 43 condition rows, 57 constants, 5 witness docs | Sibi, Ruthwik | `data/` |
-| Rank + compare | ✅ Live (`/api/rank`, `/api/compare`) | Kishan | `backend/ember/rank/` |
+| Rank + compare | ✅ Live (`/api/rank`, `/api/compare`). Counts flight rows (SAME-R, BASS-II, FLEX-2) under their base investigation and ranks DAFT from its summary conditions (#17) | Kishan, Sibi | `backend/ember/rank/` |
 | Insights report | ✅ Live, including Red's top risks and Blue's fixes from the duel | Kishan | `backend/ember/report/` |
 | Gap map | ✅ `/api/gap_map` route and the gap-map panel on the Habitat page (#12) | Kishan, Sibi | `api.py`, `frontend/src/panels/data/` |
 | Red / Blue duel | ✅ Live: `run_red`, `run_blue`, `run_duel`, and the `/api/duel/run` + `/api/duel/{run_id}` routes (#10). The report uses it too | Kartavya | `backend/ember/agents/` |
@@ -108,7 +108,7 @@ Tests:
 pytest backend/tests -q
 ```
 
-The suite covers contracts, physics behaviour, Envelope Guard (`test_envelope.py`), data-file checks (`test_data.py`), agents (`test_agents.py`), witnesses (`test_witness.py`), the data-lane API routes (`test_api_data_lane.py`) and rank/report. It takes about 80 s on a cold run (the agent tests run real searches) and about 15 s once the duel cache exists. Shared loaders for everything in `data/` live in `backend/ember/data_io.py`, so read constants through `cal("name")` and never hard-code them.
+The suite covers contracts, physics behaviour, Envelope Guard (`test_envelope.py`), data-file checks (`test_data.py`), agents (`test_agents.py`), witnesses (`test_witness.py`), the data-lane API routes (`test_api_data_lane.py`), DAFT ranking (`test_rank_daft.py`) and rank/report. It takes about 80 s on a cold run (the agent tests run real searches) and about 15 s once the duel cache exists. Shared loaders for everything in `data/` live in `backend/ember/data_io.py`, so read constants through `cal("name")` and never hard-code them.
 
 Optional: copy `.env.example` to `.env` and set `ANTHROPIC_API_KEY` to enable live LLM calls (Red seeds, "why" text, witness phrasing). Without it, EMBER uses cached responses (offline mode).
 
@@ -336,7 +336,7 @@ stub:              bool       # true only for placeholder engines
 | `EnvelopeGuard.check(conditions)` | `{badge, distance, nearest, outside_axes}`; accepts a dict, `SimConfig` or `Mission` | Sibi |
 | `EnvelopeGuard.distance_to(mission, row)` | normalized distance from a mission to one tested row (used by ranking) | Sibi |
 | `EnvelopeGuard.gap_map(pressure_kpa, g)` | `{pressure_kpa, g, o2_values, flow_values, cells[i][j], nearest[i][j], counts}` on a 13×13 O₂ (0.15–0.45) × flow (0–30 cm/s) grid | Sibi |
-| `rank(mission, investigations, guard, pillar=None)` | `[{id, score, why}]`, best first. Score = 1/(1 + nearest distance) + 0.2 if fuel phase matches | Kishan |
+| `rank(mission, investigations, guard, pillar=None)` | `[{id, score, why}]`, best first. Score = 1/(1 + nearest distance) + 0.2 if the fuel phase matches + 0.2 dust bonus for DAFT in airlock habitats (Moon, Mars, rover; #18 limits this to `pillar=detection`). Rows labelled `<ID>-…` (e.g. `SAME-R`, `BASS-II`) count toward `<ID>`. Investigations with no rows (DAFT) use the conditions in `investigations.json` | Kishan, Sibi |
 | `compare(a, b)` | `{same: [...], different: [...]}` over hardware, fuel phase, g, pillars, sensors | Kishan |
 | `build_report(mission)` | `{mission, top_investigations, top_risks, recommended_fixes, data_gaps, earth_applications}`. Any section whose lane fails returns `{available: false, reason}` instead of crashing | Kishan |
 | `run_red(base_cfg, budget, seed, llm_cache=None, top_k=5)` | Red's worst scenarios. LLM seeds (cached), else hand-written fallback seeds, refined by CMA-ES on `red_objective(simulate(cfg, frames=False))` | Kartavya |
