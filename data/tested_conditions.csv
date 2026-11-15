@@ -1,0 +1,4 @@
+investigation,test_id,fuel,fuel_phase,o2_frac,pressure_kpa,flow_cm_s,g,measured_outputs,citation,verified
+FLEX,FLEX-001,n-heptane,liquid,0.21,101.3,0.0,0.0,"burn_rate;extinction_d_mm",NTRS-XXXXXXX,false
+SAME-R,SAMER-014,silicone,pyrolysis,0.21,101.3,8.0,0.0,"d_gm_nm;sigma_g;age_s",NTRS-20130000422,false
+GROUND,G-BASS-01,PMMA,solid,0.21,101.3,0.0,1.0,"spread_rate_mm_s",NTRS-XXXXXXX,false

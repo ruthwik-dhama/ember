@@ -15,7 +15,7 @@ Core principle: **every number shows how much real data backs it.**
 | 🟡 Interpolated | Between tested conditions (including **all** partial-g results between the 0 g and 1 g data) |
 | 🔴 Extrapolated | Outside every tested condition |
 
-> **Status (Sun 15 Nov):** the repo is being set up. The skeleton (folders, shared contracts, stub endpoints, CI) lands next. Each lane then fills in its own folder. **Final deadline: tonight, 11:59 PM.**
+> **Status (Sun 15 Nov):** the skeleton is in: folders, shared contracts, CI, and a working app shell. `simulate()` is a **stub** that returns placeholder data in the real contract shape (`"stub": true`), and routes that aren't built yet return HTTP 501 naming their owner. Each lane now fills in its own folder. **Final deadline: tonight, 11:59 PM.**
 
 ---
 
@@ -55,7 +55,7 @@ The O₂ *partial pressure* is almost the same as on Earth, so breathing feels n
 
 ## Quickstart
 
-**Prerequisites:** Python 3.10+ (CI uses 3.11) and Node 18+.
+**Prerequisites:** Python 3.9+ (CI uses 3.11; macOS's built-in `python3` works) and Node 18+.
 
 ```bash
 git clone https://github.com/ruthwik-dhama/ember.git
@@ -88,6 +88,8 @@ Tests:
 ```bash
 pytest backend/tests -q
 ```
+
+Contract tests run now. The physics behaviour tests are skipped until `backend/ember/sim/engine.py` sets `IS_STUB = False`. Shared loaders for everything in `data/` live in `backend/ember/data_io.py`, so read constants through `cal("name")` and never hard-code them.
 
 Optional: copy `.env.example` to `.env` and set `ANTHROPIC_API_KEY` to enable live LLM calls (Red seeds, "why" text, witness phrasing). Without it, EMBER uses cached responses (offline mode).
 

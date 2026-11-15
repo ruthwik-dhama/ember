@@ -1,0 +1,247 @@
+[
+  {
+    "id": "BASS",
+    "name": "Burning and Suppression of Solids (BASS, BASS-II)",
+    "objective": "Flame spread vs. O2 and flow",
+    "hardware": "MSG, SPICE flow duct",
+    "fuel": {
+      "names": [],
+      "phase": "solid",
+      "shape": null,
+      "size": null
+    },
+    "conditions": {
+      "o2_frac": null,
+      "pressure_atm": null,
+      "diluents": [],
+      "g": 0.0
+    },
+    "varied": [],
+    "held_constant": [],
+    "sensors": [],
+    "pillars": [
+      "prevention"
+    ],
+    "key_findings": [],
+    "sources": [],
+    "verified": false
+  },
+  {
+    "id": "SAME",
+    "name": "Smoke Aerosol Measurement Experiment (SAME, SAME-R)",
+    "objective": "Smoke particle sizes, aging, detector response",
+    "hardware": "MSG",
+    "fuel": {
+      "names": [],
+      "phase": "pyrolysis",
+      "shape": null,
+      "size": null
+    },
+    "conditions": {
+      "o2_frac": null,
+      "pressure_atm": null,
+      "diluents": [],
+      "g": 0.0
+    },
+    "varied": [],
+    "held_constant": [],
+    "sensors": [],
+    "pillars": [
+      "detection"
+    ],
+    "key_findings": [],
+    "sources": [],
+    "verified": false
+  },
+  {
+    "id": "DAFT",
+    "name": "Dust and Aerosol measurement Feasibility Test (DAFT, DAFT-2)",
+    "objective": "Dust signature, false-alarm discrimination",
+    "hardware": "Shared aerosol instrumentation",
+    "fuel": {
+      "names": [],
+      "phase": "dust",
+      "shape": null,
+      "size": null
+    },
+    "conditions": {
+      "o2_frac": null,
+      "pressure_atm": null,
+      "diluents": [],
+      "g": 0.0
+    },
+    "varied": [],
+    "held_constant": [],
+    "sensors": [],
+    "pillars": [
+      "detection"
+    ],
+    "key_findings": [],
+    "sources": [],
+    "verified": false
+  },
+  {
+    "id": "FLEX",
+    "name": "Flame Extinguishment Experiment",
+    "objective": "Study droplet combustion and extinction, including suppression by diluents",
+    "hardware": "MDCA in the Combustion Integrated Rack",
+    "fuel": {
+      "names": [
+        "n-heptane",
+        "methanol"
+      ],
+      "phase": "liquid",
+      "shape": "free-floating droplet",
+      "size": "1.5 to 5.0 mm initial diameter"
+    },
+    "conditions": {
+      "o2_frac": [
+        0.1,
+        0.4
+      ],
+      "pressure_atm": [
+        0.7,
+        3.0
+      ],
+      "diluents": [
+        "N2",
+        "CO2",
+        "He"
+      ],
+      "g": 0.0
+    },
+    "varied": [
+      "initial droplet diameter",
+      "O2 fraction",
+      "pressure",
+      "diluent"
+    ],
+    "held_constant": [
+      "hardware",
+      "microgravity"
+    ],
+    "sensors": [
+      "backlit droplet camera",
+      "orthogonal flame camera",
+      "radiometers"
+    ],
+    "pillars": [
+      "suppression"
+    ],
+    "key_findings": [
+      "Cool flame burning after visible extinction for large heptane droplets"
+    ],
+    "sources": [
+      "doi:10.1007/s12217-014-9372-2"
+    ],
+    "verified": false
+  },
+  {
+    "id": "CFI",
+    "name": "Cool Flames Investigation",
+    "objective": "Cool flame behavior",
+    "hardware": "MDCA in CIR",
+    "fuel": {
+      "names": [],
+      "phase": "liquid",
+      "shape": null,
+      "size": null
+    },
+    "conditions": {
+      "o2_frac": null,
+      "pressure_atm": null,
+      "diluents": [],
+      "g": 0.0
+    },
+    "varied": [],
+    "held_constant": [],
+    "sensors": [],
+    "pillars": [
+      "suppression"
+    ],
+    "key_findings": [],
+    "sources": [],
+    "verified": false
+  },
+  {
+    "id": "ACME",
+    "name": "Advanced Combustion via Microgravity Experiments",
+    "objective": "Material flammability in still air, high-O2 tests, pseudo-gravity via E-field",
+    "hardware": "ACME in CIR",
+    "fuel": {
+      "names": [],
+      "phase": "gas",
+      "shape": null,
+      "size": null
+    },
+    "conditions": {
+      "o2_frac": null,
+      "pressure_atm": null,
+      "diluents": [],
+      "g": 0.0
+    },
+    "varied": [],
+    "held_constant": [],
+    "sensors": [],
+    "pillars": [
+      "prevention"
+    ],
+    "key_findings": [],
+    "sources": [],
+    "verified": false
+  },
+  {
+    "id": "SPICE",
+    "name": "Smoke Point In Co-flow Experiment",
+    "objective": "Smoke point",
+    "hardware": "MSG, SPICE flow duct",
+    "fuel": {
+      "names": [],
+      "phase": "gas",
+      "shape": null,
+      "size": null
+    },
+    "conditions": {
+      "o2_frac": null,
+      "pressure_atm": null,
+      "diluents": [],
+      "g": 0.0
+    },
+    "varied": [],
+    "held_constant": [],
+    "sensors": [],
+    "pillars": [
+      "prevention"
+    ],
+    "key_findings": [],
+    "sources": [],
+    "verified": false
+  },
+  {
+    "id": "SLICE",
+    "name": "Structure and Liftoff In Combustion Experiment",
+    "objective": "Flame liftoff",
+    "hardware": "MSG, SPICE flow duct",
+    "fuel": {
+      "names": [],
+      "phase": "gas",
+      "shape": null,
+      "size": null
+    },
+    "conditions": {
+      "o2_frac": null,
+      "pressure_atm": null,
+      "diluents": [],
+      "g": 0.0
+    },
+    "varied": [],
+    "held_constant": [],
+    "sensors": [],
+    "pillars": [
+      "prevention"
+    ],
+    "key_findings": [],
+    "sources": [],
+    "verified": false
+  }
+]

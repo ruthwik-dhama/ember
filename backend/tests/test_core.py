@@ -1,0 +1,93 @@
+# AI-assisted: drafted with Claude (Anthropic); see README "Use of AI".
+"""Core tests. Each test states its setup. If real data contradicts one, that's a finding to discuss, not a bug to hide.
+
+Contract tests run now. Behaviour tests switch on automatically when sim/engine.py sets IS_STUB = False.
+"""
+from dataclasses import replace
+
+import pytest
+from fastapi.testclient import TestClient
+
+from ember.agents.ghost_flame import ghost_flame_check
+from ember.agents.red_team import T_MAX, red_objective
+from ember.api import app
+from ember.config import Detector, DustEvent, FireSpec, SimConfig
+from ember.sim import engine
+from ember.sim.engine import RESULT_KEYS, simulate
+from ember.sim.flame import buoyant_velocity, effective_flow
+
+needs_engine = pytest.mark.skipif(engine.IS_STUB, reason="enable when the physics engine lands (Ruthwik)")
+
+
+def fire(material="cotton", phase="solid", **kw):
+    return FireSpec(material=material, phase=phase, x=3.0, y=2.0, z=0.5, **kw)
+
+
+def ceiling_det(kind="single"):
+    return Detector(id="ceil", x=3.0, y=2.0, z=2.4, kind=kind)
+
+
+# ---- contract tests (run now) ----------------------------------------------
+def test_config_defaults_are_moon_base():
+    c = SimConfig()
+    assert (c.o2_frac, c.pressure_kpa, c.g) == (0.30, 70.3, 0.165)
+
+
+def test_simulate_returns_contract_keys():
+    r = simulate(SimConfig(fires=[fire()], detectors=[ceiling_det()]))
+    assert set(RESULT_KEYS) <= set(r)
+    assert set(r["conditions"]) == {"o2_frac", "pressure_kpa", "flow_cm_s", "g"}
+    assert all(len(v) == 5 for fr in r["frames"] for v in fr["voxels"])
+
+
+def test_no_fire_is_not_detected():
+    r = simulate(SimConfig(detectors=[ceiling_det()]))
+    assert r["detected"] is False and r["delay_s"] is None
+
+
+def test_api_health_and_simulate():
+    c = TestClient(app)
+    assert c.get("/api/health").json()["ok"]
+    body = {"fires": [{"material": "cotton", "phase": "solid", "x": 3, "y": 2, "z": 0.5}],
+            "detectors": [{"id": "d1", "x": 3, "y": 2, "z": 2.4}]}
+    r = c.post("/api/simulate", json=body).json()
+    assert set(RESULT_KEYS) <= set(r) and r["envelope"]["badge"] in ("green", "yellow", "red")
+    assert c.get("/api/rank").status_code == 501
+
+
+def test_gravity_scaling():
+    assert buoyant_velocity(0.0, 1.0) == 0.0
+    assert buoyant_velocity(0.165, 1.0) == pytest.approx(0.548, abs=0.005)
+    assert buoyant_velocity(0.38, 1.0) == pytest.approx(0.724, abs=0.005)
+    assert effective_flow(3.0, 0.0, 1.0) == pytest.approx(3.0)
+
+
+def test_red_objective_tiebreak_for_undetected():
+    small = {"detected": False, "fire_area_cm2": 10.0, "smoke_escaped": 0.0}
+    big = {"detected": False, "fire_area_cm2": 500.0, "smoke_escaped": 0.0}
+    assert T_MAX < red_objective(small) < red_objective(big)
+
+
+def test_ghost_flame_not_applicable_to_solids():
+    assert ghost_flame_check(fire("cotton"), {}, {})["applicable"] is False
+
+
+# ---- behaviour tests (need the real engine) --------------------------------
+@needs_engine
+def test_more_oxygen_spreads_faster():
+    base = SimConfig(o2_frac=0.21, g=0.0, fires=[fire()], detectors=[ceiling_det()])
+    rich = replace(base, o2_frac=0.30)
+    assert simulate(rich)["fire_area_cm2"] > simulate(base)["fire_area_cm2"]
+
+
+@needs_engine
+def test_lower_g_detects_later_with_ceiling_detector_and_vents_off():
+    # Setup matters: with strong vent flow and a detector at the return, 0 g can detect sooner.
+    cfg = SimConfig(vent_on=False, fires=[fire()], detectors=[ceiling_det()])
+    assert simulate(replace(cfg, g=0.165))["delay_s"] > simulate(replace(cfg, g=1.0))["delay_s"]
+
+
+@needs_engine
+def test_two_moment_rejects_dust():
+    cfg = SimConfig(dust=[DustEvent(t_s=5, mass_mg=50)], detectors=[Detector("d1", 1, 1, 2, kind="two_moment")])
+    assert simulate(cfg)["detected"] is False

@@ -1,0 +1,10 @@
+name,value,unit,source,status
+bass.pmma.v0,0.0,mm/s,NTRS-XXXXXXX,assumed
+flame.o2_exponent,0.0,-,fit:BASS-II,fitted
+engine.smoke_scale,0.0,-,SAME-R,assumed
+engine.diffusivity,0.0,m2/s,SAME,assumed
+engine.vent_speed,0.0,m/s,habitat-spec,assumed
+detector.single.threshold,0.0,-,SAME,assumed
+smoke.d0_nm,300,nm,NTRS-20130000422,measured
+dust.mass_mg,0.0,mg,DAFT,assumed
+suppress.co2_extinction_frac,0.0,-,FLEX,measured
