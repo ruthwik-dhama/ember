@@ -7,12 +7,15 @@ cool_flame_envelope, source) come from Ruthwik's FLEX extraction.
 """
 from __future__ import annotations
 
+from ..data_io import cal, load_calibration
+
 
 def ghost_params() -> dict:
-    """FLEX regime (README 5.3). PLACEHOLDER until Ruthwik's FLEX rows land in calibration.csv."""
-    return {"cool_flame_fuels": ["n-heptane"], "critical_d_mm": 2.4,
-            "cool_flame_envelope": {"o2_frac": (0.1, 0.4), "pressure_kpa": (70.9, 303.9)},
-            "source": "FLEX: Nayagam et al., doi:10.1007/s12217-014-9372-2"}
+    """FLEX cool-flame regime from data/calibration.csv (ghost.* rows, Ruthwik's FLEX extraction)."""
+    return {"cool_flame_fuels": ["n-heptane"], "critical_d_mm": cal("ghost.critical_d_mm"),
+            "cool_flame_envelope": {"o2_frac": (cal("ghost.o2_min"), cal("ghost.o2_max")),
+                                    "pressure_kpa": (cal("ghost.p_min_kpa"), cal("ghost.p_max_kpa"))},
+            "source": load_calibration()["ghost.critical_d_mm"]["source"]}
 
 
 def in_range(conditions: dict, envelope: dict) -> bool:

@@ -31,10 +31,12 @@ def test_run_red_returns_valid_worst_scenario():
 
 def test_ghost_flame_liquid_in_regime_vs_small_droplet():
     fire = FireSpec("n-heptane", "liquid", 1, 1, 0.1, droplet_d_mm=3.0)
-    cond = {"o2_frac": 0.3, "pressure_kpa": 101.3}
+    cond = {"o2_frac": 0.21, "pressure_kpa": 101.3}  # inside the FLEX cool-flame envelope
     assert ghost_flame_check(fire, cond, ghost_params())["false_all_clear"] is True
     fire.droplet_d_mm = 1.5
     assert ghost_flame_check(fire, cond, ghost_params())["false_all_clear"] is False
+    fire.droplet_d_mm = 3.0  # Moon base 30% O2 is outside the tested cool-flame range: not claimed
+    assert ghost_flame_check(fire, {**cond, "o2_frac": 0.30}, ghost_params())["false_all_clear"] is False
 
 
 def test_duel_shape_and_cache_roundtrip():
