@@ -18,6 +18,7 @@ from .envelope.guard import EnvelopeGuard
 from .rank import compare, rank
 from .report import DUEL_ROUNDS, DUEL_SEED, build_report
 from .sim.engine import simulate
+from .sim.materials import PHASES
 
 app = FastAPI(title="EMBER")
 guard = EnvelopeGuard()
@@ -31,6 +32,12 @@ def todo(lane: str):
 @app.get("/api/health")
 def health():
     return {"ok": True, "room_m": ROOM_M, "gravity_presets": GRAVITY_PRESETS}
+
+
+@app.get("/api/mission")
+def api_get_mission():
+    """Current mission plus the materials the simulator knows (name -> phase), for the Mission setup screen."""
+    return {"mission": asdict(state["mission"]), "materials": PHASES}
 
 
 @app.post("/api/mission")
