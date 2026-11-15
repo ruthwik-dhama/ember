@@ -19,7 +19,7 @@ Core principle: **every number shows how much real data backs it.**
 
 ## What's on `main` now
 
-Merged so far: skeleton, physics engine (PR #3), Envelope Guard (#1), rank and report (#5), data lane (#4), and FLEX/BASS-II calibration (#6). **37 tests pass.**
+Merged so far: skeleton, physics engine (PR #3), Envelope Guard (#1), rank and report (#5), data lane (#4), FLEX/BASS-II calibration (#6), witnesses (#7), and Red/Blue duel + Ghost Flame + 3D playback (#8). **51 tests pass** (about 80 s; the agent tests run real CMA-ES searches). Open: #10 wires the duel routes.
 
 | Component | Status | Owner | Where |
 |---|---|---|---|
@@ -27,12 +27,12 @@ Merged so far: skeleton, physics engine (PR #3), Envelope Guard (#1), rank and r
 | Envelope Guard (`check`, `distance_to`, `gap_map`) | ✅ Live | Sibi | `backend/ember/envelope/` |
 | Data: conditions, calibration, summaries, witness docs | ✅ 43 condition rows, 57 constants, 5 witness docs | Sibi, Ruthwik | `data/` |
 | Rank + compare | ✅ Live (`/api/rank`, `/api/compare`) | Kishan | `backend/ember/rank/` |
-| Insights report | ✅ Live. Risk/fix sections say "not built yet" until the duel exists | Kishan | `backend/ember/report/` |
+| Insights report | ✅ Live, including Red's top risks and Blue's fixes from the duel | Kishan | `backend/ember/report/` |
 | `/api/gap_map` route | ⏳ 501. `guard.gap_map()` works; the route isn't wired to it yet | Kishan | `backend/ember/api.py` |
-| Red / Blue duel | ⏳ 501 (`run_red`, `run_blue`, `run_duel` are stubs) | Kartavya | `backend/ember/agents/` |
-| Ghost Flame Auditor | ✅ `ghost_flame_check()` works with `sim.suppression.ghost_flame_params()` | Kartavya | `agents/ghost_flame.py` |
-| Witnesses / Ask EMBER | ⏳ 501 (`witness.ask` is a stub) | Sibi | `agents/witness.py` |
-| Frontend | 🟡 Shell: 6 tabs, explorer and simulate wired; other screens are placeholders | Kishan, Kartavya, Ruthwik, Sibi | `frontend/src/` |
+| Red / Blue duel | ✅ Built (`run_red`, `run_blue`, `run_duel`); the report uses it. ⏳ `/api/duel/*` routes still 501 on `main`; PR #10 wires them | Kartavya | `backend/ember/agents/` |
+| Ghost Flame Auditor | ✅ `ghost_flame_check()` + `ghost_params()` (reads the `ghost.*` FLEX rows); runs inside the duel | Kartavya | `agents/ghost_flame.py` |
+| Witnesses / Ask EMBER | ✅ Built: offline cited retrieval, optional Claude phrasing, 15-question eval. ⏳ `/api/ask` still 501 (route needs `ask_ember()`) | Sibi | `agents/witness.py` |
+| Frontend | 🟡 6 tabs. Explorer wired; Habitat screen plays simulation frames in 3D and has a "Run duel" panel (works once #10 merges). Mission, Ranking, Ask and Report screens are placeholders | Kishan, Kartavya, Ruthwik, Sibi | `frontend/src/` |
 | Gravity panel | ⏳ Placeholder (`gravity_sweep()` is ready in the backend) | Ruthwik | `frontend/src/panels/gravity/` |
 | `metrics.py` | ⏳ Writes `deck_numbers.json` with null values only | Kishan | `backend/scripts/` |
 
@@ -108,7 +108,7 @@ Tests:
 pytest backend/tests -q
 ```
 
-The suite covers contracts, physics behaviour, Envelope Guard (`test_envelope.py`), data-file checks (`test_data.py`) and rank/report, and should take about 6 s. Shared loaders for everything in `data/` live in `backend/ember/data_io.py`, so read constants through `cal("name")` and never hard-code them.
+The suite covers contracts, physics behaviour, Envelope Guard (`test_envelope.py`), data-file checks (`test_data.py`), agents (`test_agents.py`), witnesses (`test_witness.py`) and rank/report. It takes about 80 s because the agent tests run real searches. Shared loaders for everything in `data/` live in `backend/ember/data_io.py`, so read constants through `cal("name")` and never hard-code them.
 
 Optional: copy `.env.example` to `.env` and set `ANTHROPIC_API_KEY` to enable live LLM calls (Red seeds, "why" text, witness phrasing). Without it, EMBER uses cached responses (offline mode).
 
@@ -338,7 +338,14 @@ stub:              bool       # true only for placeholder engines
 | `EnvelopeGuard.gap_map(pressure_kpa, g)` | `{pressure_kpa, g, o2_values, flow_values, cells[i][j], nearest[i][j], counts}` on a 13×13 O₂ (0.15–0.45) × flow (0–30 cm/s) grid | Sibi |
 | `rank(mission, investigations, guard, pillar=None)` | `[{id, score, why}]`, best first. Score = 1/(1 + nearest distance) + 0.2 if fuel phase matches | Kishan |
 | `compare(a, b)` | `{same: [...], different: [...]}` over hardware, fuel phase, g, pillars, sensors | Kishan |
-| `build_report(mission)` | `{mission, top_investigations, top_risks, recommended_fixes, data_gaps, earth_applications}`. Sections whose lane isn't built return `{available: false, reason}` | Kishan |
+| `build_report(mission)` | `{mission, top_investigations, top_risks, recommended_fixes, data_gaps, earth_applications}`. Any section whose lane fails returns `{available: false, reason}` instead of crashing | Kishan |
+| `run_red(base_cfg, budget, seed, llm_cache=None, top_k=5)` | Red's worst scenarios. LLM seeds (cached), else hand-written fallback seeds, refined by CMA-ES on `red_objective(simulate(cfg, frames=False))` | Kartavya |
+| `run_blue(red_worst, base_cfg, budget, seed)` | CMA-ES over detector positions, vent shutoff time and suppressant against Red's worst scenario | Kartavya |
+| `run_duel(base_cfg, rounds, seed, red_budget=60, blue_budget=60)` | Red attacks the layout Blue left each round; Envelope Guard and Ghost Flame run on the results; only the last round carries voxel frames. Deterministic id per input, cached by `save_duel` / `load_duel` | Kartavya |
+| `ghost_params()` | Ghost Flame regime from the `ghost.*` rows in `calibration.csv` | Kartavya |
+| `witness.ask(question, investigation_id=None)` | `[{witness, answer, citations: [{n, source, fact}], facts, score, mode}]`, best witness first; empty list = no cited data | Sibi |
+| `witness.ask_ember(question)` | `{question, answers, mode}`: the intended `POST /api/ask` body | Sibi |
+| `witness.evaluate()` | witness accuracy and citation rate on `data/witness_eval.json` (offline, no LLM) | Sibi |
 | `gravity_sweep(cfg)` | `{iss\|moon\|mars\|earth: {g, detected, delay_s, spread_rate_mm_s, partial_g}}` | Ruthwik |
 | `ghost_flame_params()` | `{cool_flame_fuels, critical_d_mm, cool_flame_envelope, source}` for `ghost_flame_check()` | Ruthwik |
 | `suppression.limiting_o2(agent, material)` | FLEX limiting O₂ for that fuel, else the generic (extrapolated) value | Ruthwik |
@@ -356,11 +363,11 @@ Known placeholder: `envelope/guard.py` assumes `DEFAULT_FLOW_CM_S = 10.0` becaus
 | GET | `/api/compare?a=&b=` | Kishan | Compare | ✅ |
 | GET | `/api/rank?pillar=` | Kishan | Ranking | ✅ |
 | POST | `/api/simulate` | Kishan (engine: Ruthwik) | Habitat | ✅ adds `envelope` badge |
-| POST | `/api/duel/run` | Kishan (agents: Kartavya) | Habitat / duel panel | ⏳ 501 |
-| GET | `/api/duel/{run_id}` | Kishan | Duel panel | ⏳ 501 |
-| POST | `/api/ask` | Kishan (witnesses: Sibi) | Ask EMBER | ⏳ 501 |
+| POST | `/api/duel/run` | Kishan (agents: Kartavya) | Habitat / duel panel | ⏳ 501 on `main`; PR #10 wires it to `run_duel` |
+| GET | `/api/duel/{run_id}` | Kishan | Duel panel | ⏳ 501 on `main`; PR #10 returns the cached run or 404 |
+| POST | `/api/ask` | Kishan (witnesses: Sibi) | Ask EMBER | ⏳ 501 (wire to `witness.ask_ember`) |
 | GET | `/api/gap_map` | Kishan (guard: Sibi) | Gap map | ⏳ 501 (wire to `guard.gap_map()`) |
-| GET | `/api/report` | Kishan | Report | ✅ partial until the duel exists |
+| GET | `/api/report` | Kishan | Report | ✅ runs the duel (cached after the first call) |
 
 ## Frontend screens (user flow)
 
@@ -412,6 +419,8 @@ suppress.co2.n-heptane,0.17,-,Dietrich et al. 2014 ...: LOI 0.17 (0.17/0.63/0.20
 
 **`witness_docs/<ID>.md`**: one file per investigation with 5–15 facts, each with a real citation in brackets. Witnesses retrieve only from their own file and drop any uncited claim. Files so far: `ACME.md`, `BASS.md`, `DAFT.md`, `FLEX.md`, `SAME.md`.
 
+**`witness_eval.json`**: Sibi's 15 eval questions, each with the expected witness and the phrase that answers it. Used by `witness.evaluate()` and `metrics.py`.
+
 **Investigations in scope:** BASS / BASS-II (solid flame spread vs. O₂ and flow, prevention); SAME / SAME-R (smoke particle size and aging, detection); DAFT / DAFT-2 (dust signature, false alarms); FLEX / FLEX-2 and CFI (droplet extinction, cool flames, suppression); ACME (gaseous flames, high-O₂ tests); SPICE / SLICE (smoke point, liftoff); 1 g ground references (upper bound for gravity interpolation).
 
 ## Scientific honesty rules
@@ -453,8 +462,8 @@ suppress.co2.n-heptane,0.17,-,Dietrich et al. 2014 ...: LOI 0.17 (0.17/0.63/0.20
 
 ## Demo reliability
 
-- **Precomputed duel:** the live duel takes about 50 s, so cache the results as JSON.
-- **Offline mode:** cached LLM responses for Red seeds, "why" text and witness answers, in case venue Wi-Fi fails.
+- **Precomputed duel:** `run_duel` caches each run in `backend/ember/agents/cache/duel_<id>.json`, keyed by its inputs. ⚠️ Those files are **gitignored**, so the cache only exists on the machine that ran the duel. **Run the demo mission's duel (or open the report) once on the demo laptop before presenting.**
+- **Offline mode:** works without a key or Wi-Fi. Red falls back to hand-written seeds (LLM seeds cache to `agents/cache/red_seeds.json` when a key is set), and witnesses return the cited facts directly (Claude phrasing caches to `data/llm_cache/witness.json`). Neither cache is committed yet.
 - **Validation:** LLM scenario output is schema-checked before use (material exists, coordinates inside the room, fuel phase matches the material).
 - **Payload size:** sparse voxels, about 2 frames per second of simulated time.
 
