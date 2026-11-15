@@ -19,13 +19,13 @@ Core principle: **every number shows how much real data backs it.**
 
 ## What's on `main` now
 
-Merged so far: skeleton, physics engine (PR #3), Envelope Guard (#1), rank and report (#5), data lane (#4), FLEX/BASS-II calibration (#6), witnesses (#7), Red/Blue duel + Ghost Flame + 3D playback (#8), duel routes (#10), `/api/ask` + `/api/gap_map` + gap-map panel (#12), gravity panel (#14), Habitat + Ask EMBER on one page (#15), data verification sheet (#16), ranking fixes (#17, #18), deck metrics (#19), BASS-II verification (#20), Ghost Flame demo (#21), click-to-place fire (#22), vents/airflow/airlock in 3D (#23), Red search fixes + `red_vs_random` (#24), real BRE and SAME-1 test points (#25), engine severity signals + `physics_metrics()` + sourced vent speed and CO₂ dilution (#26), and README updates (#9, #11, #13). **68 tests pass** (about 15 s with a warm duel cache, about 80 s cold, because the agent tests run real CMA-ES searches). **Every API route now returns real data**; nothing returns 501. Open: **#27** (Ruthwik): cotton spread calibrated from BASS fabric data (digitized), BASS summary and sources, 4 more verified rows, BASS-II pressure confirmed. No PRs are open.
+Merged so far: skeleton, physics engine (PR #3), Envelope Guard (#1), rank and report (#5), data lane (#4), FLEX/BASS-II calibration (#6), witnesses (#7), Red/Blue duel + Ghost Flame + 3D playback (#8), duel routes (#10), `/api/ask` + `/api/gap_map` + gap-map panel (#12), gravity panel (#14), Habitat + Ask EMBER on one page (#15), data verification sheet (#16), ranking fixes (#17, #18), deck metrics (#19), BASS-II verification (#20), Ghost Flame demo (#21), click-to-place fire (#22), vents/airflow/airlock in 3D (#23), Red search fixes + `red_vs_random` (#24), real BRE and SAME-1 test points (#25), engine severity signals + `physics_metrics()` + sourced vent speed and CO₂ dilution (#26), cotton calibrated from BASS fabric data + BASS summary + BASS-II pressure confirmed (#27), and README updates (#9, #11, #13). **69 tests pass** (about 15 s with a warm duel cache, about 80 s cold, because the agent tests run real CMA-ES searches). **Every API route now returns real data**; nothing returns 501. No PRs are open. No PRs are open.
 
 | Component | Status | Owner | Where |
 |---|---|---|---|
 | Physics engine | ✅ Live, calibrated where papers allow | Ruthwik | `backend/ember/sim/` |
 | Envelope Guard (`check`, `distance_to`, `gap_map`) | ✅ Live | Sibi | `backend/ember/envelope/` |
-| Data: conditions, calibration, summaries, witness docs | ✅ 44 condition rows (**41 verified**), 57 constants, 5 witness docs | Sibi, Ruthwik | `data/` |
+| Data: conditions, calibration, summaries, witness docs | ✅ 48 condition rows (**45 verified**), 60 constants, 5 witness docs | Sibi, Ruthwik | `data/` |
 | Rank + compare | ✅ Live (`/api/rank`, `/api/compare`). Counts flight rows (SAME-R, BASS-II, FLEX-2) under their base investigation and ranks DAFT from its summary conditions (#17) | Kishan, Sibi | `backend/ember/rank/` |
 | Insights report | ✅ Live, including Red's top risks and Blue's fixes from the duel | Kishan | `backend/ember/report/` |
 | Gap map | ✅ `/api/gap_map` route and the gap-map panel on the Habitat page (#12) | Kishan, Sibi | `api.py`, `frontend/src/panels/data/` |
@@ -170,12 +170,12 @@ This is a **reduced-order model** calibrated to PSI data, not CFD. Smoke and dus
 |---|---|---|
 | `engine.py` | 0.25 m grid over `ROOM_M` (24×16×10). Vent flow runs from the inlet wall to the return wall, and smoke leaving the return counts as `smoke_escaped`. Buoyancy applies to smoke only; dust doesn't rise. Smoke pools under the no-flux ceiling. The step size is set automatically for numerical stability. | SAME-R smoke size and aging (Sibi's fit); vent speed cited (~0.1 m/s, Link et al. 2018); mixing still `assumed` |
 | `flame.py` | Spread rate with the BASS-II fit. Below `flame.u_ext` = 0.6 cm/s there is no spread. The quench term uses forced + buoyant flow, and blowoff uses **forced flow only**, matching BASS-II's 1 g data. | BASS-II ISS Table S1 (PMMA rods) |
-| `materials.py` | Cotton, PMMA, n-heptane and methanol. Values come from `calibration.csv` rows `material.<name>.{v0, smoke_yield, r_cap}`. | PMMA `v0` fitted; the rest `assumed` |
+| `materials.py` | Cotton, PMMA, n-heptane and methanol. Values come from `calibration.csv` rows `material.<name>.{v0, smoke_yield, r_cap}`, plus optional per-material flame overrides `material.<name>.{o2_exponent, u_q, u_bo, n}` | PMMA `v0` fitted to BASS-II rods; cotton `v0`, O₂ exponent and `u_q` fitted to BASS fabric (digitized, #27); smoke yields, `r_cap` and liquid spread `assumed` |
 | `suppression.py` | The agent floods the cabin `suppress.response_s` after the first alarm. The fire goes out if diluted O₂ is below FLEX's **per-fuel** limiting O₂. Solids fall back to the heptane value, which is an extrapolation. `ghost_flame_params()` feeds the Ghost Flame Auditor. | FLEX LOI values; cutoff and envelope from NASA Glenn JR12-009 and Nayagam et al. 2014 |
 | `sweeps.py` | `gravity_sweep(cfg)` runs the same fire at ISS / Moon / Mars / Earth g. | — |
 
 **Known findings from the team's own runs** (simulation behaviour, not deck numbers):
-- **Don't claim "Red beats random" yet** (#24). After Kartavya's fixes Red reliably finds the worst fire, but random search with the same budget finds an equally bad one. The objective saturates: every undetected fire grows to its material's maximum size (`r_cap`) and scores the same, so nothing separates them. Cotton hits its cap fastest (its spread rate is fitted to BASS fabric data in #27; before that it was a placeholder multiplied by PMMA's steep O₂ fit). Since #26 the engine also reports signals that keep growing after full size (`burn_area_cm2_s`, `smoke_produced`, `t_full_size_s`). Among undetected fires they vary 10–15% within a material where `red_objective` is flat. **`red_objective` doesn't use them yet**; that's Kartavya's call.
+- **Don't claim "Red beats random" yet** (#24). After Kartavya's fixes Red reliably finds the worst fire, but random search with the same budget finds an equally bad one. The objective saturates: every undetected fire grows to its material's maximum size (`r_cap`) and scores the same, so nothing separates them. Cotton hits its cap fastest (its spread rate is now fitted to BASS fabric data, #27). Since #26 the engine also reports signals that keep growing after full size (`burn_area_cm2_s`, `smoke_produced`, `t_full_size_s`). Among undetected fires they vary 10–15% within a material where `red_objective` is flat. **`red_objective` doesn't use them yet**; that's Kartavya's call.
 - **The Ghost Flame overrule only fires inside FLEX's measured cool-flame range** (14–25% O₂, 0.5–1 atm). At Moon-base 30% O₂ it correctly makes no cool-flame claim, so the demo uses a dedicated liquid-fuel scenario at 21% O₂ (#21).
 
 **What the papers have shown so far** (measured values, not simulation outputs):
@@ -401,12 +401,12 @@ investigation,test_id,fuel,fuel_phase,o2_frac,pressure_kpa,flow_cm_s,g,measured_
 FLEX,FLEX-LOI-HEP-CO2,n-heptane,liquid,0.17,101.3,0.0,0.0,limiting_oxygen_index;co2_frac=0.20,doi:10.1007/s12217-014-9372-2,true
 ```
 
-- `verified=false` until the owner has checked the row against the source. **41 of 44 rows are verified** (FLEX 6, FLEX-2 4, BASS-II 6, SAME-R 12, SAME 3, ACME 10). Only the 3 GROUND rows are not.
+- `verified=false` until the owner has checked the row against the source. **45 of 48 rows are verified** (FLEX 6, FLEX-2 4, BASS-II 6 + SIBAL fabric 4, SAME-R 12, SAME 3, ACME 10). Only the 3 GROUND rows are not.
 - `data/VERIFICATION.md` (Sibi) records, per row group, what each source confirms and what was inferred. It also records the team rule **"ISS cabin nominal = 0.21 O₂ / 101.3 kPa"** for tests whose papers don't state the atmosphere (accepted for SAME, SAME-R and DAFT, and extended to BASS-II **pressure only** in section 8, since BASS-II measured O₂ per test).
 - `g` is in Earth-g units (0, 0.165, 0.38, 1.0).
 - No placeholder citations remain. `test_data.py` checks this for the data lane's rows.
 
-**Current coverage (44 rows):**
+**Current coverage (48 rows):**
 
 | Investigation | Rows | What they cover | Owner |
 |---|---|---|---|
@@ -416,11 +416,12 @@ FLEX,FLEX-LOI-HEP-CO2,n-heptane,liquid,0.17,101.3,0.0,0.0,limiting_oxygen_index;
 | FLEX | 6 | heptane/methanol limiting-O₂ conditions (air, CO₂, He), 1 atm | Ruthwik |
 | FLEX-2 | 4 | n-decane cool-flame tests at **0.5 atm**, 14–25% O₂ | Ruthwik |
 | BASS-II | 6 | ISS PMMA spread, 17–20.7% O₂, 0.7–7.6 cm/s | Ruthwik |
+| BASS / BASS-II (SIBAL) | 4 | cotton-fiberglass fabric, concurrent flow 4–11 cm/s, 17.1–21% O₂, 1 atm (#27) | Ruthwik |
 | GROUND | 3 | BASS-II 1 g PMMA references | Ruthwik |
 
-**Open data gaps:** only the 3 GROUND rows are unverified (1 g UC Berkeley lab, so the ISS cabin rule can't cover their pressure). `VERIFICATION.md` group 7 (Sibi's SAME-2 calibration fits) is not signed off yet. Section 8 notes that BASS-II Table S1 labels half its spread rates mm/s when they're cm/s; the PMMA fit uses cm/s. BASS, CFI, SPICE and SLICE have no `sources` in `investigations.json` yet, and DAFT has a summary and witness doc but no condition rows. Solid flame-spread data (BASS-II) stops at 21% O₂, so spread rates at 30% are an extrapolation of the fit even though the pooled envelope badges them 🟡.
+**Open data gaps:** only the 3 GROUND rows are unverified (1 g UC Berkeley lab, so the ISS cabin rule can't cover their pressure). `VERIFICATION.md` group 7 (Sibi's SAME-2 calibration fits) is not signed off yet. Section 8 notes that BASS-II Table S1 labels half its spread rates mm/s when they're cm/s; the PMMA fit uses cm/s. CFI, SPICE and SLICE have no `sources` in `investigations.json` yet (BASS was filled in #27), and DAFT has a summary and witness doc but no condition rows. Solid flame-spread data (BASS-II) stops at 21% O₂, so spread rates at 30% are an extrapolation of the fit even though the pooled envelope badges them 🟡.
 
-**`calibration.csv`**: the single source of truth for every physical constant in the simulator. `status` is `measured`, `fitted` or `assumed`, and the UI and deck badges are generated from it. Currently 57 constants: **22 measured, 7 fitted, 28 assumed.** The `assumed` ones are mostly mixing, cotton and liquid spread rates, detector thresholds, dust values and the CO₂ cabin dilution (sourced but rack-scale).
+**`calibration.csv`**: the single source of truth for every physical constant in the simulator. `status` is `measured`, `fitted` or `assumed`, and the UI and deck badges are generated from it. Currently 60 constants: **22 measured, 10 fitted, 28 assumed.** The `assumed` ones are mostly mixing, liquid spread rates, smoke yields, detector thresholds, dust values and the CO₂ cabin dilution (sourced but rack-scale).
 
 ```csv
 name,value,unit,source,status
