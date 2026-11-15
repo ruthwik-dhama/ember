@@ -19,7 +19,7 @@ Core principle: **every number shows how much real data backs it.**
 
 ## What's on `main` now
 
-Merged so far: skeleton, physics engine (PR #3), Envelope Guard (#1), rank and report (#5), data lane (#4), FLEX/BASS-II calibration (#6), witnesses (#7), and Red/Blue duel + Ghost Flame + 3D playback (#8). **51 tests pass** (about 80 s; the agent tests run real CMA-ES searches). Open: #10 wires the duel routes.
+Merged so far: skeleton, physics engine (PR #3), Envelope Guard (#1), rank and report (#5), data lane (#4), FLEX/BASS-II calibration (#6), witnesses (#7), Red/Blue duel + Ghost Flame + 3D playback (#8), duel routes (#10), and README updates (#9, #11). **52 tests pass** (about 15 s with a warm duel cache, about 80 s cold, because the agent tests run real CMA-ES searches). Open: **#12** (Sibi) wires `/api/ask` and `/api/gap_map` and adds the gap-map panel.
 
 | Component | Status | Owner | Where |
 |---|---|---|---|
@@ -28,11 +28,11 @@ Merged so far: skeleton, physics engine (PR #3), Envelope Guard (#1), rank and r
 | Data: conditions, calibration, summaries, witness docs | ✅ 43 condition rows, 57 constants, 5 witness docs | Sibi, Ruthwik | `data/` |
 | Rank + compare | ✅ Live (`/api/rank`, `/api/compare`) | Kishan | `backend/ember/rank/` |
 | Insights report | ✅ Live, including Red's top risks and Blue's fixes from the duel | Kishan | `backend/ember/report/` |
-| `/api/gap_map` route | ⏳ 501. `guard.gap_map()` works; the route isn't wired to it yet | Kishan | `backend/ember/api.py` |
-| Red / Blue duel | ✅ Built (`run_red`, `run_blue`, `run_duel`); the report uses it. ⏳ `/api/duel/*` routes still 501 on `main`; PR #10 wires them | Kartavya | `backend/ember/agents/` |
+| `/api/gap_map` route | ⏳ 501 on `main`. `guard.gap_map()` works; PR #12 wires the route | Kishan, Sibi | `backend/ember/api.py` |
+| Red / Blue duel | ✅ Live: `run_red`, `run_blue`, `run_duel`, and the `/api/duel/run` + `/api/duel/{run_id}` routes (#10). The report uses it too | Kartavya | `backend/ember/agents/` |
 | Ghost Flame Auditor | ✅ `ghost_flame_check()` + `ghost_params()` (reads the `ghost.*` FLEX rows); runs inside the duel | Kartavya | `agents/ghost_flame.py` |
-| Witnesses / Ask EMBER | ✅ Built: offline cited retrieval, optional Claude phrasing, 15-question eval. ⏳ `/api/ask` still 501 (route needs `ask_ember()`) | Sibi | `agents/witness.py` |
-| Frontend | 🟡 6 tabs. Explorer wired; Habitat screen plays simulation frames in 3D and has a "Run duel" panel (works once #10 merges). Mission, Ranking, Ask and Report screens are placeholders | Kishan, Kartavya, Ruthwik, Sibi | `frontend/src/` |
+| Witnesses / Ask EMBER | ✅ Built: offline cited retrieval, optional Claude phrasing, 15-question eval. ⏳ `/api/ask` still 501 on `main`; PR #12 wires it to `ask_ember()` | Sibi | `agents/witness.py` |
+| Frontend | 🟡 6 tabs. Explorer wired; Habitat screen plays simulation frames in 3D and has a working "Run duel" panel. PR #12 adds the gap-map panel. Mission, Ranking, Ask and Report screens are placeholders | Kishan, Kartavya, Ruthwik, Sibi | `frontend/src/` |
 | Gravity panel | ⏳ Placeholder (`gravity_sweep()` is ready in the backend) | Ruthwik | `frontend/src/panels/gravity/` |
 | `metrics.py` | ⏳ Writes `deck_numbers.json` with null values only | Kishan | `backend/scripts/` |
 
@@ -108,7 +108,7 @@ Tests:
 pytest backend/tests -q
 ```
 
-The suite covers contracts, physics behaviour, Envelope Guard (`test_envelope.py`), data-file checks (`test_data.py`), agents (`test_agents.py`), witnesses (`test_witness.py`) and rank/report. It takes about 80 s because the agent tests run real searches. Shared loaders for everything in `data/` live in `backend/ember/data_io.py`, so read constants through `cal("name")` and never hard-code them.
+The suite covers contracts, physics behaviour, Envelope Guard (`test_envelope.py`), data-file checks (`test_data.py`), agents (`test_agents.py`), witnesses (`test_witness.py`) and rank/report. It takes about 80 s on a cold run (the agent tests run real searches) and about 15 s once the duel cache exists. Shared loaders for everything in `data/` live in `backend/ember/data_io.py`, so read constants through `cal("name")` and never hard-code them.
 
 Optional: copy `.env.example` to `.env` and set `ANTHROPIC_API_KEY` to enable live LLM calls (Red seeds, "why" text, witness phrasing). Without it, EMBER uses cached responses (offline mode).
 
@@ -363,10 +363,10 @@ Known placeholder: `envelope/guard.py` assumes `DEFAULT_FLOW_CM_S = 10.0` becaus
 | GET | `/api/compare?a=&b=` | Kishan | Compare | ✅ |
 | GET | `/api/rank?pillar=` | Kishan | Ranking | ✅ |
 | POST | `/api/simulate` | Kishan (engine: Ruthwik) | Habitat | ✅ adds `envelope` badge |
-| POST | `/api/duel/run` | Kishan (agents: Kartavya) | Habitat / duel panel | ⏳ 501 on `main`; PR #10 wires it to `run_duel` |
-| GET | `/api/duel/{run_id}` | Kishan | Duel panel | ⏳ 501 on `main`; PR #10 returns the cached run or 404 |
-| POST | `/api/ask` | Kishan (witnesses: Sibi) | Ask EMBER | ⏳ 501 (wire to `witness.ask_ember`) |
-| GET | `/api/gap_map` | Kishan (guard: Sibi) | Gap map | ⏳ 501 (wire to `guard.gap_map()`) |
+| POST | `/api/duel/run` | Kishan (agents: Kartavya) | Habitat / duel panel | ✅ returns `{run_id, rounds, top_risks, recommended_fixes}` |
+| GET | `/api/duel/{run_id}` | Kishan | Duel panel | ✅ cached run, or 404 for an unknown id |
+| POST | `/api/ask` | Kishan (witnesses: Sibi) | Ask EMBER | ⏳ 501 on `main`; PR #12 wires it to `witness.ask_ember` |
+| GET | `/api/gap_map` | Kishan (guard: Sibi) | Gap map | ⏳ 501 on `main`; PR #12 wires it to `guard.gap_map()` |
 | GET | `/api/report` | Kishan | Report | ✅ runs the duel (cached after the first call) |
 
 ## Frontend screens (user flow)
