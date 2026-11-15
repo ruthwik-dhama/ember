@@ -108,9 +108,9 @@
       "MSG hardware"
     ],
     "sensors": [
-      "P-Trak condensation nuclei counter (zeroth moment, 20 nm to 1 \u00b5m)",
+      "P-Trak condensation nuclei counter (zeroth moment, 20 nm to 1 µm)",
       "ionization chamber from a residential smoke detector (first moment)",
-      "DustTrak light scattering (third moment, 1 \u00b5m and 10 \u00b5m impactors)",
+      "DustTrak light scattering (third moment, 1 µm and 10 µm impactors)",
       "MPASS two-angle scattering sensor, a prototype two-moment detector (SAME-2)",
       "ISS and Space Shuttle smoke detectors",
       "thermal precipitator TEM grids"
@@ -123,8 +123,7 @@
       "Unaged diameter of average mass ranged from 101 nm (Kapton) to 465 nm (silicone); after 720 s of aging it ranged from 161 nm to 619 nm.",
       "Teflon and Kapton smoke was very small, which makes it hard for light-scattering detectors like the ISS detector to see.",
       "Diameter of average mass was 30 to 40% larger in zero-flow tests than in flow tests, so smoke trapped in an enclosure is larger than smoke in ventilated areas.",
-      "The two-moment MPASS sensor cut the relative variance of its response by at least a factor of 2 versus a single-output sensor, which can separate a lot of smoke from a little large dust.",
-      "Across materials, the diameter of average mass increased on average by a factor of 1.7 in low gravity."
+      "The two-moment MPASS sensor cut the relative variance of its response by at least a factor of 2 versus a single-output sensor, which can separate a lot of smoke from a little large dust."
     ],
     "sources": [
       "NTRS-20130000422 (Urban et al., AIAA 2012-3536)",
@@ -133,7 +132,7 @@
       "doi:10.1080/02786826.2015.1025125 (Yang et al., Aerosol Sci. Technol. 49, 2015)",
       "https://www.nist.gov/node/1863886 (SAME final report)"
     ],
-    "verified": false
+    "verified": true
   },
   {
     "id": "DAFT",
@@ -159,7 +158,7 @@
       "g": 0.0
     },
     "varied": [
-      "sampling location (US Lab and Node)",
+      "sampling location (two locations in the Lab, and the Node)",
       "aerosol source (undisturbed air, Velcro separation, reference dust)"
     ],
     "held_constant": [
@@ -181,9 +180,10 @@
     ],
     "sources": [
       "NTRS-20070031686 (Urban, Ruff, Sheredy, Funk, ISDC 2007)",
-      "NTRS-20050215648 (Sheredy, NASA Research and Technology 2004)"
+      "NTRS-20050215648 (Sheredy, NASA Research and Technology 2004)",
+      "NTRS-20130000422 (Urban et al., AIAA 2012-3536: P-Trak condenser modified with small grooves, validated in a separate space experiment)"
     ],
-    "verified": false
+    "verified": true
   },
   {
     "id": "FLEX",
@@ -339,7 +339,7 @@
       "hdl:1903/29303 (Dehghani, UMD dissertation, 2022)",
       "hdl:1903/27484 (Wright, UMD thesis, 2021; Appendix B test tables)"
     ],
-    "verified": false
+    "verified": true
   },
   {
     "id": "SPICE",

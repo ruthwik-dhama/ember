@@ -176,3 +176,23 @@ above 21% O₂ the fit is an extrapolation. Concurrent fabric spread rises with 
 why cotton has its own flame parameters instead of sharing `flame.*`.
 
 - [ ] Second reader: re-digitize Fig. 4 independently and check the 7 points (±0.05 mm/s)
+
+## 9. Investigation summaries in `investigations.json`: SAME, DAFT, ACME (owner: Sibi)
+
+Every field of the three summary objects (objective, hardware, fuel, conditions, varied, held constant, sensors,
+findings, sources) was checked against the full sources already read for §1–5: S2 text and Table 1, TM, DA slides,
+AC, DE Table 3.1, WR Appendix B.
+
+| Change | Why |
+|---|---|
+| **Removed** the SAME finding "the diameter of average mass increased on average by a factor of 1.7 in low gravity" (also from `witness_docs/SAME.md`) | The Yang et al. (2015) abstract says only "increased on average by a factor of 1.7" and doesn't name the baseline. The sentence before it is about zero external flow, so "in low gravity" was an unsupported reading. The confirmed zero-flow effect (D30 30–40% larger, S2 §4) is already a finding. |
+| DAFT sampling locations: "US Lab and Node" → "two locations in the Lab, and the Node" | DA slide 26 wording |
+| DAFT sources: added S2 | The P-Trak condenser grooves and their separate space test come from S2 §II.B, not the DAFT slides |
+
+Not changed, but worth knowing:
+- SAME and DAFT conditions use the section 0 cabin-air rule (the summaries say so in `diluents`).
+- ACME `conditions.flow_cm_s = 0` describes BRE (still chamber). The other ACME studies (coflow, gas-jet) used burner flows.
+- The investigation name "DAFT, DAFT-2" is the team's scope label. DA calls the flight runs "DAFT 1-2" and "DAFT 3-4" (Expeditions 10 and 13), not two separately named flights.
+
+- [x] Sign off SAME, DAFT and ACME summaries: `verified: true`. Signed off by Sibi, 15 Nov 2026.
+- [ ] BASS and FLEX summaries: Ruthwik's paper split. CFI, SPICE, SLICE: no data yet.
