@@ -114,3 +114,27 @@ The aging law `d = d0 (1 + t/τ)^(1/3)` is the design doc's assumed form, not S2
 720 s, so τ is fitted to two points per material.
 
 - [ ] Sign off group 7
+
+## 8. BASS-II on the ISS: `BASSII-*` (owner: Ruthwik)
+
+Source **BL**: Link, Huang, Fernandez-Pello, Olson, Ferkul (2018), *The Effect of Gravity on Flame Spread over PMMA
+Cylinders*, Sci. Rep. 8:120, doi:10.1038/s41598-017-18398-4 (full text and supplementary Table S1 read; table checked
+against a rendered image of the page, not only extracted text).
+
+| Field | Value | Status | Passage (BL) |
+|---|---|---|---|
+| Fuel | PMMA, solid | ✅ confirmed | Methods: "rods of cast black PMMA with diameters of 6.4, 9.5, and 12.7 mm"; Table S1: "B ... means black" |
+| g | 0.0 | ✅ confirmed | Table S1 title: "microgravity data in International Space Station" |
+| O₂ fraction per row | 0.207, 0.189, 0.182, 0.175, 0.170 | ✅ confirmed | Table S1 X_O2 column (B13a 20.7, B6 18.9, B16 18.2, B19 17.5, B10 17.0 %); Fig. 7 caption: O₂ uncertainty ±0.3% |
+| Flow per row | 1.64, 2.00, 7.55, 0.72, 1.67, 2.00 cm/s | ✅ confirmed | Table S1 V_g column for the same samples |
+| Output | spread rate | ✅ confirmed | Table S1 V_f column; methods: "flame spread rate was measured by tracking the flame leading edge" |
+| Pressure | 101.3 kPa | ⚠️ inferred | Not stated. The duct fan draws from and exhausts to the MSG work volume ("combustion products exit the duct and mix with the gas in the work volume"), so pressure is taken as ISS cabin nominal under the section 0 rule. O₂ is **not** inferred: it was set per test and is measured in Table S1 |
+
+Note on units: in Table S1 the left half labels V_f "×10³ (cm/s)" and the right half (0.64 cm rods) "×10³ (mm/s)".
+The values are cm/s in both halves. With cm/s, 0.64 cm rods in microgravity spread faster than the 1 g Table S2 values
+below 19% O₂, which is what the paper states ("below X_O2 = 19% the flame spread becomes faster in microgravity").
+With mm/s they would be about 10× slower, contradicting it. `calibration.csv` (material.pmma.v0 and the flame fit) uses cm/s.
+
+- [x] Extend the section 0 rule to BASS-II **pressure only** (MSG work volume at ISS cabin nominal). Accepted by Ruthwik, 15 Nov 2026.
+- [x] Sign off group 8: 6 rows marked `verified=true` (`BASSII-B13a`, `-B6`, `-B16-hi`, `-B16-lo`, `-B19`, `-B10`)
+- [ ] `G-BASSII-*` (1 g, UC Berkeley flow duct, Table S2) stay `verified=false`: lab pressure isn't stated, and the ISS cabin rule doesn't apply to a ground lab
