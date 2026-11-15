@@ -63,7 +63,7 @@ from 2 to 8 cm/s." Its flight run log names the flow for three runs, so the rows
 Other fields: g = 0 ✅ (MSG on ISS, Expedition 15); O₂ / pressure by the section 0 rule ✅. Teflon and silicone rubber
 rows were dropped because the run log doesn't give their flow.
 
-- [ ] Sign off group 3: 3 rows, every field read from TM (O₂/pressure by section 0)
+- [x] Sign off group 3: 3 rows marked `verified=true` (every field read from TM; O₂/pressure by section 0). Signed off by Sibi, 15 Nov 2026.
 
 ## 4–5. ACME / BRE: rows replaced with real ISS test points from Wright (2021) Appendix B
 
@@ -93,7 +93,7 @@ Worth knowing for the pitch: 10.2 psia is the planned Moon base / rover pressure
 were "nominal NASA selected atmospheres … 21 % oxygen and 1 bar, 26.5% and 0.7 bar and 34 % and 0.565 bar". The Moon
 base mission (0.30 O₂, 70.3 kPa) sits right next to `BRE-20261J1` (0.29, 70.3 kPa); it is still 🟡 only because of g.
 
-- [ ] Sign off groups 4–5: 10 rows, every field read from WR Appendix B (no inference)
+- [x] Sign off groups 4–5: 10 rows marked `verified=true` (every field read from WR Appendix B, cross-checked against DE Table 3.1 for round 1; no inference). Signed off by Sibi, 15 Nov 2026.
 
 ## 6. DAFT: no condition rows (by design)
 

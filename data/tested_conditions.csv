@@ -30,16 +30,16 @@ SAME-R,SAMER-KAPT-02,Kapton,pyrolysis,0.21,101.3,2.0,0.0,d10_nm;d30_nm;d_gm_nm;s
 SAME-R,SAMER-KAPT-00,Kapton,pyrolysis,0.21,101.3,0.0,0.0,d10_nm;d30_nm;d_gm_nm;sigma_g,NTRS-20130000422,true
 SAME-R,SAMER-CELL-02,cellulose lampwick,pyrolysis,0.21,101.3,2.0,0.0,d10_nm;d30_nm;d_gm_nm;sigma_g,NTRS-20130000422,true
 SAME-R,SAMER-CELL-00,cellulose lampwick,pyrolysis,0.21,101.3,0.0,0.0,d10_nm;d30_nm;d_gm_nm;sigma_g,NTRS-20130000422,true
-SAME,SAME1-DIBU-08,dibutyl phthalate,pyrolysis,0.21,101.3,8.0,0.0,d10_nm;d30_nm;age_s,"Yang et al. SAME NASA TM 2010 (NIST pub 904707) run log, run 37",false
-SAME,SAME1-KAPT-02,Kapton,pyrolysis,0.21,101.3,2.0,0.0,d10_nm;d30_nm;age_s,"Yang et al. SAME NASA TM 2010 (NIST pub 904707) run log, run 33",false
-SAME,SAME1-CELL-02,cellulose lampwick,pyrolysis,0.21,101.3,2.0,0.0,d10_nm;d30_nm;age_s,"Yang et al. SAME NASA TM 2010 (NIST pub 904707) run log, run 34",false
-ACME,BRE-19039H2,ethylene (emulated solid; 25 mm burner),gas,0.18,101.3,0.0,0.0,extinction_time_s;oscillation_onset_s;flame_height_mm,hdl:1903/27484 Table B.1 (14.7 psia),false
-ACME,BRE-20358B1,ethylene (emulated solid; 25 mm burner),gas,0.39,101.3,0.0,0.0,extinction_time_s;oscillation_onset_s;flame_height_mm,hdl:1903/27484 Table B.1 (14.7 psia),false
-ACME,BRE-19056G1,ethylene 50% in N2 (emulated solid; 25 mm burner),gas,0.24,70.3,0.0,0.0,extinction_time_s;oscillation_onset_s;flame_height_mm,hdl:1903/27484 Table B.1 (10.2 psia),false
-ACME,BRE-20261J1,ethylene (emulated solid; 25 mm burner),gas,0.29,70.3,0.0,0.0,extinction_time_s;oscillation_onset_s;flame_height_mm,hdl:1903/27484 Table B.1 (10.2 psia),false
-ACME,BRE-19051G1,ethylene (emulated solid; 25 mm burner),gas,0.3,56.5,0.0,0.0,extinction_time_s;oscillation_onset_s;flame_height_mm,hdl:1903/27484 Table B.1 (8.2 psia),false
-ACME,BRE-19094H1,ethylene (emulated solid; 25 mm burner),gas,0.35,56.5,0.0,0.0,extinction_time_s;oscillation_onset_s;flame_height_mm,hdl:1903/27484 Table B.1 (8.2 psia),false
-ACME,BRE-20247K1,ethylene (emulated solid; 50 mm burner),gas,0.23,101.3,0.0,0.0,extinction_time_s;oscillation_onset_s;flame_height_mm,hdl:1903/27484 Table B.2 (14.7 psia),false
-ACME,BRE-20247B1,ethylene (emulated solid; 50 mm burner),gas,0.37,101.3,0.0,0.0,extinction_time_s;oscillation_onset_s;flame_height_mm,hdl:1903/27484 Table B.2 (14.7 psia),false
-ACME,BRE-20279J6,methane (emulated solid; 25 mm burner),gas,0.24,101.3,0.0,0.0,extinction_time_s;oscillation_onset_s;flame_height_mm,hdl:1903/27484 Table B.3 (14.7 psia),false
-ACME,BRE-20279B1,methane (emulated solid; 25 mm burner),gas,0.39,101.3,0.0,0.0,extinction_time_s;oscillation_onset_s;flame_height_mm,hdl:1903/27484 Table B.3 (14.7 psia),false
+SAME,SAME1-DIBU-08,dibutyl phthalate,pyrolysis,0.21,101.3,8.0,0.0,d10_nm;d30_nm;age_s,"Yang et al. SAME NASA TM 2010 (NIST pub 904707) run log, run 37",true
+SAME,SAME1-KAPT-02,Kapton,pyrolysis,0.21,101.3,2.0,0.0,d10_nm;d30_nm;age_s,"Yang et al. SAME NASA TM 2010 (NIST pub 904707) run log, run 33",true
+SAME,SAME1-CELL-02,cellulose lampwick,pyrolysis,0.21,101.3,2.0,0.0,d10_nm;d30_nm;age_s,"Yang et al. SAME NASA TM 2010 (NIST pub 904707) run log, run 34",true
+ACME,BRE-19039H2,ethylene (emulated solid; 25 mm burner),gas,0.18,101.3,0.0,0.0,extinction_time_s;oscillation_onset_s;flame_height_mm,hdl:1903/27484 Table B.1 (14.7 psia),true
+ACME,BRE-20358B1,ethylene (emulated solid; 25 mm burner),gas,0.39,101.3,0.0,0.0,extinction_time_s;oscillation_onset_s;flame_height_mm,hdl:1903/27484 Table B.1 (14.7 psia),true
+ACME,BRE-19056G1,ethylene 50% in N2 (emulated solid; 25 mm burner),gas,0.24,70.3,0.0,0.0,extinction_time_s;oscillation_onset_s;flame_height_mm,hdl:1903/27484 Table B.1 (10.2 psia),true
+ACME,BRE-20261J1,ethylene (emulated solid; 25 mm burner),gas,0.29,70.3,0.0,0.0,extinction_time_s;oscillation_onset_s;flame_height_mm,hdl:1903/27484 Table B.1 (10.2 psia),true
+ACME,BRE-19051G1,ethylene (emulated solid; 25 mm burner),gas,0.3,56.5,0.0,0.0,extinction_time_s;oscillation_onset_s;flame_height_mm,hdl:1903/27484 Table B.1 (8.2 psia),true
+ACME,BRE-19094H1,ethylene (emulated solid; 25 mm burner),gas,0.35,56.5,0.0,0.0,extinction_time_s;oscillation_onset_s;flame_height_mm,hdl:1903/27484 Table B.1 (8.2 psia),true
+ACME,BRE-20247K1,ethylene (emulated solid; 50 mm burner),gas,0.23,101.3,0.0,0.0,extinction_time_s;oscillation_onset_s;flame_height_mm,hdl:1903/27484 Table B.2 (14.7 psia),true
+ACME,BRE-20247B1,ethylene (emulated solid; 50 mm burner),gas,0.37,101.3,0.0,0.0,extinction_time_s;oscillation_onset_s;flame_height_mm,hdl:1903/27484 Table B.2 (14.7 psia),true
+ACME,BRE-20279J6,methane (emulated solid; 25 mm burner),gas,0.24,101.3,0.0,0.0,extinction_time_s;oscillation_onset_s;flame_height_mm,hdl:1903/27484 Table B.3 (14.7 psia),true
+ACME,BRE-20279B1,methane (emulated solid; 25 mm burner),gas,0.39,101.3,0.0,0.0,extinction_time_s;oscillation_onset_s;flame_height_mm,hdl:1903/27484 Table B.3 (14.7 psia),true
