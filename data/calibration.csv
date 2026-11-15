@@ -1,10 +1,38 @@
 name,value,unit,source,status
-bass.pmma.v0,0.0,mm/s,NTRS-XXXXXXX,assumed
-flame.o2_exponent,0.0,-,fit:BASS-II,fitted
-engine.smoke_scale,0.0,-,SAME-R,assumed
-engine.diffusivity,0.0,m2/s,SAME,assumed
-engine.vent_speed,0.0,m/s,habitat-spec,assumed
-detector.single.threshold,0.0,-,SAME,assumed
-smoke.d0_nm,300,nm,NTRS-20130000422,measured
-dust.mass_mg,0.0,mg,DAFT,assumed
-suppress.co2_extinction_frac,0.0,-,FLEX,measured
+engine.dx_m,0.25,m,model choice (coarse grid so optimizers can run hundreds of sims),assumed
+engine.vent_speed,0.10,m/s,habitat-spec placeholder (cabin ventilation order of 0.1 m/s),assumed
+engine.diffusivity,0.01,m2/s,placeholder until calibrated vs SAME mixing-dominated transport,assumed
+engine.w_b_earth,0.15,m/s,placeholder smoke rise speed at 1 g; scaled by g^(1/3),assumed
+engine.u_b_earth,30.0,cm/s,placeholder flame-zone buoyant velocity at 1 g; fit vs BASS ground vs flight,assumed
+engine.smoke_scale,1.0,-,placeholder until calibrated vs SAME-R,assumed
+engine.frame_dt_s,2.0,s,payload limit (1 frame per 2 s of sim time keeps a 300 s run near 4 MB; interpolate in 3D),assumed
+engine.frame_min_conc,0.02,-,payload limit (sparse voxels; 0.4x single-detector threshold),assumed
+flame.x_ref,0.21,-,reference O2 mole fraction (Earth air),measured
+flame.o2_exponent,1.0,-,placeholder until fit to BASS-II,assumed
+flame.u_q,2.0,cm/s,placeholder low-flow quench scale until BASS,assumed
+flame.u_bo,100.0,cm/s,placeholder blowoff scale until BASS,assumed
+flame.n,2.0,-,placeholder blowoff exponent,assumed
+flame.r0_m,0.02,m,ignition patch radius,assumed
+material.cotton.v0,1.0,mm/s,placeholder until BASS/BASS-II,assumed
+material.cotton.smoke_yield,1.0,-,placeholder until SAME,assumed
+material.cotton.r_cap,0.5,m,placeholder max fire radius,assumed
+material.pmma.v0,0.5,mm/s,placeholder until BASS/BASS-II,assumed
+material.pmma.smoke_yield,0.6,-,placeholder until SAME,assumed
+material.pmma.r_cap,0.5,m,placeholder max fire radius,assumed
+material.n-heptane.v0,5.0,mm/s,placeholder (liquid pool spread) until FLEX,assumed
+material.n-heptane.smoke_yield,0.8,-,placeholder,assumed
+material.n-heptane.r_cap,0.15,m,placeholder max pool radius,assumed
+material.methanol.v0,4.0,mm/s,placeholder (liquid pool spread) until FLEX,assumed
+material.methanol.smoke_yield,0.1,-,placeholder (methanol is nearly sootless),assumed
+material.methanol.r_cap,0.15,m,placeholder max pool radius,assumed
+detector.single.threshold,0.05,-,placeholder until SAME detector response,assumed
+detector.two_moment.threshold,0.05,-,placeholder until SAME detector response,assumed
+detector.two_moment.size_cut_nm,1000,nm,smoke hundreds of nm vs regolith dust microns,assumed
+smoke.d0_nm,300,nm,NTRS-20130000422 (SAME-R most average sizes 200-400 nm),measured
+smoke.tau_s,300,s,placeholder aging time scale; calibrate to SAME-R aging 11-1800 s,assumed
+dust.d_nm,3000,nm,placeholder regolith dust size until DAFT,assumed
+dust.conc_per_mg,0.01,-/mg,placeholder dust obscuration per mg released until DAFT,assumed
+suppress.co2_extinction_frac,0.16,-,placeholder limiting O2 fraction with CO2 until FLEX (droplet-scale),assumed
+suppress.he_extinction_frac,0.14,-,placeholder limiting O2 fraction with He until FLEX (droplet-scale),assumed
+suppress.dilution_frac,0.40,-,placeholder O2 dilution from cabin flooding,assumed
+suppress.response_s,10.0,s,placeholder delay from first alarm to suppressant release,assumed

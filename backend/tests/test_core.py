@@ -91,3 +91,21 @@ def test_lower_g_detects_later_with_ceiling_detector_and_vents_off():
 def test_two_moment_rejects_dust():
     cfg = SimConfig(dust=[DustEvent(t_s=5, mass_mg=50)], detectors=[Detector("d1", 1, 1, 2, kind="two_moment")])
     assert simulate(cfg)["detected"] is False
+
+
+@needs_engine
+def test_single_detector_false_alarms_on_dust_near_airlock():
+    # Setup: dust-only puff, detector 0.5 m downstream of the airlock. Single can't tell dust from smoke.
+    cfg = SimConfig(dust=[DustEvent(t_s=5, mass_mg=50)], detectors=[Detector("d1", 1.0, 2.0, 1.0)])
+    assert simulate(cfg, frames=False)["detected"] is True
+    cfg.detectors[0].kind = "two_moment"
+    assert simulate(cfg, frames=False)["detected"] is False
+
+
+@needs_engine
+def test_gravity_sweep_order_vents_off_ceiling_detector():
+    # Setup: vents off, ceiling detector straight above a cotton fire. Partial-g values are interpolated (yellow).
+    from ember.sim.sweeps import gravity_sweep
+    s = gravity_sweep(SimConfig(vent_on=False, fires=[fire()], detectors=[ceiling_det()]))
+    assert s["earth"]["delay_s"] < s["mars"]["delay_s"] < s["moon"]["delay_s"]
+    assert s["moon"]["partial_g"] and not s["earth"]["partial_g"]
