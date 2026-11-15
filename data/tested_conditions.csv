@@ -18,18 +18,18 @@ BASS-II,BASSII-B10,PMMA,solid,0.17,101.3,2.0,0.0,spread_rate_mm_s,doi:10.1038/s4
 GROUND,G-BASSII-209-25,PMMA,solid,0.209,101.3,25.0,1.0,spread_rate_mm_s,doi:10.1038/s41598-017-18398-4 Table S2,false
 GROUND,G-BASSII-209-2,PMMA,solid,0.209,101.3,2.0,1.0,spread_rate_mm_s,doi:10.1038/s41598-017-18398-4 Table S2,false
 GROUND,G-BASSII-180-2,PMMA,solid,0.18,101.3,2.0,1.0,spread_rate_mm_s,doi:10.1038/s41598-017-18398-4 Table S2,false
-SAME-R,SAMER-TEFL-08,Teflon,pyrolysis,0.21,101.3,8.0,0.0,d10_nm;d30_nm;d_gm_nm;sigma_g;age_s,NTRS-20130000422,false
-SAME-R,SAMER-KAPT-08,Kapton,pyrolysis,0.21,101.3,8.0,0.0,d10_nm;d30_nm;d_gm_nm;sigma_g;age_s,NTRS-20130000422,false
-SAME-R,SAMER-PYRE-08,Pyrell,pyrolysis,0.21,101.3,8.0,0.0,d10_nm;d30_nm;d_gm_nm;sigma_g;age_s,NTRS-20130000422,false
-SAME-R,SAMER-SILI-08,silicone rubber,pyrolysis,0.21,101.3,8.0,0.0,d10_nm;d30_nm;d_gm_nm;sigma_g;age_s,NTRS-20130000422,false
-SAME-R,SAMER-CELL-08,cellulose lampwick,pyrolysis,0.21,101.3,8.0,0.0,d10_nm;d30_nm;d_gm_nm;sigma_g;age_s,NTRS-20130000422,false
-SAME-R,SAMER-DIBU-08,dibutyl phthalate,pyrolysis,0.21,101.3,8.0,0.0,d10_nm;d30_nm;d_gm_nm;sigma_g;age_s,NTRS-20130000422,false
-SAME-R,SAMER-TEFL-02,Teflon,pyrolysis,0.21,101.3,2.0,0.0,d10_nm;d30_nm;d_gm_nm;sigma_g,NTRS-20130000422,false
-SAME-R,SAMER-TEFL-00,Teflon,pyrolysis,0.21,101.3,0.0,0.0,d10_nm;d30_nm;d_gm_nm;sigma_g,NTRS-20130000422,false
-SAME-R,SAMER-KAPT-02,Kapton,pyrolysis,0.21,101.3,2.0,0.0,d10_nm;d30_nm;d_gm_nm;sigma_g,NTRS-20130000422,false
-SAME-R,SAMER-KAPT-00,Kapton,pyrolysis,0.21,101.3,0.0,0.0,d10_nm;d30_nm;d_gm_nm;sigma_g,NTRS-20130000422,false
-SAME-R,SAMER-CELL-02,cellulose lampwick,pyrolysis,0.21,101.3,2.0,0.0,d10_nm;d30_nm;d_gm_nm;sigma_g,NTRS-20130000422,false
-SAME-R,SAMER-CELL-00,cellulose lampwick,pyrolysis,0.21,101.3,0.0,0.0,d10_nm;d30_nm;d_gm_nm;sigma_g,NTRS-20130000422,false
+SAME-R,SAMER-TEFL-08,Teflon,pyrolysis,0.21,101.3,8.0,0.0,d10_nm;d30_nm;d_gm_nm;sigma_g;age_s,NTRS-20130000422,true
+SAME-R,SAMER-KAPT-08,Kapton,pyrolysis,0.21,101.3,8.0,0.0,d10_nm;d30_nm;d_gm_nm;sigma_g;age_s,NTRS-20130000422,true
+SAME-R,SAMER-PYRE-08,Pyrell,pyrolysis,0.21,101.3,8.0,0.0,d10_nm;d30_nm;d_gm_nm;sigma_g;age_s,NTRS-20130000422,true
+SAME-R,SAMER-SILI-08,silicone rubber,pyrolysis,0.21,101.3,8.0,0.0,d10_nm;d30_nm;d_gm_nm;sigma_g;age_s,NTRS-20130000422,true
+SAME-R,SAMER-CELL-08,cellulose lampwick,pyrolysis,0.21,101.3,8.0,0.0,d10_nm;d30_nm;d_gm_nm;sigma_g;age_s,NTRS-20130000422,true
+SAME-R,SAMER-DIBU-08,dibutyl phthalate,pyrolysis,0.21,101.3,8.0,0.0,d10_nm;d30_nm;d_gm_nm;sigma_g;age_s,NTRS-20130000422,true
+SAME-R,SAMER-TEFL-02,Teflon,pyrolysis,0.21,101.3,2.0,0.0,d10_nm;d30_nm;d_gm_nm;sigma_g,NTRS-20130000422,true
+SAME-R,SAMER-TEFL-00,Teflon,pyrolysis,0.21,101.3,0.0,0.0,d10_nm;d30_nm;d_gm_nm;sigma_g,NTRS-20130000422,true
+SAME-R,SAMER-KAPT-02,Kapton,pyrolysis,0.21,101.3,2.0,0.0,d10_nm;d30_nm;d_gm_nm;sigma_g,NTRS-20130000422,true
+SAME-R,SAMER-KAPT-00,Kapton,pyrolysis,0.21,101.3,0.0,0.0,d10_nm;d30_nm;d_gm_nm;sigma_g,NTRS-20130000422,true
+SAME-R,SAMER-CELL-02,cellulose lampwick,pyrolysis,0.21,101.3,2.0,0.0,d10_nm;d30_nm;d_gm_nm;sigma_g,NTRS-20130000422,true
+SAME-R,SAMER-CELL-00,cellulose lampwick,pyrolysis,0.21,101.3,0.0,0.0,d10_nm;d30_nm;d_gm_nm;sigma_g,NTRS-20130000422,true
 SAME,SAME1-TEFL-08,Teflon,pyrolysis,0.21,101.3,8.0,0.0,d10_nm;d30_nm;age_s,doi:10.4271/2009-01-2468,false
 SAME,SAME1-KAPT-08,Kapton,pyrolysis,0.21,101.3,8.0,0.0,d10_nm;d30_nm;age_s,doi:10.4271/2009-01-2468,false
 SAME,SAME1-CELL-08,cellulose,pyrolysis,0.21,101.3,8.0,0.0,d10_nm;d30_nm;age_s,doi:10.4271/2009-01-2468,false

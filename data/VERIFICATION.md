@@ -19,7 +19,7 @@ None of the SAME, DAFT or BRE sources states the O₂ fraction or pressure of th
 O₂ = 0.21 and 101.3 kPa (ISS cabin nominal, about 14.7 psi). SAME ran in the MSG and DAFT sampled open cabin air,
 so cabin air is the reasonable reading, but it is an inference.
 
-- [ ] Accept "ISS cabin nominal = 0.21 / 101.3 kPa" for SAME, SAME-R and DAFT. If not, those rows stay unverified.
+- [x] Accept "ISS cabin nominal = 0.21 / 101.3 kPa" for SAME, SAME-R and DAFT. **Accepted by Sibi, 15 Nov 2026.**
 
 ## 1. SAME-R (SAME-2), 6 materials at 8 cm/s: `SAMER-*-08`
 
@@ -31,7 +31,7 @@ so cabin air is the reasonable reading, but it is an inference.
 | O₂ / pressure | 0.21 / 101.3 kPa | ⚠️ inferred | Not stated; see section 0 |
 | Outputs | d10, d30, d_gm, σg, age | ✅ confirmed | Table 1 and §II.A moment method |
 
-- [ ] Sign off group 1
+- [x] Sign off group 1: 6 rows marked `verified=true` (all other fields confirmed in S2; O₂/pressure by the section 0 rule)
 
 ## 2. SAME-R at 2 and 0 cm/s: Teflon, Kapton, lampwick: `SAMER-{TEFL,KAPT,CELL}-{02,00}`
 
@@ -45,7 +45,7 @@ so cabin air is the reasonable reading, but it is an inference.
 Note: S2 says zero-flow was examined "for all of the materials" in the D30 comparison, but only these three are
 plotted, so only these three got 0 and 2 cm/s rows.
 
-- [ ] Sign off group 2
+- [x] Sign off group 2: 6 rows marked `verified=true` (all other fields confirmed in S2; O₂/pressure by the section 0 rule)
 
 ## 3. SAME-1, 5 materials at 8 cm/s: `SAME1-*-08`
 
