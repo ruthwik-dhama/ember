@@ -24,7 +24,13 @@ export default function HabitatScreen() {
 
   const tMax = r?.frames?.length ? r.frames[r.frames.length - 1].t_s : 0;
   const show = (res) => { setR(res); setT(0); setPlaying(true); setErr(null); };
-  const run = () => simulate({ ...scene, g: GRAVITY[g] }).then(show).catch((e) => setErr(String(e)));
+  const run = (sc = scene) => simulate({ ...sc, g: GRAVITY[g] }).then(show).catch((e) => setErr(String(e)));
+  // Move the first fire to the clicked floor point (z stays near the floor) and re-run.
+  const placeFire = (x, y) => {
+    const sc = { ...scene, fires: [{ ...scene.fires[0], x, y, z: 0.1 }, ...scene.fires.slice(1)] };
+    setScene(sc);
+    run(sc);
+  };
 
   useEffect(() => {
     if (!playing) return;
@@ -36,7 +42,7 @@ export default function HabitatScreen() {
 
   return (
     <div style={{ display: "grid", gap: 16 }}>
-      <HabitatView frames={r?.frames} t={t} detectors={scene.detectors} fires={scene.fires} alarmed={alarmed} />
+      <HabitatView frames={r?.frames} t={t} detectors={scene.detectors} fires={scene.fires} alarmed={alarmed} onPlaceFire={placeFire} />
       {r && (
         <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
           <button onClick={() => setPlaying((p) => !p)}>{playing ? "Pause" : "Play"}</button>
@@ -54,7 +60,7 @@ export default function HabitatScreen() {
         {/* only 0 g and 1 g have PSI data: anything between is interpolated (yellow) by rule */}
         <Badge status={GRAVITY[g] > 0 && GRAVITY[g] < 1 ? "yellow" : "green"} source="gravity preset"
           nearest={GRAVITY[g] > 0 && GRAVITY[g] < 1 ? "interpolated between 0 g and 1 g" : "tested gravity"} />{" "}
-        <button className="primary" onClick={run}>Run simulation</button>
+        <button className="primary" onClick={() => run()}>Run simulation</button> <small>or click the floor to place the fire</small>
         {err && <p>{err}</p>}
         {r && (
           <p>
