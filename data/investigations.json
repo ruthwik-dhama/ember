@@ -29,55 +29,123 @@
   {
     "id": "SAME",
     "name": "Smoke Aerosol Measurement Experiment (SAME, SAME-R)",
-    "objective": "Smoke particle sizes, aging, detector response",
-    "hardware": "MSG",
+    "objective": "Measure the size distribution of smoke from overheated (pyrolyzing, not flaming) spacecraft materials in microgravity, so spacecraft smoke detectors can be designed from low-g data instead of 1 g data",
+    "hardware": "Microgravity Science Glovebox (MSG) on the ISS: heated-wire smoke generation duct, piston aging chamber, diagnostics duct with moment instruments, ISS and Space Shuttle smoke detectors, thermal precipitator for TEM grids",
     "fuel": {
-      "names": [],
+      "names": [
+        "Teflon",
+        "Kapton",
+        "Pyrell",
+        "silicone rubber",
+        "cellulose (lamp wick)",
+        "dibutyl phthalate"
+      ],
       "phase": "pyrolysis",
-      "shape": null,
-      "size": null
+      "shape": "small sample heated by a wire coil below its ignition point for about 60 s",
+      "size": "sized for 1 to 2 mg of weight loss in 60 s at the baseline temperature"
     },
     "conditions": {
-      "o2_frac": null,
-      "pressure_atm": null,
-      "diluents": [],
-      "g": 0.0
+      "o2_frac": 0.21,
+      "pressure_atm": 1.0,
+      "diluents": [
+        "N2 (ISS cabin air; O2 and pressure are cabin nominal, not stated in the papers)"
+      ],
+      "g": 0.0,
+      "flow_cm_s": [
+        0.0,
+        8.0
+      ],
+      "aging_s": [
+        11,
+        1800
+      ]
     },
-    "varied": [],
-    "held_constant": [],
-    "sensors": [],
+    "varied": [
+      "material",
+      "sample (wire) temperature",
+      "air flow past the sample (baseline 8 cm/s, down to 2 cm/s, plus 11 quiescent tests)",
+      "aging time (11 to 1800 s)"
+    ],
+    "held_constant": [
+      "microgravity",
+      "heating duration (about 60 s)",
+      "MSG hardware"
+    ],
+    "sensors": [
+      "P-Trak condensation nuclei counter (zeroth moment, 20 nm to 1 µm)",
+      "ionization chamber from a residential smoke detector (first moment)",
+      "DustTrak light scattering (third moment, 1 µm and 10 µm impactors)",
+      "MPASS two-angle scattering sensor, a prototype two-moment detector (SAME-2)",
+      "ISS and Space Shuttle smoke detectors",
+      "thermal precipitator TEM grids"
+    ],
     "pillars": [
       "detection"
     ],
-    "key_findings": [],
-    "sources": [],
+    "key_findings": [
+      "Most average smoke particle sizes were 200 to 400 nm; quiescent cases sometimes produced much larger particles.",
+      "Unaged diameter of average mass ranged from 101 nm (Kapton) to 465 nm (silicone); after 720 s of aging it ranged from 161 nm to 619 nm.",
+      "Teflon and Kapton smoke was very small, which makes it hard for light-scattering detectors like the ISS detector to see.",
+      "Diameter of average mass was 30 to 40% larger in zero-flow tests than in flow tests, so smoke trapped in an enclosure is larger than smoke in ventilated areas.",
+      "The two-moment MPASS sensor cut the relative variance of its response by at least a factor of 2 versus a single-output sensor, which can separate a lot of smoke from a little large dust.",
+      "Across materials, the diameter of average mass increased on average by a factor of 1.7 in low gravity."
+    ],
+    "sources": [
+      "NTRS-20130000422 (Urban et al., AIAA 2012-3536)",
+      "doi:10.4271/2009-01-2468 (Urban et al., SAE ICES 2009)",
+      "doi:10.1080/02786826.2015.1025125 (Yang et al., Aerosol Sci. Technol. 49, 2015)",
+      "https://www.nist.gov/node/1863886 (SAME final report)"
+    ],
     "verified": false
   },
   {
     "id": "DAFT",
     "name": "Dust and Aerosol measurement Feasibility Test (DAFT, DAFT-2)",
-    "objective": "Dust signature, false-alarm discrimination",
-    "hardware": "Shared aerosol instrumentation",
+    "objective": "Check that the P-Trak particle counter (a key SAME instrument) works in long-duration microgravity, and make the first measurement of background particle levels in ISS cabin air",
+    "hardware": "Hand-held TSI P-Trak condensation nuclei counter (modified condenser grooves for low-g condensate return) and TSI DustTrak, plus a reference dust source on the later flight",
     "fuel": {
-      "names": [],
+      "names": [
+        "ISS cabin air",
+        "Velcro separation aerosol",
+        "reference dust"
+      ],
       "phase": "dust",
-      "shape": null,
-      "size": null
+      "shape": "airborne particles",
+      "size": "P-Trak counts particles down to 20 nm"
     },
     "conditions": {
-      "o2_frac": null,
-      "pressure_atm": null,
-      "diluents": [],
+      "o2_frac": 0.21,
+      "pressure_atm": 1.0,
+      "diluents": [
+        "N2 (ISS cabin air, nominal)"
+      ],
       "g": 0.0
     },
-    "varied": [],
-    "held_constant": [],
-    "sensors": [],
+    "varied": [
+      "sampling location (US Lab and Node)",
+      "aerosol source (undisturbed air, Velcro separation, reference dust)"
+    ],
+    "held_constant": [
+      "microgravity",
+      "instruments"
+    ],
+    "sensors": [
+      "TSI P-Trak (number concentration)",
+      "TSI DustTrak (mass concentration)"
+    ],
     "pillars": [
       "detection"
     ],
-    "key_findings": [],
-    "sources": [],
+    "key_findings": [
+      "ISS cabin air averaged below 0.005 mg/m3 (DustTrak) and below 15 particles/cm3 (P-Trak), substantially cleaner than the Space Shuttle or a typical office.",
+      "Deliberately separating Velcro produced a large transient particle spike, a nuisance source a smoke detector must not alarm on.",
+      "The modified P-Trak worked in low gravity; reference-dust readings agreed with the DustTrak on the first run before low alcohol degraded it.",
+      "DAFT was flown on Expedition 10 (P-Trak and DustTrak) and Expedition 13 (reference source)."
+    ],
+    "sources": [
+      "NTRS-20070031686 (Urban, Ruff, Sheredy, Funk, ISDC 2007)",
+      "NTRS-20050215648 (Sheredy, NASA Research and Technology 2004)"
+    ],
     "verified": false
   },
   {
@@ -166,28 +234,73 @@
   {
     "id": "ACME",
     "name": "Advanced Combustion via Microgravity Experiments",
-    "objective": "Material flammability in still air, high-O2 tests, pseudo-gravity via E-field",
-    "hardware": "ACME in CIR",
+    "objective": "Six independent studies of non-premixed gaseous flames in the Combustion Integrated Rack; the Burning Rate Emulator (BRE) study targets spacecraft fire prevention by studying material flammability in still air",
+    "hardware": "ACME chamber insert in the Combustion Integrated Rack (CIR), about 83 L free volume, constant-volume tests; gas-jet, coflow, spherical and BRE porous burners",
     "fuel": {
-      "names": [],
+      "names": [
+        "ethylene",
+        "methane",
+        "hydrogen",
+        "ethane",
+        "propane",
+        "n-butane",
+        "hydrogen/methane"
+      ],
       "phase": "gas",
-      "shape": null,
-      "size": null
+      "shape": "gas-jet, coflow, porous spherical and flat porous (BRE) burners",
+      "size": "BRE porous burners 25 mm and 50 mm diameter"
     },
     "conditions": {
-      "o2_frac": null,
-      "pressure_atm": null,
-      "diluents": [],
-      "g": 0.0
+      "o2_frac": [
+        0.21,
+        0.4
+      ],
+      "pressure_atm": [
+        0.56,
+        0.99
+      ],
+      "diluents": [
+        "N2",
+        "He (s-Flame)"
+      ],
+      "g": 0.0,
+      "flow_cm_s": 0.0
     },
-    "varied": [],
-    "held_constant": [],
-    "sensors": [],
+    "varied": [
+      "fuel and dilution",
+      "ambient O2 mole fraction (BRE 0.21 to 0.40)",
+      "pressure (BRE 0.57 to 1 bar)",
+      "fuel flow rate",
+      "burner size (BRE 25 and 50 mm)",
+      "electric field (E-FIELD Flames, up to 10 kV)"
+    ],
+    "held_constant": [
+      "microgravity",
+      "still chamber atmosphere for BRE (no forced flow)"
+    ],
+    "sensors": [
+      "radiometers / thermopile array",
+      "heat flux gauges and slug calorimeter (BRE)",
+      "PMTs for CH* and OH*",
+      "thin filament pyrometry (SiC fibers)",
+      "color HD camera",
+      "intensified OH* and CH* / formaldehyde cameras"
+    ],
     "pillars": [
       "prevention"
     ],
-    "key_findings": [],
-    "sources": [],
+    "key_findings": [
+      "BRE flames self-extinguished in O2 below about 25% by volume; in 21% O2 all 25 mm ethylene flames went out within 40 s, while steady flames were seen at 26.5%, 34% and 40% O2.",
+      "Larger BRE flames generally self-extinguished within 1.5 minutes; methane flames went out within a minute while ethylene flames at elevated O2 burned for minutes.",
+      "BRE extinction times decreased with burner diameter and did not depend on pressure (0.57 to 1 bar).",
+      "The results support significant fire hazards for enriched-oxygen spacecraft atmospheres.",
+      "CFI-G observed non-premixed cool flames with n-butane on porous burners."
+    ],
+    "sources": [
+      "NTRS-20210021781 (Stocker, 33rd JASMAC, 2021)",
+      "hdl:1903/29303 (Dehghani, UMD dissertation, 2022)",
+      "hdl:1903/27484 (Wright, UMD thesis, 2021)"
+    ],
     "verified": false
   },
   {

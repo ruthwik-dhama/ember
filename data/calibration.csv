@@ -28,8 +28,12 @@ material.methanol.r_cap,0.15,m,placeholder max pool radius,assumed
 detector.single.threshold,0.05,-,placeholder until SAME detector response,assumed
 detector.two_moment.threshold,0.05,-,placeholder until SAME detector response,assumed
 detector.two_moment.size_cut_nm,1000,nm,smoke hundreds of nm vs regolith dust microns,assumed
-smoke.d0_nm,300,nm,NTRS-20130000422 (SAME-R most average sizes 200-400 nm),measured
-smoke.tau_s,300,s,placeholder aging time scale; calibrate to SAME-R aging 11-1800 s,assumed
+smoke.d0_nm,258,nm,NTRS-20130000422 Table 1: median diameter of average mass (D30) of unaged baseline smoke over 5 materials (range 101-465 nm),fitted
+smoke.tau_s,408,s,NTRS-20130000422 Table 1: median tau from D30 growth unaged->720 s with d=d0(1+t/tau)^(1/3) (per-material 236-530 s),fitted
+smoke.sigma_g,2.21,-,NTRS-20130000422 Table 1: median geometric std. deviation of unaged baseline smoke (range 2.15-2.53; lognormal assumed),fitted
+smoke.zero_flow_d30_factor,1.35,-,NTRS-20130000422: D30 was 30-40% larger in zero-flow tests than flow tests (midpoint),measured
+smoke.sample_mass_min_mg_m3,2,mg/m3,NTRS-20130000422: typical SAME-2 smoke mass concentration 2-15 mg/m3 (lower end),measured
+smoke.sample_mass_max_mg_m3,15,mg/m3,NTRS-20130000422: typical SAME-2 smoke mass concentration 2-15 mg/m3 (upper end),measured
 dust.d_nm,3000,nm,placeholder regolith dust size until DAFT,assumed
 dust.conc_per_mg,0.01,-/mg,placeholder dust obscuration per mg released until DAFT,assumed
 suppress.co2_extinction_frac,0.17,-,Dietrich et al. 2014 Microgravity Sci Technol 26:65-76 doi:10.1007/s12217-014-9372-2: heptane droplet LOI with CO2 in air 1 atm; applied to solids = extrapolation,assumed
@@ -50,3 +54,5 @@ ghost.o2_min,0.14,-,Nayagam et al. 2014 NTRS 20140006750: cool-flame tests O2 14
 ghost.o2_max,0.25,-,Nayagam et al. 2014 NTRS 20140006750: cool-flame tests O2 14-25%,measured
 ghost.p_min_kpa,50.7,kPa,Nayagam et al. 2014 NTRS 20140006750: tests at 0.5 0.7 and 1.0 atm,measured
 ghost.p_max_kpa,101.3,kPa,Nayagam et al. 2014 NTRS 20140006750: tests at 0.5 0.7 and 1.0 atm,measured
+background.iss_mass_mg_m3,0.005,mg/m3,NTRS-20070031686 (DAFT): average ISS cabin air below 0.005 mg/m3 (DustTrak; upper bound),measured
+background.iss_number_cm3,15,1/cm3,NTRS-20070031686 (DAFT): average ISS cabin air below 15 particles/cm3 (P-Trak; upper bound),measured

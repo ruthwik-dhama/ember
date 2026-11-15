@@ -1,0 +1,16 @@
+# ACME
+
+- ACME (Advanced Combustion via Microgravity Experiments) is a set of six independent experiments with non-premixed flames of gaseous fuels, run in the ISS Combustion Integrated Rack (CIR) since 2017. [NTRS 20210021781, Stocker, 33rd JASMAC, 2021]
+- The six ACME experiments are CLD Flame, E-FIELD Flames, Burning Rate Emulator (BRE), Flame Design, s-Flame and CFI-G. [NTRS 20210021781]
+- ACME tests are constant-volume runs in a chamber with about 83 liters of free volume, usually lasting only a few minutes, and are commanded from NASA Glenn. [NTRS 20210021781]
+- ACME most often burned ethylene and methane; other fuels included hydrogen, ethane, propane, n-butane and hydrogen/methane mixtures. [NTRS 20210021781]
+- BRE is the ACME experiment focused on spacecraft fire prevention: a flat porous burner fed with gaseous fuel emulates burning solids and liquids, measuring the heat fed back to the burner. [NTRS 20210021781]
+- BRE flames self-extinguished in oxygen concentrations below about 25% by volume. [NTRS 20210021781]
+- Larger BRE flames generally self-extinguished within 1.5 minutes, and methane flames went out within a minute, while ethylene flames at elevated oxygen burned for minutes. [NTRS 20210021781]
+- In BRE tests with N2-diluted ethylene on a 25 mm burner, all flames in 21% oxygen self-extinguished within 40 s, while steady flames occurred at 26.5%, 34% and 40% oxygen. [hdl:1903/29303, Dehghani, UMD dissertation, 2022]
+- BRE ISS tests used ethylene and methane on 25 mm and 50 mm burners at oxygen mole fractions of 0.21 to 0.4 and pressures of 0.57 to 1 bar. [hdl:1903/27484, Wright, UMD thesis, 2021]
+- BRE extinction times decreased with increasing burner diameter and did not depend on pressure. [hdl:1903/27484]
+- The BRE results support significant fire hazards in enriched-oxygen spacecraft atmospheres. [hdl:1903/27484]
+- Microgravity coflow flames had several times more soot than comparable normal-gravity flames, and dilution limits were extended in microgravity. [NTRS 20210021781]
+- E-FIELD Flames found that highly diluted flames can be stabilized with very weak electric fields (up to 10 kV was applied). [NTRS 20210021781]
+- CFI-G observed non-premixed cool flames with n-butane on porous burners. [NTRS 20210021781]

@@ -52,7 +52,25 @@ def test_api_health_and_simulate():
             "detectors": [{"id": "d1", "x": 3, "y": 2, "z": 2.4}]}
     r = c.post("/api/simulate", json=body).json()
     assert set(RESULT_KEYS) <= set(r) and r["envelope"]["badge"] in ("green", "yellow", "red")
-    assert c.get("/api/rank").status_code == 501
+
+
+def test_api_rank_and_report_return_data():
+    c = TestClient(app)
+
+    ranked = c.get("/api/rank").json()
+    assert ranked and all({"id", "score", "why"} <= set(row) for row in ranked)
+    assert ranked == sorted(ranked, key=lambda row: row["score"], reverse=True)
+
+    filtered = c.get("/api/rank", params={"pillar": "suppression"}).json()
+    assert filtered and all("suppression" in row["why"] for row in filtered)
+    assert len(filtered) < len(ranked)
+
+    report = c.get("/api/report").json()
+    assert report["top_investigations"] == ranked
+    for section in ("top_risks", "recommended_fixes"):
+        assert report[section]["available"] is False and "reason" in report[section]
+    assert set(report["data_gaps"]) >= {"cells", "counts", "o2_values", "flow_values"}
+    assert report["earth_applications"]
 
 
 def test_gravity_scaling():
