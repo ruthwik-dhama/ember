@@ -14,5 +14,4 @@
 - SAME used the moment method: the zeroth (number), first (diameter) and third (mass) moments, with a lognormal assumption to derive the geometric mean diameter and geometric standard deviation. [Yang et al., Aerosol Sci. Technol. 49 (2015), doi:10.1080/02786826.2015.1025124]
 - The prototype two-moment MPASS sensor reduced the relative variance of its response by at least a factor of 2 compared with a conventional single-output sensor, letting it tell a high smoke concentration from a lower concentration of large dust particles. [NTRS 20130000422]
 - Detecting small smoke particles like Teflon and Kapton without nuisance alarms from large dust particles is difficult without some particle size discrimination. [NTRS 20130000422]
-- In low gravity, the diameter of average mass of the smoke increased on average by a factor of 1.7. [Yang et al., Aerosol Sci. Technol. 49 (2015), doi:10.1080/02786826.2015.1025125]
 - In microgravity, smoke transport was dominated by mixing, and detection lags were longer than in normal gravity. [SAME final report, NASA TM / NIST, https://www.nist.gov/node/1863886]
