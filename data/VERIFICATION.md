@@ -8,14 +8,15 @@ once the team accepts the cabin-nominal rule (section 0).
 Sources (all public):
 - **S2**: Urban et al., *Particle Morphology and Size Results from SAME-2*, AIAA 2012-3536, NTRS 20130000422 (full text read)
 - **S1**: Urban et al., SAE 2009-01-2468 (abstract only)
+- **TM**: Yang, Cleary, Urban, Ruff, Sheredy, Yuan, Mulholland, *Smoke Aerosol Measurement Experiment (SAME)*, NASA TM 2010, NIST pub 904707 (full text read, incl. flight run log)
 - **DA**: Urban, Ruff, Sheredy, Funk, *Particle and Smoke Detection on ISS for Next Generation Smoke Detectors*, ISDC 2007, NTRS 20070031686 (slides read)
 - **AC**: Stocker, *Recent Research on Flames of Gaseous Fuel Aboard the ISS*, 33rd JASMAC 2021, NTRS 20210021781 (full text read)
-- **DE**: Dehghani, UMD dissertation 2022, hdl:1903/29303 (abstract only)
-- **WR**: Wright, UMD thesis 2021, hdl:1903/27484 (abstract only)
+- **DE**: Dehghani, UMD dissertation 2022, hdl:1903/29303 (full text read: Table 2.1 design parameters, Table 3.1 all 59 round-1 tests)
+- **WR**: Wright, UMD thesis 2021, hdl:1903/27484 (full text read: Tables 2.1–2.2 design parameters, Appendix B Tables B.1–B.3, every ISS BRE test)
 
 ## 0. Team rule to decide: ISS cabin nominal atmosphere
 
-None of the SAME, DAFT or BRE sources states the O₂ fraction or pressure of the air used. The rows use
+None of the SAME or DAFT sources states the O₂ fraction or pressure of the air used (the BRE theses do; see §4–5). The rows use
 O₂ = 0.21 and 101.3 kPa (ISS cabin nominal, about 14.7 psi). SAME ran in the MSG and DAFT sampled open cabin air,
 so cabin air is the reasonable reading, but it is an inference.
 
@@ -47,42 +48,52 @@ plotted, so only these three got 0 and 2 cm/s rows.
 
 - [x] Sign off group 2: 6 rows marked `verified=true` (all other fields confirmed in S2; O₂/pressure by the section 0 rule)
 
-## 3. SAME-1, 5 materials at 8 cm/s: `SAME1-*-08`
+## 3. SAME-1 (Expedition 15): rows replaced with run-log-backed points: `SAME1-DIBU-08`, `SAME1-KAPT-02`, `SAME1-CELL-02`
 
-| Field | Value | Status | Passage |
+The first draft had 5 rows (all 5 materials at 8 cm/s), with the 8 cm/s inferred. The NIST SAME technical memo (TM)
+was readable, and it gives no single baseline flow: "The system was designed to provide air flow rates ranging
+from 2 to 8 cm/s." Its flight run log names the flow for three runs, so the rows now match those runs exactly:
+
+| Row | Material | Flow | Passage (TM run log) |
 |---|---|---|---|
-| Materials | Teflon, Kapton, cellulose, silicone rubber, dibutyl phthalate | ✅ confirmed | S1 abstract lists these five |
-| Flow | 8.0 cm/s | ⚠️ inferred | S1 abstract gives no flow value. S2 calls 8 cm/s "the baseline", and S2 says it "built upon the results of the original flight", but doesn't say SAME-1 used 8 cm/s |
-| g | 0.0 | ✅ confirmed | MSG on ISS, Expedition 15 (S1) |
-| O₂ / pressure | 0.21 / 101.3 kPa | ⚠️ inferred | Section 0 |
+| `SAME1-DIBU-08` | dibutyl phthalate | 8 cm/s | run 37: "DBP Reheat … 8 cm/s" |
+| `SAME1-KAPT-02` | Kapton | 2 cm/s | run 33: "Kapton Initial … using 2 cm/s" |
+| `SAME1-CELL-02` | cellulose (lampwick) | 2 cm/s | run 34: "Lampwick Initial … using 2 cm/s" |
 
-- [ ] Need the S1 full text (SAE paywall) or the NIST SAME final report to confirm the flow, or drop these 5 rows
+Other fields: g = 0 ✅ (MSG on ISS, Expedition 15); O₂ / pressure by the section 0 rule ✅. Teflon and silicone rubber
+rows were dropped because the run log doesn't give their flow.
 
-## 4. ACME / BRE, Dehghani: `BRE-C2H4-25-{210,265,340,400}`
+- [ ] Sign off group 3: 3 rows, every field read from TM (O₂/pressure by section 0)
 
-| Field | Value | Status | Passage (DE abstract) |
-|---|---|---|---|
-| Fuel / burner | N₂-diluted ethylene, 25 mm porous burner | ✅ confirmed | "gaseous ethylene diluted with varying amounts of nitrogen", "25 mm" |
-| O₂ | 0.21, 0.265, 0.34, 0.40 | ✅ confirmed | "21% … self-extinguished within 40 s"; "steady flames at 26.5, 34 and 40% oxygen" |
-| Pressure | 101.3 kPa | ⚠️ inferred | DE abstract says pressure was varied but gives no values. WR gives 0.57–1 bar for the same ISS tests, so 1 atm is the upper end, not confirmed per O₂ level |
-| Flow | 0.0 (still air) | ✅ confirmed | AC §3.3: flames "burn for minutes in the absence of an air flow" |
-| g | 0.0 | ✅ confirmed | ISS CIR |
+## 4–5. ACME / BRE: rows replaced with real ISS test points from Wright (2021) Appendix B
 
-- [ ] Sign off O₂ and fuel. Pressure needs the DE full text (Chapter on test matrix) or stays 🟡
+The first draft had 7 BRE rows built from abstract ranges. The full theses gave the actual test tables, and showed that
+two of the draft rows were wrong: methane was only tested on the **25 mm** burner (not 50 mm), and only at **14.7 psia**
+(so "methane at 57 kPa" never happened). All 7 draft rows are replaced by 10 real test points: the lowest- and highest-O₂
+test in each fuel / burner / pressure group.
 
-## 5. ACME / BRE, Wright: `BRE-C2H4-25-340-LP`, `BRE-CH4-50-210-LP`, `BRE-CH4-50-400`
+| Row (test ID) | Fuel, burner | X_O2 | Pressure | Table |
+|---|---|---|---|---|
+| `BRE-19039H2` | ethylene, 25 mm | 0.18 | 14.7 psia (101.3 kPa) | B.1 |
+| `BRE-20358B1` | ethylene, 25 mm | 0.39 | 14.7 psia | B.1 |
+| `BRE-19056G1` | ethylene 50% in N₂, 25 mm | 0.24 | **10.2 psia (70.3 kPa)** | B.1 |
+| `BRE-20261J1` | ethylene, 25 mm | 0.29 | **10.2 psia** | B.1 |
+| `BRE-19051G1` | ethylene, 25 mm | 0.30 | 8.2 psia (56.5 kPa) | B.1 |
+| `BRE-19094H1` | ethylene, 25 mm | 0.35 | 8.2 psia | B.1 |
+| `BRE-20247K1` | ethylene, 50 mm | 0.23 | 14.7 psia | B.2 |
+| `BRE-20247B1` | ethylene, 50 mm | 0.37 | 14.7 psia | B.2 |
+| `BRE-20279J6` | methane, 25 mm | 0.24 | 14.7 psia | B.3 |
+| `BRE-20279B1` | methane, 25 mm | 0.39 | 14.7 psia | B.3 |
 
-| Field | Value | Status | Passage (WR abstract) |
-|---|---|---|---|
-| Fuels / burners | ethylene and methane, 25 and 50 mm | ✅ confirmed | "ethylene and methane … 25 and 50 mm burners" |
-| O₂ range | 0.21–0.40 | ✅ confirmed | "XO2 from 0.21 to 0.4" |
-| Pressure range | 57–100 kPa | ✅ confirmed | "pressures from 0.57 to 1 bar" |
-| **Specific pairings** (0.34 @ 57 kPa ethylene 25 mm; 0.21 @ 57 kPa methane 50 mm; 0.40 @ 100 kPa methane 50 mm) | | ⚠️ inferred | The abstract gives ranges only. These are corners of the reported envelope, chosen so the guard's ranges match the paper. 0.34 @ 57 kPa matches NASA's planned exploration atmosphere, but that isn't confirmed for BRE |
+Every field is read from the table row with that test ID. Pressures are the tables' psia values converted to kPa
+(× 6.895). DE Table 3.1 lists the same round-1 tests with measured pressures (1.01–1.04, 0.69–0.71, 0.57–0.58 bar),
+which agree. Flow 0 ✅ (DE §2: the burner "is installed in a quiescent chamber"). g = 0 ✅ (ISS CIR).
 
-- [ ] Need the WR full text test matrix to confirm pairings, or replace with confirmed ones
+Worth knowing for the pitch: 10.2 psia is the planned Moon base / rover pressure, and DE §2 says three BRE atmospheres
+were "nominal NASA selected atmospheres … 21 % oxygen and 1 bar, 26.5% and 0.7 bar and 34 % and 0.565 bar". The Moon
+base mission (0.30 O₂, 70.3 kPa) sits right next to `BRE-20261J1` (0.29, 70.3 kPa); it is still 🟡 only because of g.
 
-These three rows matter most: they are what extend the tested pressure range down to 57 kPa, which moves the Moon
-base (70.3 kPa) from 🔴 to 🟡 on the pressure axis.
+- [ ] Sign off groups 4–5: 10 rows, every field read from WR Appendix B (no inference)
 
 ## 6. DAFT: no condition rows (by design)
 
@@ -98,7 +109,7 @@ Side effect: Kishan's `rank()` scores an investigation with no condition rows as
 "detection" even though it is the false-alarm reference. Decide: add DAFT cabin-air rows, or ask Kishan to rank
 non-combustion investigations differently.
 
-- [ ] Decide DAFT ranking approach
+- [x] Decide DAFT ranking approach: `rank()` scores investigations without rows from their investigations.json conditions, and adds a dust bonus on Moon/Mars/rover habitats **under the detection filter only** (PRs #17, #18).
 
 ## 7. Calibration values from SAME-2 Table 1
 

@@ -93,6 +93,7 @@
     "sources": [
       "NTRS-20130000422 (Urban et al., AIAA 2012-3536)",
       "doi:10.4271/2009-01-2468 (Urban et al., SAE ICES 2009)",
+      "Yang et al., Smoke Aerosol Measurement Experiment (SAME), NASA TM 2010, NIST pub 904707",
       "doi:10.1080/02786826.2015.1025125 (Yang et al., Aerosol Sci. Technol. 49, 2015)",
       "https://www.nist.gov/node/1863886 (SAME final report)"
     ],
@@ -248,16 +249,16 @@
       ],
       "phase": "gas",
       "shape": "gas-jet, coflow, porous spherical and flat porous (BRE) burners",
-      "size": "BRE porous burners 25 mm and 50 mm diameter"
+      "size": "BRE porous burners 25 mm (ethylene, methane) and 50 mm (ethylene) diameter"
     },
     "conditions": {
       "o2_frac": [
-        0.21,
+        0.18,
         0.4
       ],
       "pressure_atm": [
         0.56,
-        0.99
+        1.0
       ],
       "diluents": [
         "N2",
@@ -268,10 +269,10 @@
     },
     "varied": [
       "fuel and dilution",
-      "ambient O2 mole fraction (BRE 0.21 to 0.40)",
-      "pressure (BRE 0.57 to 1 bar)",
+      "ambient O2 mole fraction (BRE nominal 0.21, 0.265, 0.34, 0.40; measured 0.18 to 0.39)",
+      "pressure (BRE 14.7, 10.2 and 8.2 psia: 101, 70 and 57 kPa)",
+      "burner size (BRE 25 mm and 50 mm; methane on 25 mm only)",
       "fuel flow rate",
-      "burner size (BRE 25 and 50 mm)",
       "electric field (E-FIELD Flames, up to 10 kV)"
     ],
     "held_constant": [
@@ -291,15 +292,16 @@
     ],
     "key_findings": [
       "BRE flames self-extinguished in O2 below about 25% by volume; in 21% O2 all 25 mm ethylene flames went out within 40 s, while steady flames were seen at 26.5%, 34% and 40% O2.",
+      "BRE ran flames at 10.2 psia (70 kPa), the planned Moon base and rover pressure, at O2 0.24 to 0.29.",
       "Larger BRE flames generally self-extinguished within 1.5 minutes; methane flames went out within a minute while ethylene flames at elevated O2 burned for minutes.",
-      "BRE extinction times decreased with burner diameter and did not depend on pressure (0.57 to 1 bar).",
+      "BRE extinction times decreased with burner diameter and did not depend on pressure (8.2 to 14.7 psia).",
       "The results support significant fire hazards for enriched-oxygen spacecraft atmospheres.",
       "CFI-G observed non-premixed cool flames with n-butane on porous burners."
     ],
     "sources": [
       "NTRS-20210021781 (Stocker, 33rd JASMAC, 2021)",
       "hdl:1903/29303 (Dehghani, UMD dissertation, 2022)",
-      "hdl:1903/27484 (Wright, UMD thesis, 2021)"
+      "hdl:1903/27484 (Wright, UMD thesis, 2021; Appendix B test tables)"
     ],
     "verified": false
   },
