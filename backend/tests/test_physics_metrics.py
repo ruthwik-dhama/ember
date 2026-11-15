@@ -32,3 +32,15 @@ def test_physics_metrics_shape_and_honest_status():
 def test_co2_flood_reaches_heptane_limit_at_moon_o2():
     # Wu & Ruff 2004: CO2 must cut rack O2 by 50%. At 30% O2 that reaches 15%, below heptane's FLEX limit (17%).
     assert diluted_o2(0.30) < limiting_o2("co2", "n-heptane")
+
+
+def test_cotton_reproduces_digitized_bass_points():
+    # Zhao et al. 2015 (NTRS 20150008962) Fig. 4, digitized: 2.2 cm SIBAL fabric, ISS concurrent flow.
+    from ember.sim.engine import _p_flame
+    from ember.sim.flame import spread_rate
+    from ember.sim.materials import get_material
+    m = get_material("cotton")
+    p = {**_p_flame(), **m.flame}
+    for x, u, obs in [(0.21, 10.0, 2.72), (0.21, 5.0, 1.76), (0.188, 2.4, 0.78), (0.169, 3.7, 0.88)]:
+        assert abs(spread_rate(m.v0, x, u, p, u_forced=u) - obs) < 0.1
+    assert get_material("pmma").flame == {}   # PMMA keeps the shared flame.* fit

@@ -139,7 +139,7 @@ against a rendered image of the page, not only extracted text).
 | O₂ fraction per row | 0.207, 0.189, 0.182, 0.175, 0.170 | ✅ confirmed | Table S1 X_O2 column (B13a 20.7, B6 18.9, B16 18.2, B19 17.5, B10 17.0 %); Fig. 7 caption: O₂ uncertainty ±0.3% |
 | Flow per row | 1.64, 2.00, 7.55, 0.72, 1.67, 2.00 cm/s | ✅ confirmed | Table S1 V_g column for the same samples |
 | Output | spread rate | ✅ confirmed | Table S1 V_f column; methods: "flame spread rate was measured by tracking the flame leading edge" |
-| Pressure | 101.3 kPa | ⚠️ inferred | Not stated. The duct fan draws from and exhausts to the MSG work volume ("combustion products exit the duct and mix with the gas in the work volume"), so pressure is taken as ISS cabin nominal under the section 0 rule. O₂ is **not** inferred: it was set per test and is measured in Table S1 |
+| Pressure | 101.3 kPa | ✅ confirmed | Not stated in BL, but **ZH** (section 9) describes the same BASS/BASS-II flow duct in the MSG (7.6 cm × 7.6 cm, fan-driven) and states "Ambient pressure was 1 atm". Previously inferred via the section 0 rule; now sourced |
 
 Note on units: in Table S1 the left half labels V_f "×10³ (cm/s)" and the right half (0.64 cm rods) "×10³ (mm/s)".
 The values are cm/s in both halves. With cm/s, 0.64 cm rods in microgravity spread faster than the 1 g Table S2 values
@@ -149,3 +149,30 @@ With mm/s they would be about 10× slower, contradicting it. `calibration.csv` (
 - [x] Extend the section 0 rule to BASS-II **pressure only** (MSG work volume at ISS cabin nominal). Accepted by Ruthwik, 15 Nov 2026.
 - [x] Sign off group 8: 6 rows marked `verified=true` (`BASSII-B13a`, `-B6`, `-B16-hi`, `-B16-lo`, `-B19`, `-B10`)
 - [ ] `G-BASSII-*` (1 g, UC Berkeley flow duct, Table S2) stay `verified=false`: lab pressure isn't stated, and the ISS cabin rule doesn't apply to a ground lab
+
+## 9. BASS / BASS-II SIBAL cotton-fiberglass fabric: `SIBAL-*` and `material.cotton.*` (owner: Ruthwik)
+
+Source **ZH**: Zhao, T'ien, Ferkul, Olson (2015), *Concurrent flame growth, spread and extinction over composite fabric
+samples in low speed purely forced flow in microgravity*, 9th US National Combustion Meeting, NTRS 20150008962
+(full text read; Fig. 4 rendered and read as an image).
+
+| Field | Value | Status | Passage (ZH) |
+|---|---|---|---|
+| Hardware | small flow duct in the MSG | ✅ confirmed | §2: "small flow duct of cross-sectional size of 7.6 cm × 7.6 cm. The flow speed could be varied from 1 to 55 cm/s" |
+| Pressure | 101.3 kPa | ✅ confirmed | §2: "Ambient pressure was 1 atm" |
+| O₂, flow per row | GMT96-T7 21% / 10, GMT96-T8 21% / 5, GMT178-T11 17.1% / 4, GMT190-T19 17.2% / 11 cm/s | ✅ confirmed | Appendix test table (fixed-flow tests only; tests where flow was ramped are left out) |
+| g | 0.0 | ✅ confirmed | Abstract: "aboard the International Space Station" |
+| Investigation label | GMT96 = BASS, others = BASS-II | ✅ confirmed | Appendix "Comments" column marks GMT96 tests "BASS" |
+
+- [x] Sign off group 9: 4 rows marked `verified=true` (every field stated in ZH; no inference)
+
+**Cotton calibration (`material.cotton.v0`, `.o2_exponent`, `.u_q`) is DIGITIZED** from ZH Fig. 4 (steady spread rate vs.
+flow, log x-axis 2–20 cm/s, linear y 0–3.5 mm/s), 2.2 cm samples only:
+(21%, 10.0 cm/s, 2.72 mm/s), (21%, 5.0, 1.76), (18.8%, 2.4, 0.78), (18.8%, 2.6, 0.84), (17.6%, 3.0, 0.82),
+(17.1%, 4.0, 0.99), (16.9%, 3.7, 0.88). Fit `v = v0 (X/0.21)^a · u/(u + u_q)`, no blowoff (ZH appendix: no blow-off up to
+29–53 cm/s at 16.9–18.7% O₂): v0 = 6.07 ± 0.17 mm/s, a = 2.08 ± 0.06, u_q = 12.3 ± 0.6 cm/s, R² ≈ 1.0 on 7 points.
+Caveats: ZH says flames "spread more slowly across the narrower samples", so cabin-sized fabric may spread faster;
+above 21% O₂ the fit is an extrapolation. Concurrent fabric spread rises with flow, unlike opposed PMMA spread, which is
+why cotton has its own flame parameters instead of sharing `flame.*`.
+
+- [ ] Second reader: re-digitize Fig. 4 independently and check the 7 points (±0.05 mm/s)

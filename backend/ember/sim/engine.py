@@ -143,7 +143,7 @@ def simulate(cfg: SimConfig, frames: bool = True) -> dict:
                 fr["r"] = r0
             u_forced = vent_now * 100.0  # cm/s
             u_eff = math.hypot(u_forced, u_b_flame)
-            fr["v_mm_s"] = spread_rate(m.v0, x_o2, u_eff, p_flame, u_forced=u_forced)
+            fr["v_mm_s"] = spread_rate(m.v0, x_o2, u_eff, {**p_flame, **m.flame}, u_forced=u_forced)
             fr["r"] = min(fr["r"] + fr["v_mm_s"] / 1000.0 * dt, m.r_cap)
             if fr["full_at"] is None and fr["r"] >= m.r_cap:
                 fr["full_at"] = round(t, 2)
