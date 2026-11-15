@@ -10,6 +10,7 @@ from typing import Optional
 
 from fastapi import FastAPI, HTTPException
 
+from .agents.witness import ask_ember
 from .config import GRAVITY_PRESETS, ROOM_M, Mission, SimConfig
 from .data_io import load_investigations
 from .envelope.guard import EnvelopeGuard
@@ -79,12 +80,13 @@ def api_duel(run_id: str):
 
 @app.post("/api/ask")
 def api_ask(body: dict):
-    todo("Sibi: agents/witness.py")
+    return ask_ember(body["question"])
 
 
 @app.get("/api/gap_map")
 def api_gap_map():
-    todo("Sibi: envelope/guard.gap_map")
+    m = state["mission"]
+    return guard.gap_map(m.pressure_kpa, m.g)
 
 
 @app.get("/api/report")
