@@ -34,7 +34,7 @@ Merged so far: skeleton, physics engine (PR #3), Envelope Guard (#1), rank and r
 | Witnesses / Ask EMBER | ✅ Backend live: `/api/ask` returns cited answers (offline retrieval; Claude phrasing if a key is set), 15-question eval. ⏳ The **chat UI** (`dashboard/AskEmber.jsx`) is still a placeholder | Sibi (backend), Kishan (chat UI) | `agents/witness.py` |
 | Frontend | 🟡 5 tabs. Explorer wired. **Habitat simulation and Ask EMBER share one page** (#15): 3D frame playback, click the floor to move the fire and re-run (#22), inlet/return vents, airflow arrows and airlock marker (#23; arrows are static), working "Run duel" plus a "Liquid-fuel demo (Ghost Flame)" button (#21), gravity comparison and gap-map panels, with the Ask EMBER column beside them. Still placeholders: Mission setup, Ranking, the Ask EMBER chat and the Report screen (their APIs all work) | Kishan, Kartavya, Ruthwik, Sibi | `frontend/src/` |
 | Gravity panel | ✅ Same fire at ISS / Moon / Mars / Earth, vents on/off, badge per level (#14). About 10 s per comparison, because `/api/simulate` always returns voxel frames | Ruthwik | `frontend/src/panels/gravity/` |
-| `metrics.py` | ⏳ Still writes `deck_numbers.json` with null values only. Ready but **not called yet**: Sibi's `deck_metrics()` (#19) and Kartavya's `red_vs_random()` (#24) | Kishan (Sibi: `envelope/metrics.py`) | `backend/scripts/` |
+| `metrics.py` | ⏳ Still writes `deck_numbers.json` with null values only. Ready but **not called yet**: Sibi's `deck_metrics()` (#19), Kartavya's `red_vs_random()` (#24), and Ruthwik's `physics_metrics()` (gravity + dust false-alarm entries, PR #26) | Kishan (Sibi: `envelope/metrics.py`) | `backend/scripts/` |
 
 ---
 
@@ -175,14 +175,14 @@ This is a **reduced-order model** calibrated to PSI data, not CFD. Smoke and dus
 | `sweeps.py` | `gravity_sweep(cfg)` runs the same fire at ISS / Moon / Mars / Earth g. | — |
 
 **Known findings from the team's own runs** (simulation behaviour, not deck numbers):
-- **Don't claim "Red beats random" yet** (#24). After Kartavya's fixes Red reliably finds the worst fire, but random search with the same budget finds an equally bad one. The objective saturates: every undetected fire grows to its material's maximum size (`r_cap`) and scores the same, so nothing separates them. Cotton hits its cap fastest because its spread rate is still an `assumed` placeholder, multiplied by the steep O₂ fit at 30% O₂. Fixing this needs a richer severity signal from the engine and/or a different `red_objective`. That's a team decision.
+- **Don't claim "Red beats random" yet** (#24). After Kartavya's fixes Red reliably finds the worst fire, but random search with the same budget finds an equally bad one. The objective saturates: every undetected fire grows to its material's maximum size (`r_cap`) and scores the same, so nothing separates them. Cotton hits its cap fastest because its spread rate is still an `assumed` placeholder, multiplied by the steep O₂ fit at 30% O₂. PR #26 adds engine signals that keep growing after full size (`burn_area_cm2_s`, `smoke_produced`, `t_full_size_s`): among undetected fires they vary 10–15% within a material where `red_objective` is flat. Whether `red_objective` uses them is Kartavya's call.
 - **The Ghost Flame overrule only fires inside FLEX's measured cool-flame range** (14–25% O₂, 0.5–1 atm). At Moon-base 30% O₂ it correctly makes no cool-flame claim, so the demo uses a dedicated liquid-fuel scenario at 21% O₂ (#21).
 
 **What the papers have shown so far** (measured values, not simulation outputs):
 - FLEX limiting O₂ for droplets: heptane 0.15 in air, 0.17 with CO₂ and 0.15 with He; methanol 0.12, 0.14 and 0.14.
 - BASS-II: in microgravity, PMMA spread **rises and then falls** as airflow increases, stops below 0.6 cm/s, and is sustained down to 17% O₂ (18% at 1 g).
 - FLEX-2 burned n-decane droplets at **0.5 atm**, and ACME tested flames at 21–40% O₂ (some at 57 kPa). With both in `data/`, Moon-base conditions (30% O₂, 70.3 kPa, 0.165 g) badge **🟡**: inside every tested range, and partial gravity is 🟡 by rule. Caveat: the guard pools all investigations, so the 30% O₂ coverage comes from ACME gas flames, not from solid flame-spread data (BASS-II only reaches 21%).
-- At 30% O₂, a CO₂ flood that would work in Earth air may leave O₂ above heptane's limit. The cabin dilution fraction is still `assumed`, so treat this as a hypothesis, not a result.
+- ~~A CO₂ flood that works in Earth air may fail at 30% O₂~~ **(retracted).** That came from a placeholder 40% dilution. NASA's requirement for the ISS CO₂ extinguisher is to cut rack O₂ by **50% within 60 s** (Wu & Ruff 2004, NTRS 20050215297). At 30% O₂ that reaches 15%, below heptane's 17% FLEX limit, so the flood works, though with less margin than in Earth air (10.5%). PR #26 switches `calibration.csv` to the sourced value. It's a rack-scale requirement, so whole-cabin use stays `assumed`.
 
 ---
 
