@@ -5,10 +5,11 @@ import React, { useEffect, useMemo, useRef, useState } from "react";
 import { Canvas, useFrame, useThree } from "@react-three/fiber";
 import { OrbitControls, Stars } from "@react-three/drei";
 import * as THREE from "three";
-import Planet, { DOME_DIR, DOME_POS, R, planetKind } from "./Planet.jsx";
+import Planet, { DOME_DIR, DOME_POS, R, SkyBody, planetKind } from "./Planet.jsx";
+import { Boulders } from "./Scenery.jsx";
+import Foliage from "./Foliage.jsx";
 import Habitat3D from "./Habitat3D.jsx";
 import Ship from "./Ship.jsx";
-import Scenery from "./Scenery.jsx";
 import { skyLight } from "./dayNight.js";
 
 // Portrait phones need the camera further back so the whole planet fits.
@@ -50,9 +51,12 @@ export default function PlanetScene({ mission, focus, onEnter, agents, canEnter 
       <Canvas camera={{ position: HOME.toArray(), fov: 45 }} dpr={[1, 1.75]} gl={{ alpha: true }}>
         <ambientLight intensity={sky.ambient} />
         <directionalLight position={[5, 3, 4]} intensity={sky.sunIntensity} color={sky.sunColor} />
-        {!sky.isDay && <Stars radius={60} depth={30} count={2200} factor={3} fade speed={0.4} />}
+        <hemisphereLight args={["#c9d6ff", "#241a14", 0.32]} />
+        {!sky.isDay && <Stars radius={70} depth={30} count={1400} factor={2.2} fade speed={0.3} />}
+        <SkyBody kind={kind} />
         <Planet kind={kind} />
-        <Scenery kind={kind} isDay={sky.isDay} />
+        <Boulders kind={kind} />
+        <Foliage kind={kind} isDay={sky.isDay} />
         {station && <Station />}
         <Habitat3D onHover={setHover} onEnter={onEnter} interactive={canEnter && focus === "planet"} agents={agents} />
         <Ship enabled={focus === "planet"} />

@@ -28,7 +28,7 @@ export default function AgentsPanel({ run }) {
               <td>{fmt(r.after.delay_s)} <Badge status={r.envelope.badge} source="Envelope Guard" nearest={r.envelope.nearest} /></td>
               <td>{r.blue.detectors.length} two-moment detectors · vents off {Math.round(r.blue.vent_off_at_s)} s · {r.blue.suppressant}</td>
               <td>{r.ghost.applicable
-                ? (r.ghost.false_all_clear ? "⚠ camera may report out while a cool flame burns" : "no cool-flame risk")
+                ? (r.ghost.false_all_clear ? "Warning: camera may report out while a cool flame burns" : "no cool-flame risk")
                 : r.ghost.note}</td>
             </tr>
           ))}

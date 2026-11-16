@@ -5,7 +5,6 @@ import AgentFeed from "../planet/AgentFeed.jsx";
 import AskEmber from "../dashboard/AskEmber.jsx";
 import HabitatScreen from "../habitat/HabitatScreen.jsx";
 import InsightsOverlay from "./InsightsOverlay.jsx";
-import Brand from "./Brand.jsx";
 
 // Ghost Flame demo: heptane droplet inside the FLEX cool-flame range (14-25% O2, 50.7-101.3 kPa), CO2 suppression.
 const LIQUID_DEMO = {
@@ -13,7 +12,7 @@ const LIQUID_DEMO = {
   fires: [{ material: "n-heptane", phase: "liquid", x: 3, y: 2, z: 0.1, droplet_d_mm: 3.0 }],
 };
 
-export default function LiveHUD({ mission, duel, startDuel, focus, onBackToPlanet, onEditMission }) {
+export default function LiveHUD({ mission, duel, startDuel, focus, onEnter, onBackToPlanet, onEditMission }) {
   const [insights, setInsights] = useState(false);
   const [askOpen, setAskOpen] = useState(true);
   const running = duel.status === "running";
@@ -24,8 +23,8 @@ export default function LiveHUD({ mission, duel, startDuel, focus, onBackToPlane
     <>
       <div className="hud">
         <header className="hud__top">
-          <Brand />
-          <button className="btn" onClick={onEditMission}>← Mission</button>
+          <span className="brand-chip"><span className="brand">Ember</span></span>
+          <button className="btn" onClick={onEditMission}>Edit mission</button>
           <span className="grow" />
           <button className="primary cta" onClick={() => setInsights(true)}>Insights / Report</button>
         </header>
@@ -43,14 +42,16 @@ export default function LiveHUD({ mission, duel, startDuel, focus, onBackToPlane
         <div className="hud__bar">
           <button className="primary" disabled={running} onClick={() => startDuel(base)}>{running ? "Agents working…" : "Run duel"}</button>
           <button className="btn" disabled={running} onClick={() => startDuel({ ...base, ...LIQUID_DEMO })}>Liquid-fuel demo (Ghost Flame)</button>
-          <span className="muted small hud__hint">Drag to turn the planet · click the dome to enter · W A S D steers the ship</span>
+          {/* A button as well as the clickable dome: the dome is small and the planet turns. */}
+          <button className="btn" onClick={onEnter}>Go inside the habitat</button>
+          <span className="hud__hint">Drag to turn the planet · W A S D steers the ship</span>
         </div>
       </div>
 
       {(focus === "zooming" || inRoom) && (
         <div className={"overlay room" + (inRoom ? " room--in" : "")} role="dialog" aria-label="Habitat room">
           <div className="overlay__bar">
-            <b>Habitat room</b>
+            <b>Inside the habitat</b>
             <button className="btn" onClick={onBackToPlanet}>Back to planet</button>
           </div>
           <div className="overlay__body">{inRoom && <HabitatScreen duel={duel.run} mission={mission} />}</div>

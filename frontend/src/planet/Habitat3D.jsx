@@ -7,12 +7,13 @@ import { Html } from "@react-three/drei";
 import * as THREE from "three";
 import { DOME_DIR, DOME_POS } from "./Planet.jsx";
 import { ROOM_M } from "../habitat/room.js";
+import { Base } from "./Scenery.jsx";
 
 const [L, W, H] = ROOM_M;
 // Room metres -> dome-local coordinates (y is up from the pad).
 const toDome = (x, y, z) => [(x / L - 0.5) * 0.36, 0.02 + (z / H) * 0.12, (y / W - 0.5) * 0.24];
 
-function Ping({ position, color = "#17806d", delay = 0 }) {
+function Ping({ position, color = "#4fd8b8", delay = 0 }) {
   const ref = useRef();
   useFrame(({ clock }) => {
     const t = ((clock.elapsedTime + delay) % 1.8) / 1.8;
@@ -68,9 +69,10 @@ export default function Habitat3D({ onEnter, interactive, agents, onHover }) {
 
   return (
     <group position={DOME_POS} quaternion={quat} scale={1.6}>
+      <Base />
       <mesh position={[0, 0.012, 0]}>
         <cylinderGeometry args={[0.27, 0.3, 0.025, 24]} />
-        <meshStandardMaterial color="#d8d0c0" roughness={0.9} flatShading />
+        <meshStandardMaterial color="#55585f" roughness={0.9} flatShading />
       </mesh>
       <mesh
         onClick={(e) => { if (!interactive || e.delta > 4) return; e.stopPropagation(); onEnter(); }}
@@ -78,8 +80,8 @@ export default function Habitat3D({ onEnter, interactive, agents, onHover }) {
         onPointerOut={() => { setHover(false); onHover?.(false); document.body.style.cursor = ""; }}
       >
         <sphereGeometry args={[0.24, 20, 10, 0, Math.PI * 2, 0, Math.PI / 2]} />
-        <meshStandardMaterial color={hover ? "#ffffff" : "#f1f8f6"} emissive={hover ? "#17806d" : "#0f6b5a"}
-          emissiveIntensity={hover ? 0.55 : 0.25} transparent opacity={0.66} roughness={0.2} flatShading />
+        <meshStandardMaterial color={hover ? "#e4f4ff" : "#cfe9ff"} emissive={hover ? "#6fb3ff" : "#3b7fc4"}
+          emissiveIntensity={hover ? 1.1 : 0.7} transparent opacity={0.62} roughness={0.2} flatShading />
       </mesh>
 
       {fire && (
@@ -96,22 +98,22 @@ export default function Habitat3D({ onEnter, interactive, agents, onHover }) {
         const p = toDome(d.x, d.y, d.z);
         return (
           <group key={d.id || i}>
-            <mesh position={p}><boxGeometry args={[0.022, 0.012, 0.022]} /><meshBasicMaterial color="#17806d" /></mesh>
+            <mesh position={p}><boxGeometry args={[0.022, 0.012, 0.022]} /><meshBasicMaterial color="#4fd8b8" /></mesh>
             <Ping position={[p[0], 0.03, p[2]]} delay={i * 0.6} />
           </group>
         );
       })}
-      {puff && fire && <Puff position={fire} color={agents.blue.suppressant === "he" ? "#e0a526" : "#6fc3e8"} />}
+      {puff && fire && <Puff position={fire} color={agents.blue.suppressant === "he" ? "#ffd166" : "#9fe8ff"} />}
       {ghost && fire && <Pulse position={fire} color="#b388ff" radius={0.07} speed={2.5} base={0.3} />}
 
       {interactive && !ghost && (
         <Html position={[0, 0.34, 0]} center distanceFactor={7} zIndexRange={[4, 0]} style={{ pointerEvents: "none" }}>
-          <div className="scene-label"><b>01</b>Habitat <span>{hover ? "click to enter" : ""}</span></div>
+          <div className="scene-label" data-n="01">{hover ? "Go inside" : "Habitat"}</div>
         </Html>
       )}
       {ghost && (
         <Html position={[0, 0.5, 0]} center distanceFactor={7} zIndexRange={[4, 0]} style={{ pointerEvents: "none" }}>
-          <div className="scene-label scene-label--ghost">Ghost flame: false all-clear</div>
+          <div className="scene-label scene-label--ghost">Cool flame still burning</div>
         </Html>
       )}
     </group>

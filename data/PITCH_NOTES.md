@@ -71,12 +71,26 @@ Every value gets a badge, generated from the data, never hand-labelled:
 
 ## 8. Demo tips
 
-- Start on **Mission setup → Moon base → Save**, then Ranking, Explorer (compare SAME vs DAFT), Habitat (run simulation,
-  hover a badge, scroll to the gap map), Ask EMBER, and Report.
+- Demo order (planet UI, #35). Tested end to end on main, offline:
+  1. **Mission setup:** Moon base → Save mission → Next. Leave **Ventilation on** checked.
+  2. **Experiment explorer:** click Compare on SAME and DAFT → Next.
+  3. **Ranking:** click "detection" (DAFT jumps to #1: airlock dust) → **Start project**.
+  4. **Run duel:** the Agents feed streams Red and Blue round by round (about 10 s).
+  5. **Liquid-fuel demo (Ghost Flame):** watch for "Camera could report 'out' while a cool flame still burns".
+  6. **Ask EMBER** (right panel): one of the questions below.
+  7. **Insights / Report:** top risks, fixes, gap map, and **Compare gravity** (Earth 132 s → Moon 254 s → 0 g never).
+  8. Close the report and **click the dome** to go inside the habitat room and see the 3D replay.
+- Preset missions with ventilation on load every duel from cache. A custom mission, or ventilation off, runs a live
+  duel (about 90 s).
 - Good Ask EMBER questions (each answers with citations):
   - "How big are smoke particles in microgravity?" (SAME)
   - "How clean is the ISS cabin air?" (DAFT)
   - "Below what oxygen concentration do BRE flames put themselves out?" (ACME)
   - "Can a droplet keep burning invisibly after the visible flame goes out?" (FLEX)
+- **Red picks methanol fires, even on cotton/PMMA missions.** The report header lists the mission's materials, but Red
+  searches every material in the PSI data, so its top risks are methanol fires. Don't hide it; say it as a choice:
+  > "Red isn't limited to what's on the packing list. It stress-tests every fuel the PSI experiments burned, because
+  > the fire you didn't plan for is the dangerous one. Here, a low methanol fire is never detected in 300 seconds."
+  If a judge asks: restricting Red to the mission's materials is a small change (pass the materials into the duel) that we held back so the demo build stayed frozen.
 - Duels and reports for the presets are precomputed and committed, so they load instantly with no network.
   A **custom** mission or fire triggers a fresh duel (about a minute).

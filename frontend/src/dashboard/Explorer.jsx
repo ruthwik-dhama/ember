@@ -39,8 +39,8 @@ function Card({ inv, open, onToggle, picked, onPick, pickDisabled }) {
     <article className="card" style={picked ? { borderColor: "var(--accent)" } : undefined}>
       <div style={{ display: "flex", justifyContent: "space-between", gap: 8 }}>
         <h3>{inv.id}</h3>
-        <span className="small" title={inv.verified ? "Every field checked against the cited sources" : "Not yet checked against the sources"}>
-          {inv.verified ? "✅ verified" : "⚪ unverified"}
+        <span className={"badge badge--" + (inv.verified ? "green" : "none")} title={inv.verified ? "Every field checked against the cited sources" : "Not yet checked against the sources"}>
+          {inv.verified ? "Verified" : "Unverified"}
         </span>
       </div>
       <div className="small muted" style={{ marginBottom: 6 }}>{inv.name}</div>
@@ -70,7 +70,7 @@ function Card({ inv, open, onToggle, picked, onPick, pickDisabled }) {
       <div style={{ display: "flex", gap: 8, marginTop: 10 }}>
         {!empty && <button className="btn small" onClick={onToggle}>{open ? "Less" : "Details"}</button>}
         <button className={`btn small ${picked ? "on" : ""}`} onClick={onPick} disabled={!picked && pickDisabled}>
-          {picked ? "✓ Comparing" : "Compare"}
+          {picked ? "Comparing" : "Compare"}
         </button>
       </div>
     </article>

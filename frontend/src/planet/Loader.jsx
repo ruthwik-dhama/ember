@@ -1,52 +1,71 @@
 // AI-assisted: drafted with Claude (Anthropic); see README "Use of AI".
-// Drafting-sheet loader like the Landfall template: cream sheet with a grid, a wireframe globe with a teal orbit,
-// a model-progress counter, then an "Enter the planet" button that opens an iris onto the scene.
-import React, { useEffect, useState } from "react";
-import Brand from "../app/Brand.jsx";
+// Drafting-sheet loader: the planet as a line drawing with sheet notes, a percent counter, then an iris reveal.
+import React, { useEffect, useRef, useState } from "react";
 
+const MIN_MS = 2200;
 const IRIS_MS = 900;
 const reduced = () => typeof window !== "undefined" && window.matchMedia?.("(prefers-reduced-motion: reduce)").matches;
 
 export default function Loader({ ready, onDone }) {
   const [pct, setPct] = useState(0);
   const [iris, setIris] = useState(false);
+  const t0 = useRef(performance.now());
 
+  // Count up over MIN_MS, but hold at 92% until the backend has answered.
   useEffect(() => {
-    const id = setInterval(() => setPct((p) => (reduced() ? (ready ? 100 : 90) : Math.min(ready ? 100 : 92, p + 2 + Math.random() * 3))), 60);
+    if (reduced()) { setPct(ready ? 100 : 92); return; }
+    // A timer, not requestAnimationFrame: rAF stalls in background tabs and would leave the sheet up.
+    const id = setInterval(() => {
+      const p = Math.min(1, (performance.now() - t0.current) / MIN_MS);
+      const eased = 1 - Math.pow(1 - p, 2.2);
+      setPct(Math.round(Math.min(ready ? 100 : 92, eased * 100)));
+      if (p >= 1 && ready) clearInterval(id);
+    }, 40);
     return () => clearInterval(id);
   }, [ready]);
-  const done = pct >= 100;
-  const enter = () => { setIris(true); setTimeout(onDone, reduced() ? 0 : IRIS_MS); };
+
+  useEffect(() => {
+    if (pct < 100) return;
+    const hold = setTimeout(() => setIris(true), reduced() ? 0 : 350);
+    const done = setTimeout(onDone, reduced() ? 0 : 350 + IRIS_MS);
+    return () => { clearTimeout(hold); clearTimeout(done); };
+  }, [pct, onDone]);
 
   return (
     <div className={"loader" + (iris ? " loader--iris" : "")} role="status" aria-label="Loading EMBER">
-      <i className="loader__corner loader__corner--tl" /><i className="loader__corner loader__corner--tr" />
-      <i className="loader__corner loader__corner--bl" /><i className="loader__corner loader__corner--br" />
-      <div className="loader__name"><Brand /><span>Fire safety for the Moon and Mars</span></div>
-      <div className="loader__meta"><b>Sheet 01 — A tiny planet</b><span>Scale 1 : 200 000</span><span>0.165 g · 30% O₂ · 70.3 kPa</span></div>
-
-      <svg className="loader__globe" viewBox="-80 -64 160 128" fill="none" strokeLinecap="round" overflow="visible">
-        <g stroke="#141619">
-          <circle r="50" strokeWidth="2" />
-          <g strokeWidth="1" opacity="0.55">
-            <line x1="-47" y1="-17" x2="40" y2="-47" /><line x1="-50" y1="3" x2="49" y2="-33" />
-            <line x1="-45" y1="24" x2="50" y2="-8" /><line x1="-30" y1="42" x2="47" y2="17" />
-          </g>
-          <g className="loader__spin" strokeWidth="1" opacity="0.4"><ellipse rx="18" ry="50" /><ellipse rx="36" ry="50" /></g>
-          <line x1="0" y1="-60" x2="0" y2="60" strokeWidth="1" strokeDasharray="12 6 2 6" opacity="0.5" />
-          <line x1="-60" y1="0" x2="60" y2="0" strokeWidth="1" strokeDasharray="12 6 2 6" opacity="0.5" />
-        </g>
-        <ellipse id="orbit" rx="68" ry="16" transform="rotate(-14)" stroke="#17806D" strokeWidth="1.3" strokeDasharray="4 6" />
-        <circle r="2.4" fill="#17806D"><animateMotion dur="7s" repeatCount="indefinite" rotate="0"><mpath href="#orbit" /></animateMotion></circle>
-        <g stroke="#141619" strokeWidth="1" opacity="0.6"><line x1="-50" y1="62" x2="-20" y2="62" /><line x1="20" y1="62" x2="50" y2="62" /></g>
-        <text y="64.5" textAnchor="middle" fontSize="5" fill="#141619" stroke="none">Ø 6 m</text>
-      </svg>
-
-      <div className="loader__cta">
-        {done ? <button className="primary cta" onClick={enter} autoFocus>Enter the planet</button>
-              : <span className="muted small">Drag to turn the model once inside</span>}
+      <div className="loader__tl"><b>Ember</b><span>Fire safety · Moon and Mars</span></div>
+      <div className="loader__tr">
+        Sheet 01 — Habitat fire survey
+        <span>Scale 1 : 200 000</span>
+        <span>89.9° S · Shackleton rim</span>
       </div>
-      <div className="loader__count"><span>{done ? "Model ready" : "Drafting the model"}</span><b>{Math.floor(pct)}<i>%</i></b></div>
+      <svg className="loader__globe" viewBox="-70 -70 140 140" fill="none" stroke="#141619" strokeLinecap="round">
+        <line x1="-66" y1="0" x2="66" y2="0" strokeWidth="0.25" strokeDasharray="3 1.5 0.6 1.5" opacity="0.5" />
+        <line x1="0" y1="-66" x2="0" y2="66" strokeWidth="0.25" strokeDasharray="3 1.5 0.6 1.5" opacity="0.5" />
+        <g transform="rotate(-18)">
+          <circle r="50" strokeWidth="0.9" />
+          <ellipse rx="50" ry="13" strokeWidth="0.3" />
+          <ellipse rx="43.5" ry="11" cy="-25" strokeWidth="0.3" />
+          <ellipse rx="43.5" ry="11" cy="25" strokeWidth="0.3" />
+          <g className="loader__spin" strokeWidth="0.3">
+            <ellipse rx="20" ry="50" />
+            <ellipse rx="38" ry="50" />
+          </g>
+          <ellipse rx="68" ry="20" stroke="#17806d" strokeWidth="0.5" strokeDasharray={`${(pct / 100) * 290} 400`} transform="rotate(-8)" />
+          <circle cx="31" cy="-12" r="1.6" fill="#17806d" stroke="none" />
+          <circle cx="31" cy="-12" r="3.6" stroke="#17806d" strokeWidth="0.35" />
+        </g>
+        <g strokeWidth="0.3" opacity="0.7">
+          <line x1="-50" y1="62" x2="50" y2="62" />
+          <line x1="-50" y1="60" x2="-50" y2="64" /><line x1="50" y1="60" x2="50" y2="64" />
+        </g>
+        <text x="0" y="60.4" textAnchor="middle" fontSize="3.4" fill="#141619" stroke="#eeebe4" strokeWidth="2.4" paintOrder="stroke"
+          fontFamily="inherit">habitat · 6 × 4 × 2.5 m</text>
+      </svg>
+      <div className="loader__bl">
+        <span>{pct < 100 ? "Drafting the model" : "Model ready"}</span>
+        <div className="loader__pct">{pct}<i>%</i></div>
+      </div>
     </div>
   );
 }
