@@ -10,7 +10,8 @@ const delay = (s) => (s == null ? "never detected" : `${Math.round(s)} s`);
 
 function reduce(s, e) {
   switch (e.type) {
-    case "reset": return { ...INITIAL, status: "running", log: [entry("system", "Duel started")] };
+    case "reset": return { ...INITIAL, status: "running", log: [entry("system", e.label ?? "Duel started")] };
+    case "clear": return INITIAL;
     case "round_start":
       return { ...s, round: e.round, rounds: e.rounds ?? s.rounds, red: null, blue: null, ghost: null,
                log: [...s.log, entry("system", `Round ${e.round}`)] };
@@ -41,14 +42,15 @@ export default function useDuelStream() {
   const [state, dispatch] = useReducer(reduce, INITIAL);
   const abort = useRef(null);
   useEffect(() => () => abort.current?.abort(), []);
-  const start = useCallback((cfg) => {
+  const start = useCallback((cfg, label) => {
     abort.current?.abort();
     const ctl = new AbortController();
     abort.current = ctl;
-    dispatch({ type: "reset" });
+    dispatch({ type: "reset", label });
     streamDuel(cfg, dispatch, ctl.signal).catch((err) => {
       if (err.name !== "AbortError") dispatch({ type: "fail", message: String(err.message || err) });
     });
   }, []);
-  return [state, start];
+  const clear = useCallback(() => { abort.current?.abort(); dispatch({ type: "clear" }); }, []);
+  return [state, start, clear];
 }

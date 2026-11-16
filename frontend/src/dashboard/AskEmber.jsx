@@ -1,6 +1,7 @@
 // AI-assisted: drafted with Claude (Anthropic); see README "Use of AI".
 // Ask EMBER: chat with clickable citations. Owner: Kishan (witnesses: Sibi).
 // POST /api/ask -> {question, answers: [{witness, answer, citations: [{n, source, fact}]}], note}.
+// The backend ranks up to three witnesses; only the best match (answers[0]) is shown.
 // The [n] markers inside `answer` match citations[n-1]; clicking one jumps to that citation and highlights it.
 import React, { useRef, useState } from "react";
 import { ask } from "../api.js";
@@ -97,7 +98,7 @@ export default function AskEmber() {
             {ex.answers.length === 0 ? (
               <p style={{ color: "var(--muted)", fontStyle: "italic" }}>{ex.note}</p>
             ) : (
-              ex.answers.map((a, j) => <Answer key={a.witness} a={a} exchangeIdx={i} answerIdx={j} />)
+              <Answer a={ex.answers[0]} exchangeIdx={i} answerIdx={0} />
             )}
           </div>
         ))}

@@ -1,13 +1,14 @@
 // AI-assisted: drafted with Claude (Anthropic); see README "Use of AI".
 // App shell. Owner: Kishan (UI redesign by Kartavya, Landfall-style). Flow: loader -> setup (steps 1-3) over the planet ->
-// "Start project" -> live view (agents on the planet, Ask EMBER, Insights button). No router: it's one stage.
+// "Start project" -> live view, where both duels start on their own (agents on the planet, Ask EMBER, Insights button).
+// No router: it's one stage.
 import React, { useCallback, useEffect, useState } from "react";
 import { getMission } from "../api.js";
 import Loader from "../planet/Loader.jsx";
 import PlanetScene from "../planet/PlanetScene.jsx";
-import useDuelStream from "../planet/useDuelStream.js";
 import SetupPanel from "./SetupPanel.jsx";
 import LiveHUD from "./LiveHUD.jsx";
+import useDuels from "./useDuels.js";
 
 export default function App() {
   const [mission, setMission] = useState(null);
@@ -16,13 +17,20 @@ export default function App() {
   const [phase, setPhase] = useState("setup"); // setup | live
   const [step, setStep] = useState(0);
   const [focus, setFocus] = useState("planet"); // planet | zooming | room
-  const [duel, startDuel] = useDuelStream();
+  const duels = useDuels();
+  const startDuels = duels.start;
 
   // The backend owns the mission; re-read it when the user moves between steps so the planet follows.
   useEffect(() => {
     getMission().then((d) => setMission(d.mission)).catch(() => {}).finally(() => setReady(true));
   }, [step, phase]);
   const onDone = useCallback(() => setLoaderDone(true), []);
+  // Read the saved mission at the moment of starting, so the duels use exactly what the report will read.
+  const startProject = useCallback(() => {
+    setPhase("live");
+    setFocus("planet");
+    getMission().then((d) => { setMission(d.mission); startDuels(d.mission); }).catch(() => {});
+  }, [startDuels]);
 
   useEffect(() => {
     if (focus !== "zooming") return;
@@ -37,11 +45,11 @@ export default function App() {
 
   return (
     <div className={"app" + (phase === "setup" ? " app--setup" : "")}>
-      <PlanetScene mission={mission} focus={focus} agents={duel} canEnter={phase === "live"} onEnter={() => setFocus("zooming")} />
+      <PlanetScene mission={mission} focus={focus} agents={duels.active} canEnter={phase === "live"} onEnter={() => setFocus("zooming")} />
       {phase === "setup" ? (
-        <SetupPanel step={step} setStep={setStep} onMissionSaved={setMission} onStart={() => { setPhase("live"); setFocus("planet"); }} />
+        <SetupPanel step={step} setStep={setStep} onMissionSaved={setMission} onStart={startProject} />
       ) : (
-        <LiveHUD mission={mission} duel={duel} startDuel={startDuel} focus={focus} onEnter={() => setFocus("zooming")}
+        <LiveHUD mission={mission} duels={duels} focus={focus} onEnter={() => setFocus("zooming")}
           onBackToPlanet={() => setFocus("planet")} onEditMission={() => { setPhase("setup"); setStep(0); setFocus("planet"); }} />
       )}
       {!loaderDone && <Loader ready={ready} onDone={onDone} />}

@@ -1,22 +1,28 @@
 // AI-assisted: drafted with Claude (Anthropic); see README "Use of AI".
-// After "Start project": agents feed, Ask EMBER, duel buttons and the Insights button around the planet.
+// After "Start project": agents feed, Ask EMBER and the Insights button around the planet. Both duels run on their
+// own (app/useDuels.js); Insights / Report opens once they finish, with a progress bar beside it until then.
 import React, { useState } from "react";
 import AgentFeed from "../planet/AgentFeed.jsx";
 import AskEmber from "../dashboard/AskEmber.jsx";
 import HabitatScreen from "../habitat/HabitatScreen.jsx";
 import InsightsOverlay from "./InsightsOverlay.jsx";
 
-// Ghost Flame demo: heptane droplet inside the FLEX cool-flame range (14-25% O2, 50.7-101.3 kPa), CO2 suppression.
-const LIQUID_DEMO = {
-  o2_frac: 0.21, pressure_kpa: 101.3, suppressant: "co2",
-  fires: [{ material: "n-heptane", phase: "liquid", x: 3, y: 2, z: 0.1, droplet_d_mm: 3.0 }],
-};
+function DuelProgress({ duels }) {
+  const pct = Math.round(duels.progress * 100);
+  return (
+    <div className="duel-progress" role="progressbar" aria-label="Duels running" aria-valuemin={0} aria-valuemax={100} aria-valuenow={pct}>
+      <div className="duel-progress__label"><span>{duels.stage}</span><b>{pct}%</b></div>
+      <div className="duel-progress__track"><div className="duel-progress__fill" style={{ width: `${pct}%` }} /></div>
+    </div>
+  );
+}
 
-export default function LiveHUD({ mission, duel, startDuel, focus, onEnter, onBackToPlanet, onEditMission }) {
+export default function LiveHUD({ mission, duels, focus, onEnter, onBackToPlanet, onEditMission }) {
   const [insights, setInsights] = useState(false);
   const [askOpen, setAskOpen] = useState(true);
-  const running = duel.status === "running";
-  const base = mission ? { g: mission.g, o2_frac: mission.o2_frac, pressure_kpa: mission.pressure_kpa, vent_on: mission.vent_on } : {};
+  const { duel, ghost, active, done } = duels;
+  const feed = { ...active, log: [...duel.log, ...ghost.log] };
+  const failed = [duel, ghost].filter((d) => d.status === "error");
   const inRoom = focus === "room";
 
   return (
@@ -26,12 +32,15 @@ export default function LiveHUD({ mission, duel, startDuel, focus, onEnter, onBa
           <span className="brand-chip"><span className="brand">Ember</span></span>
           <button className="btn" onClick={onEditMission}>Edit mission</button>
           <span className="grow" />
-          <button className="primary cta" onClick={() => setInsights(true)}>Insights / Report</button>
+          {!done && <DuelProgress duels={duels} />}
+          {done && failed.length > 0 && <span className="duel-note">A duel failed: {failed[0].error}</span>}
+          <button className="primary cta" disabled={!done} title={done ? undefined : "Opens when both duels finish"}
+            onClick={() => setInsights(true)}>Insights / Report</button>
         </header>
 
         <aside className="panel hud__feed" aria-label="Agents">
           <h2>Agents</h2>
-          <AgentFeed duel={duel} />
+          <AgentFeed duel={feed} />
         </aside>
 
         <aside className={"panel hud__ask" + (askOpen ? "" : " hud__ask--closed")} aria-label="Ask EMBER">
@@ -40,11 +49,9 @@ export default function LiveHUD({ mission, duel, startDuel, focus, onEnter, onBa
         </aside>
 
         <div className="hud__bar">
-          <button className="primary" disabled={running} onClick={() => startDuel(base)}>{running ? "Agents working…" : "Run duel"}</button>
-          <button className="btn" disabled={running} onClick={() => startDuel({ ...base, ...LIQUID_DEMO })}>Liquid-fuel demo (Ghost Flame)</button>
           {/* A button as well as the clickable dome: the dome is small and the planet turns. */}
           <button className="btn" onClick={onEnter}>Go inside the habitat</button>
-          <span className="hud__hint">Drag to turn the planet · W A S D steers the ship</span>
+          <span className="hud__hint">Drag to turn the planet</span>
         </div>
       </div>
 
@@ -57,7 +64,7 @@ export default function LiveHUD({ mission, duel, startDuel, focus, onEnter, onBa
           <div className="overlay__body">{inRoom && <HabitatScreen duel={duel.run} mission={mission} />}</div>
         </div>
       )}
-      {insights && <InsightsOverlay run={duel.run} onClose={() => setInsights(false)} />}
+      {insights && <InsightsOverlay run={duel.run} ghostRun={ghost.run} onClose={() => setInsights(false)} />}
     </>
   );
 }
