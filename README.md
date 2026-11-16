@@ -15,11 +15,11 @@ Core principle: **every number shows how much real data backs it.**
 | 🟡 Interpolated | Between tested conditions (including **all** partial-g results between the 0 g and 1 g data) |
 | 🔴 Extrapolated | Outside every tested condition |
 
-> **Final deadline: tonight (Sun 15 Nov), 11:59 PM. The build is frozen as of ~9 PM: presentation fixes only.** Routes that aren't built yet return HTTP 501 naming their owner.
+> **Final deadline: tonight (Sun 15 Nov), 11:59 PM. The build is frozen as of ~9 PM: presentation fixes only.** #35 (UI redesign) merged after the freeze; it was checked in the browser and the committed demo duels and `deck_numbers.json` are unchanged and still valid. Routes that aren't built yet return HTTP 501 naming their owner.
 
 ## What's on `main` now
 
-Merged so far: skeleton, physics engine (PR #3), Envelope Guard (#1), rank and report (#5), data lane (#4), FLEX/BASS-II calibration (#6), witnesses (#7), Red/Blue duel + Ghost Flame + 3D playback (#8), duel routes (#10), `/api/ask` + `/api/gap_map` + gap-map panel (#12), gravity panel (#14), Habitat + Ask EMBER on one page (#15), data verification sheet (#16), ranking fixes (#17, #18), deck metrics (#19), BASS-II verification (#20), Ghost Flame demo (#21), click-to-place fire (#22), vents/airflow/airlock in 3D (#23), Red search fixes + `red_vs_random` (#24), real BRE and SAME-1 test points (#25), engine severity signals + `physics_metrics()` + sourced vent speed and CO₂ dilution (#26), cotton calibrated from BASS fabric data + BASS summary + BASS-II pressure confirmed (#27), `metrics.py` + `deck_numbers.json` + Ask EMBER chat screen (#28), verified SAME/DAFT/ACME summaries (#29), the four dashboard screens (#30), committed demo duels + regenerated deck numbers + `data/PITCH_NOTES.md` (#31), reproducible seed-0 duels (#32), fix for a blank screen after Run duel (#33), pitch wording for Red's methanol fires (#34), and README updates (#9, #11, #13). **71 tests pass** (about 15 s with a warm duel cache, about 80 s cold, because the agent tests run real CMA-ES searches). **Every API route now returns real data**; nothing returns 501. **No screen is a placeholder anymore.** No PRs are open.
+Merged so far: skeleton, physics engine (PR #3), Envelope Guard (#1), rank and report (#5), data lane (#4), FLEX/BASS-II calibration (#6), witnesses (#7), Red/Blue duel + Ghost Flame + 3D playback (#8), duel routes (#10), `/api/ask` + `/api/gap_map` + gap-map panel (#12), gravity panel (#14), Habitat + Ask EMBER on one page (#15), data verification sheet (#16), ranking fixes (#17, #18), deck metrics (#19), BASS-II verification (#20), Ghost Flame demo (#21), click-to-place fire (#22), vents/airflow/airlock in 3D (#23), Red search fixes + `red_vs_random` (#24), real BRE and SAME-1 test points (#25), engine severity signals + `physics_metrics()` + sourced vent speed and CO₂ dilution (#26), cotton calibrated from BASS fabric data + BASS summary + BASS-II pressure confirmed (#27), `metrics.py` + `deck_numbers.json` + Ask EMBER chat screen (#28), verified SAME/DAFT/ACME summaries (#29), the four dashboard screens (#30), committed demo duels + regenerated deck numbers + `data/PITCH_NOTES.md` (#31), reproducible seed-0 duels (#32), fix for a blank screen after Run duel (#33), pitch wording for Red's methanol fires (#34), the planet UI redesign with live agent streaming (#35, merged after the freeze), and README updates (#9, #11, #13). **74 tests pass** (about 15 s with a warm duel cache, about 80 s cold, because the agent tests run real CMA-ES searches). **Every API route now returns real data**; nothing returns 501. **No screen is a placeholder anymore.** No PRs are open.
 
 | Component | Status | Owner | Where |
 |---|---|---|---|
@@ -32,7 +32,7 @@ Merged so far: skeleton, physics engine (PR #3), Envelope Guard (#1), rank and r
 | Red / Blue duel | ✅ Live: `run_red`, `run_blue`, `run_duel`, and the `/api/duel/run` + `/api/duel/{run_id}` routes (#10). The report uses it too. A duel request that names a fire skips Red's search and Blue defends that fire (#21). ⚠️ **Red currently ties random search** (#24): see Known findings | Kartavya | `backend/ember/agents/` |
 | Ghost Flame Auditor | ✅ `ghost_flame_check()` + `ghost_params()` (reads the `ghost.*` FLEX rows); runs inside the duel | Kartavya | `agents/ghost_flame.py` |
 | Witnesses / Ask EMBER | ✅ Live end to end: `/api/ask` returns cited answers (offline retrieval; Claude phrasing if a key is set), 15-question eval, and the **chat screen** (#28) shows answers with clickable `[n]` citations beside the habitat | Sibi (backend), Kishan (chat UI) | `agents/witness.py`, `dashboard/AskEmber.jsx` |
-| Frontend | ✅ 5 tabs. Explorer wired. **Habitat simulation and Ask EMBER share one page** (#15): 3D frame playback, click the floor to move the fire and re-run (#22), inlet/return vents, airflow arrows and airlock marker (#23; arrows are static), working "Run duel" plus a "Liquid-fuel demo (Ghost Flame)" button (#21), gravity comparison and gap-map panels, with the Ask EMBER column beside them. **Mission setup, Explorer + compare, Ranking and the Insights report are built (#30)**: saving a mission updates ranking, report and gap map; the report exports JSON and prints to PDF | Kishan, Kartavya, Ruthwik, Sibi | `frontend/src/` |
+| Frontend | ✅ Planet UI (#35): loader, then a 3-step setup panel (Mission setup, Experiment explorer, Ranking) beside a draggable low-poly planet that follows the mission (Moon / Mars / Earth / ISS ring station). Then the main view: **Agents** feed (left, live Red/Blue/Ghost Flame events), **Ask EMBER** (right), **Run duel** / **Liquid-fuel demo** buttons, and an **Insights / Report** overlay (report, duel rounds, gravity comparison, gap map). Click the dome to fly into the room view (smoke playback, click-to-place fire). Tabs and `SimulateAndAsk.jsx` were removed | Kartavya (planet), Kishan (app shell), Sibi (dashboard), Ruthwik (gravity panel) | `frontend/src/app/`, `frontend/src/planet/` |
 | Gravity panel | ✅ Same fire at ISS / Moon / Mars / Earth, vents on/off, badge per level (#14). About 10 s per comparison, because `/api/simulate` always returns voxel frames | Ruthwik | `frontend/src/panels/gravity/` |
 | `metrics.py` | ✅ Implemented (#28): writes all 17 entries of `deck_numbers.json` from `red_vs_random()`, the duel, the Ghost Flame sweep, `physics_metrics()` and `deck_metrics()`. Takes about 3 min. Regenerated in #31 (19:25). #32 changed seed handling afterwards, so a fresh run moves only the two Blue entries slightly; everything else matches. **Regenerate deck numbers and demo duels together at the freeze** (see Demo reliability) | Kishan |
 
@@ -214,7 +214,8 @@ ember/
 │   ├── investigations.json
 │   └── witness_docs/*.md
 ├── frontend/src/
-│   ├── app/                       # Kishan (routing, layout; SimulateAndAsk.jsx = habitat + chat page)
+│   ├── app/                       # Kishan (phase machine, setup panel, live HUD, insights overlay)
+│   ├── planet/                    # Kartavya (planet scene, habitat dome, ship, live duel stream)
 │   ├── api.js                     # Kishan
 │   ├── dashboard/                 # Kishan
 │   ├── habitat/                   # Kartavya
@@ -379,19 +380,22 @@ Known placeholder: `envelope/guard.py` assumes `DEFAULT_FLOW_CM_S = 10.0` becaus
 | POST | `/api/simulate` | Kishan (engine: Ruthwik) | Habitat | ✅ adds `envelope` badge |
 | POST | `/api/duel/run` | Kishan (agents: Kartavya) | Habitat / duel panel | ✅ returns `{run_id, rounds, top_risks, recommended_fixes}` |
 | GET | `/api/duel/{run_id}` | Kishan | Duel panel | ✅ cached run, or 404 for an unknown id |
+| POST | `/api/duel/stream` | Kishan (agents: Kartavya) | Planet / Agents feed | ✅ newline-delimited JSON events (`round_start`, `red_step`, `red_done`, `blue_step`, `blue_done`, `ghost`, `round_done`, `done`). A cached duel replays its rounds (#35) |
 | POST | `/api/ask` | Kishan (witnesses: Sibi) | Ask EMBER | ✅ `{question, answers, mode, note}` via `witness.ask_ember` |
 | GET | `/api/gap_map` | Kishan (guard: Sibi) | Gap map | ✅ `guard.gap_map()` at the current mission's pressure and g |
 | GET | `/api/report` | Kishan | Report | ✅ runs the duel (cached after the first call) |
 
 ## Frontend screens (user flow)
 
-1. **Mission setup:** habitat type, gravity, O₂, pressure, materials, ventilation. Every other screen updates from this.
-2. **Experiment explorer:** a summary card for each investigation, plus side-by-side compare.
-3. **Ranking:** ranked list with prevention / detection / suppression filters and a one-line "why".
-4. **Habitat simulation + Ask EMBER (one page):** the 3D habitat (smoke playback, Red/Blue duel, gravity comparison, gap map, badges on every number) on the left, and the **Ask EMBER** chat with clickable citations on the right. That way you can ask the witnesses about what you're watching without switching tabs. The chat stays in view while you scroll the habitat, and stacks below it on screens narrower than 1000 px.
-5. **Insights report:** risks, fixes, data gaps, Earth applications; export.
+1. **Loader**, then **setup (3 steps, beside the planet):**
+   1. **Mission setup:** habitat type, gravity, O₂, pressure, materials, ventilation. Autosaves; the planet changes with the habitat. Every other view uses this mission.
+   2. **Experiment explorer:** a summary card for each investigation, plus side-by-side compare.
+   3. **Ranking:** ranked list with prevention / detection / suppression filters and a one-line "why".
+2. **Main view (after the last setup step):** the **Agents** feed on the left streams Red, Blue and Ghost Flame events live while markers appear on the planet. **Ask EMBER** on the right answers with clickable citations. **Run duel** and **Liquid-fuel demo (Ghost Flame)** sit along the bottom. Drag to turn the planet; W/A/S/D steers the ship.
+3. **Room view:** click the habitat dome to fly in (3D smoke playback, click the floor to place a fire). Esc or "Back to planet" returns.
+4. **Insights / Report overlay** (top right): top risks, Blue's fixes, duel rounds, gravity comparison, data gap map, Earth applications; export JSON or print to PDF.
 
-The combined page lives in `frontend/src/app/SimulateAndAsk.jsx`. It only arranges the two screens: `habitat/HabitatScreen.jsx` (Kartavya) and `dashboard/AskEmber.jsx` (Kishan, witnesses: Sibi) keep their owners and can still be built independently.
+⚠️ The demo order in `data/PITCH_NOTES.md` §8 was written for the old tabbed UI and needs updating to this flow.
 
 ---
 
