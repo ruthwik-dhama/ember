@@ -4,7 +4,7 @@ import React, { useState } from "react";
 import { runDuel } from "../../api.js";
 import Badge from "../../components/Badge.jsx";
 
-const fmt = (d) => (d == null ? "never detected" : `${d} s`);
+const fmt = (d) => (d == null ? "never detected" : `${Math.round(d * 10) / 10} s`);
 
 // Ghost Flame demo: heptane droplet inside the FLEX cool-flame range (14-25% O2, 50.7-101.3 kPa), CO2 suppression.
 const LIQUID_DEMO = {
@@ -24,7 +24,7 @@ export default function AgentsPanel({ onDuel, gravity = 0.165 }) {
       setRun(res);
       const last = res.rounds[res.rounds.length - 1];
       const s = last.red.worst.scenario;
-      onDuel?.(last.after, {
+      onDuel?.({ ...last.after, envelope: last.envelope }, {
         fires: [{ material: s.material, phase: s.droplet_d_mm && ["n-heptane", "methanol"].includes(s.material) ? "liquid" : "solid",
                   x: s.x, y: s.y, z: s.z, t_ignite_s: s.t_ignite_s, droplet_d_mm: s.droplet_d_mm }],
         detectors: last.blue.detectors,

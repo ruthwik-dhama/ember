@@ -65,8 +65,8 @@ export default function HabitatScreen() {
         {r && (
           <p>
             {r.stub && <b>STUB DATA · </b>}
-            detected: {String(r.detected)} · delay: {r.delay_s ?? "-"} s · frames: {r.frames.length}{" "}
-            <Badge status={r.envelope.badge} source="Envelope Guard" nearest={r.envelope.nearest} />
+            detected: {String(r.detected)} · delay: {r.delay_s == null ? "-" : Math.round(r.delay_s * 10) / 10} s · frames: {r.frames.length}{" "}
+            {r.envelope && <Badge status={r.envelope.badge} source="Envelope Guard" nearest={r.envelope.nearest} />}
           </p>
         )}
       </div>
