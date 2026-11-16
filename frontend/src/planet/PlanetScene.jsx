@@ -5,7 +5,8 @@ import React, { useEffect, useMemo, useRef, useState } from "react";
 import { Canvas, useFrame, useThree } from "@react-three/fiber";
 import { OrbitControls, Stars } from "@react-three/drei";
 import * as THREE from "three";
-import Planet, { DOME_DIR, DOME_POS, R, planetKind } from "./Planet.jsx";
+import Planet, { DOME_DIR, DOME_POS, R, SkyBody, planetKind } from "./Planet.jsx";
+import { Boulders } from "./Scenery.jsx";
 import Habitat3D from "./Habitat3D.jsx";
 import Ship from "./Ship.jsx";
 import { skyLight } from "./dayNight.js";
@@ -49,8 +50,11 @@ export default function PlanetScene({ mission, focus, onEnter, agents, canEnter 
         <color attach="background" args={[sky.background]} />
         <ambientLight intensity={sky.ambient} />
         <directionalLight position={[5, 3, 4]} intensity={sky.sunIntensity} color={sky.sunColor} />
-        <Stars radius={60} depth={30} count={2200} factor={3} fade speed={0.4} />
+        <hemisphereLight args={["#c9d6ff", "#241a14", 0.32]} />
+        <Stars radius={70} depth={30} count={1400} factor={2.2} fade speed={0.3} />
+        <SkyBody kind={kind} />
         <Planet kind={kind} />
+        <Boulders kind={kind} />
         {station && <Station />}
         <Habitat3D onHover={setHover} onEnter={onEnter} interactive={canEnter && focus === "planet"} agents={agents} />
         <Ship enabled={focus === "planet"} />

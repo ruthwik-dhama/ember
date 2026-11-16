@@ -1,6 +1,6 @@
 // AI-assisted: drafted with Claude (Anthropic); see README "Use of AI".
 // Drafting-sheet loader: the planet as a line drawing with sheet notes, a percent counter, then an iris reveal.
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 
 const MIN_MS = 2200;
 const IRIS_MS = 900;
@@ -9,20 +9,19 @@ const reduced = () => typeof window !== "undefined" && window.matchMedia?.("(pre
 export default function Loader({ ready, onDone }) {
   const [pct, setPct] = useState(0);
   const [iris, setIris] = useState(false);
+  const t0 = useRef(performance.now());
 
   // Count up over MIN_MS, but hold at 92% until the backend has answered.
   useEffect(() => {
     if (reduced()) { setPct(ready ? 100 : 92); return; }
-    const t0 = performance.now();
-    let raf;
-    const tick = (now) => {
-      const p = Math.min(1, (now - t0) / MIN_MS);
+    // A timer, not requestAnimationFrame: rAF stalls in background tabs and would leave the sheet up.
+    const id = setInterval(() => {
+      const p = Math.min(1, (performance.now() - t0.current) / MIN_MS);
       const eased = 1 - Math.pow(1 - p, 2.2);
       setPct(Math.round(Math.min(ready ? 100 : 92, eased * 100)));
-      if (p < 1 || !ready) raf = requestAnimationFrame(tick);
-    };
-    raf = requestAnimationFrame(tick);
-    return () => cancelAnimationFrame(raf);
+      if (p >= 1 && ready) clearInterval(id);
+    }, 40);
+    return () => clearInterval(id);
   }, [ready]);
 
   useEffect(() => {
