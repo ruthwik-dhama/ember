@@ -7,7 +7,7 @@ import Badge from "../../components/Badge.jsx";
 const fmt = (d) => (d == null ? "never detected" : `${Math.round(d * 10) / 10} s`);
 
 export default function AgentsPanel({ run }) {
-  if (!run) return <p className="muted small">No duel yet. Run one from the planet view.</p>;
+  if (!run) return <p className="muted small">This run did not finish.</p>;
   const last = run.rounds[run.rounds.length - 1];
   return (
     <section>
