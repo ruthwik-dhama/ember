@@ -71,17 +71,19 @@ Every value gets a badge, generated from the data, never hand-labelled:
 
 ## 8. Demo tips
 
-- Demo order (planet UI, #35). Tested end to end on main, offline:
+- Demo order (planet UI, #35, with auto-run from #39):
   1. **Mission setup:** Moon base → Save mission → Next. Leave **Ventilation on** checked.
   2. **Experiment explorer:** click Compare on SAME and DAFT → Next.
   3. **Ranking:** click "detection" (DAFT jumps to #1: airlock dust) → **Start project**.
-  4. **Run duel:** the Agents feed streams Red and Blue round by round (about 10 s).
-  5. **Liquid-fuel demo (Ghost Flame):** watch for "Camera could report 'out' while a cool flame still burns".
-  6. **Ask EMBER** (right panel): one of the questions below.
-  7. **Insights / Report:** top risks, fixes, gap map, and **Compare gravity** (Earth 132 s → Moon 254 s → 0 g never).
-  8. Close the report and **click the dome** to go inside the habitat room and see the 3D replay.
-- Preset missions with ventilation on load every duel from cache. A custom mission, or ventilation off, runs a live
-  duel (about 90 s).
+  4. **Watch the agents.** No button: the Red vs Blue duel starts on its own, then the Ghost Flame liquid-fuel demo.
+     Narrate the Agents feed round by round. In the demo part, point at "Camera could report 'out' while a cool flame
+     still burns". The progress bar on **Insights / Report** shows how far along both runs are.
+  5. **Ask EMBER** (right panel) while the agents run: one of the questions below. It shows the single best witness.
+  6. **Insights / Report** (unlocks when both runs finish): top risks, fixes, the duel and Ghost Flame sections,
+     gap map, and **Compare gravity** (Earth 132 s → Moon 254 s → 0 g never).
+  7. Close the report and **click the dome** (or "Go inside the habitat") to see the 3D replay.
+- Preset missions with ventilation on load both runs from cache, so Insights unlocks in well under a minute. A custom
+  mission, or ventilation off, runs live (a few minutes), and Insights stays locked until it finishes. Use a preset.
 - Good Ask EMBER questions (each answers with citations):
   - "How big are smoke particles in microgravity?" (SAME)
   - "How clean is the ISS cabin air?" (DAFT)
