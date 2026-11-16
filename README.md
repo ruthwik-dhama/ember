@@ -37,7 +37,7 @@ The oxygen *partial pressure* is almost the same as on Earth, so breathing feels
 
 ## What you can do with it
 
-1. **Set up a mission.** Pick a habitat (spacecraft, ISS, Moon base, Mars base, pressurized rover) and adjust gravity, oxygen, pressure, materials on board and ventilation. The planet on screen changes with it.
+1. **Set up a mission.** Pick a habitat (spacecraft, ISS, Moon base, Mars base, pressurized rover) and adjust gravity, oxygen, pressure, materials on board and ventilation. The planet on screen changes with it, and the sky follows your local time of day (with a day/night toggle).
 2. **Explore the experiments.** A summary card for each investigation (objective, hardware, fuel, conditions, what was varied, sensors, key findings, sources), with side-by-side compare.
 3. **Rank them for your mission.** Investigations are scored by how close their real test conditions are to yours, filterable by prevention, detection and suppression, each with a one-line reason.
 4. **Run the Red vs Blue duel.** Watch both agents work in a live feed while their moves appear on the habitat. A second scenario shows the **Ghost Flame Auditor** flagging a liquid-fuel fire that a camera would report as out.
@@ -195,7 +195,7 @@ Tests:
 backend/.venv/bin/python -m pytest backend/tests -q
 ```
 
-EMBER runs fully offline. The duels for the preset missions are precomputed and committed, so the demo loads instantly; a custom mission runs a fresh duel in about a minute. Setting the `ANTHROPIC_API_KEY` environment variable is optional and lets Claude suggest Red's starting scenarios and phrase witness answers.
+EMBER runs fully offline; without a connection the interface uses its bundled fonts. The duels for the preset missions are precomputed and committed, so the demo loads instantly; a custom mission runs a fresh duel in about a minute. Setting the `ANTHROPIC_API_KEY` environment variable is optional and lets Claude suggest Red's starting scenarios and phrase witness answers.
 
 ## Repository layout
 
@@ -238,6 +238,13 @@ deck_numbers.json   generated results
 | **Sibi** | NASA data, verification, Envelope Guard, Witnesses |
 | **Kishan** | API, ranking, report, metrics, integration |
 | **Kavin** | Pitch and demo |
+
+## Built with
+
+- **Backend:** Python, FastAPI, NumPy, SciPy, pycma (CMA-ES)
+- **Frontend:** React, three.js with React Three Fiber and drei, Vite
+- **Fonts:** General Sans (Indian Type Foundry, via Fontshare), Instrument Serif and Instrument Sans (SIL Open Font License)
+- **Visual design** inspired by the [Landfall](https://www.framer.com/marketplace/templates/landfall/) template on Framer, recreated from scratch; no template code or assets are used
 
 ## Use of AI
 
