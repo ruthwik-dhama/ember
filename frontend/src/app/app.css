@@ -171,14 +171,15 @@ pre { background: var(--paper-2); border: 1px solid var(--line); padding: 12px; 
 
 /* ---- small screens: panels become bottom sheets ---- */
 @media (max-width: 900px) {
-  .hud__feed, .hud__ask { position: absolute; left: 10px; right: 10px; width: auto; top: auto; bottom: 74px; max-height: 26vh; }
-  .hud__ask { bottom: 74px; } .hud__feed { display: none; }
+  .hud__feed, .hud__ask { position: absolute; left: 10px; right: 10px; width: auto; top: auto; bottom: 112px; max-height: 26vh; }
+  .hud__ask { bottom: 112px; } .hud__feed { display: none; }
   .hud__hint { display: none; }
 }
 @media (max-width: 760px) {
   .setup { left: 0; right: 0; top: auto; bottom: 0; width: auto; max-height: 64vh; border-radius: 14px 14px 0 0; }
   .field { grid-template-columns: 1fr 76px; } .field label { grid-column: 1 / -1; }
-  .steps { overflow-x: auto; }
+  .steps { overflow-x: auto; scrollbar-width: none; flex: none; } .steps::-webkit-scrollbar { display: none; }
+  .steps li { flex: none; } .steps button { padding: 7px 12px; }
   .overlay__body { padding: 18px; } .overlay__bar { padding: 12px 18px; }
   .loader__tr { display: none; }
 }

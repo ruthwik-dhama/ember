@@ -12,7 +12,7 @@ const LIQUID_DEMO = {
   fires: [{ material: "n-heptane", phase: "liquid", x: 3, y: 2, z: 0.1, droplet_d_mm: 3.0 }],
 };
 
-export default function LiveHUD({ mission, duel, startDuel, focus, onBackToPlanet, onEditMission }) {
+export default function LiveHUD({ mission, duel, startDuel, focus, onEnter, onBackToPlanet, onEditMission }) {
   const [insights, setInsights] = useState(false);
   const [askOpen, setAskOpen] = useState(true);
   const running = duel.status === "running";
@@ -42,7 +42,9 @@ export default function LiveHUD({ mission, duel, startDuel, focus, onBackToPlane
         <div className="hud__bar">
           <button className="primary" disabled={running} onClick={() => startDuel(base)}>{running ? "Agents working…" : "Run duel"}</button>
           <button className="btn" disabled={running} onClick={() => startDuel({ ...base, ...LIQUID_DEMO })}>Liquid-fuel demo (Ghost Flame)</button>
-          <span className="hud__hint">Drag to turn the planet · click the habitat to go inside · W A S D steers the ship</span>
+          {/* A button as well as the clickable dome: the dome is small and the planet turns. */}
+          <button className="btn" onClick={onEnter}>Go inside the habitat</button>
+          <span className="hud__hint">Drag to turn the planet · W A S D steers the ship</span>
         </div>
       </div>
 

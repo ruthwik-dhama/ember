@@ -41,7 +41,7 @@ export default function App() {
       {phase === "setup" ? (
         <SetupPanel step={step} setStep={setStep} onMissionSaved={setMission} onStart={() => { setPhase("live"); setFocus("planet"); }} />
       ) : (
-        <LiveHUD mission={mission} duel={duel} startDuel={startDuel} focus={focus}
+        <LiveHUD mission={mission} duel={duel} startDuel={startDuel} focus={focus} onEnter={() => setFocus("zooming")}
           onBackToPlanet={() => setFocus("planet")} onEditMission={() => { setPhase("setup"); setStep(0); setFocus("planet"); }} />
       )}
       {!loaderDone && <Loader ready={ready} onDone={onDone} />}
