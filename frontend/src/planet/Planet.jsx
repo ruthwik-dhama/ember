@@ -8,10 +8,11 @@ export const R = 2;
 export const DOME_DIR = new THREE.Vector3(0.32, 0.5, 0.8).normalize();
 export const DOME_POS = DOME_DIR.clone().multiplyScalar(R + 0.02);
 
-const PALETTES = {
-  moon: { low: "#555861", mid: "#8a8d96", high: "#bcbfc7", glow: "#8fa4c8", seed: 1.3 },
-  mars: { low: "#6e3320", mid: "#b5562f", high: "#dc9060", glow: "#ff9a66", seed: 4.1 },
-  earth: { low: "#1b4d7c", mid: "#2f7d4f", high: "#d4dccb", glow: "#6fb3ff", seed: 7.7, water: "#1f5f9e" },
+// Palettes follow the Landfall template: grass #9FB371, sand, teal water #72AEA6. Moon and Mars keep their own hues.
+export const PALETTES = {
+  moon: { low: "#9f9a94", mid: "#c9c3bb", high: "#e8e3db", glow: "#ffffff", seed: 1.3 },
+  mars: { low: "#b0654a", mid: "#d08a62", high: "#eab890", glow: "#ffd9c0", seed: 4.1 },
+  earth: { low: "#d9cba5", mid: "#9fb371", high: "#6d8f4e", glow: "#ffffff", seed: 7.7, water: "#72aea6" },
 };
 
 // Mission gravity decides the world: 0.165 g Moon, 0.38 g Mars, 0 g / 1 g Earth (the ISS gets a ring station).
@@ -27,7 +28,7 @@ const noise = (x, y, z, s) =>
   (Math.sin(x * 2.1 + s) * Math.cos(y * 2.3 - s * 0.7) + Math.sin(z * 2.9 + x * 1.3 + s * 1.7) * 0.6 +
     Math.sin((x + y + z) * 4.1 - s) * 0.3) / 1.9;
 
-function heightAt(dir, kind) {
+export function heightAt(dir, kind) {
   const { seed } = PALETTES[kind];
   let h = noise(dir.x * 1.8, dir.y * 1.8, dir.z * 1.8, seed) * 0.16 + noise(dir.x * 5, dir.y * 5, dir.z * 5, seed) * 0.05;
   if (kind === "earth") h = Math.max(h, 0); // flat sea at sea level
@@ -72,7 +73,7 @@ export default function Planet({ kind }) {
       </mesh>
       <mesh>
         <sphereGeometry args={[R * 1.07, 48, 32]} />
-        <meshBasicMaterial color={PALETTES[kind].glow} transparent opacity={0.09} side={THREE.BackSide} depthWrite={false} />
+        <meshBasicMaterial color={PALETTES[kind].glow} transparent opacity={0.12} side={THREE.BackSide} depthWrite={false} />
       </mesh>
     </group>
   );

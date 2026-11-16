@@ -8,6 +8,7 @@ import * as THREE from "three";
 import Planet, { DOME_DIR, DOME_POS, R, planetKind } from "./Planet.jsx";
 import Habitat3D from "./Habitat3D.jsx";
 import Ship from "./Ship.jsx";
+import Scenery from "./Scenery.jsx";
 import { skyLight } from "./dayNight.js";
 
 // Portrait phones need the camera further back so the whole planet fits.
@@ -36,21 +37,22 @@ function CameraRig({ focus, controls }) {
   return null;
 }
 
-export default function PlanetScene({ mission, focus, onEnter, agents, canEnter = true }) {
+export default function PlanetScene({ mission, focus, onEnter, agents, canEnter = true, mode = "auto" }) {
   const kind = planetKind(mission);
-  const sky = useMemo(() => skyLight(), []);
+  const sky = useMemo(() => skyLight(mode), [mode]);
   const controls = useRef();
   const [hover, setHover] = useState(false);
   const still = useMemo(() => window.matchMedia?.("(prefers-reduced-motion: reduce)").matches, []);
   const station = mission && (mission.habitat === "iss" || mission.habitat === "spacecraft");
   return (
     <div className="stage" aria-hidden="true">
-      <Canvas camera={{ position: HOME.toArray(), fov: 45 }} dpr={[1, 1.75]}>
-        <color attach="background" args={[sky.background]} />
+      <div className="stage-bg" style={{ background: sky.background }} />
+      <Canvas camera={{ position: HOME.toArray(), fov: 45 }} dpr={[1, 1.75]} gl={{ alpha: true }}>
         <ambientLight intensity={sky.ambient} />
         <directionalLight position={[5, 3, 4]} intensity={sky.sunIntensity} color={sky.sunColor} />
-        <Stars radius={60} depth={30} count={2200} factor={3} fade speed={0.4} />
+        {!sky.isDay && <Stars radius={60} depth={30} count={2200} factor={3} fade speed={0.4} />}
         <Planet kind={kind} />
+        <Scenery kind={kind} isDay={sky.isDay} />
         {station && <Station />}
         <Habitat3D onHover={setHover} onEnter={onEnter} interactive={canEnter && focus === "planet"} agents={agents} />
         <Ship enabled={focus === "planet"} />
@@ -74,7 +76,7 @@ function Station() {
       </mesh>
       <mesh position={[R + 1.1, 0, 0]}>
         <boxGeometry args={[0.5, 0.02, 0.07]} />
-        <meshStandardMaterial color="#ff7a3d" flatShading />
+        <meshStandardMaterial color="#17806d" flatShading />
       </mesh>
     </group>
   );

@@ -5,6 +5,7 @@ import AgentFeed from "../planet/AgentFeed.jsx";
 import AskEmber from "../dashboard/AskEmber.jsx";
 import HabitatScreen from "../habitat/HabitatScreen.jsx";
 import InsightsOverlay from "./InsightsOverlay.jsx";
+import Brand from "./Brand.jsx";
 
 // Ghost Flame demo: heptane droplet inside the FLEX cool-flame range (14-25% O2, 50.7-101.3 kPa), CO2 suppression.
 const LIQUID_DEMO = {
@@ -23,10 +24,10 @@ export default function LiveHUD({ mission, duel, startDuel, focus, onBackToPlane
     <>
       <div className="hud">
         <header className="hud__top">
-          <span className="brand">EMBER</span>
+          <Brand />
           <button className="btn" onClick={onEditMission}>← Mission</button>
           <span className="grow" />
-          <button className="primary" onClick={() => setInsights(true)}>Insights / Report</button>
+          <button className="primary cta" onClick={() => setInsights(true)}>Insights / Report</button>
         </header>
 
         <aside className="panel hud__feed" aria-label="Agents">

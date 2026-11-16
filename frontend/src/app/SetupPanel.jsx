@@ -4,6 +4,7 @@ import React from "react";
 import MissionSetup from "../dashboard/MissionSetup.jsx";
 import Explorer from "../dashboard/Explorer.jsx";
 import Ranking from "../dashboard/Ranking.jsx";
+import Brand from "./Brand.jsx";
 
 const STEPS = ["Mission setup", "Experiment explorer", "Ranking"];
 
@@ -11,7 +12,7 @@ export default function SetupPanel({ step, setStep, onStart, onMissionSaved }) {
   return (
     <aside className="panel setup" aria-label="Project setup">
       <header className="setup__head">
-        <span className="brand">EMBER</span>
+        <Brand />
         <span className="muted small">Fire safety for the Moon and Mars</span>
       </header>
       <ol className="steps">
@@ -32,7 +33,7 @@ export default function SetupPanel({ step, setStep, onStart, onMissionSaved }) {
         <button className="btn" disabled={step === 0} onClick={() => setStep(step - 1)}>Back</button>
         {step < STEPS.length - 1
           ? <button className="primary" onClick={() => setStep(step + 1)}>Next</button>
-          : <button className="primary" onClick={onStart}>Start project</button>}
+          : <button className="primary cta" onClick={onStart}>Start project</button>}
       </footer>
     </aside>
   );
