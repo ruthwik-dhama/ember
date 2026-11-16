@@ -13,7 +13,7 @@ const [L, W, H] = ROOM_M;
 // Room metres -> dome-local coordinates (y is up from the pad).
 const toDome = (x, y, z) => [(x / L - 0.5) * 0.36, 0.02 + (z / H) * 0.12, (y / W - 0.5) * 0.24];
 
-function Ping({ position, color = "#3ddc84", delay = 0 }) {
+function Ping({ position, color = "#4fd8b8", delay = 0 }) {
   const ref = useRef();
   useFrame(({ clock }) => {
     const t = ((clock.elapsedTime + delay) % 1.8) / 1.8;
@@ -98,7 +98,7 @@ export default function Habitat3D({ onEnter, interactive, agents, onHover }) {
         const p = toDome(d.x, d.y, d.z);
         return (
           <group key={d.id || i}>
-            <mesh position={p}><boxGeometry args={[0.022, 0.012, 0.022]} /><meshBasicMaterial color="#3ddc84" /></mesh>
+            <mesh position={p}><boxGeometry args={[0.022, 0.012, 0.022]} /><meshBasicMaterial color="#4fd8b8" /></mesh>
             <Ping position={[p[0], 0.03, p[2]]} delay={i * 0.6} />
           </group>
         );

@@ -9,6 +9,7 @@ import PlanetScene from "../planet/PlanetScene.jsx";
 import SetupPanel from "./SetupPanel.jsx";
 import LiveHUD from "./LiveHUD.jsx";
 import useDuels from "./useDuels.js";
+import { skyLight } from "../planet/dayNight.js";
 
 export default function App() {
   const [mission, setMission] = useState(null);
@@ -17,6 +18,7 @@ export default function App() {
   const [phase, setPhase] = useState("setup"); // setup | live
   const [step, setStep] = useState(0);
   const [focus, setFocus] = useState("planet"); // planet | zooming | room
+  const [mode, setMode] = useState("auto"); // auto (local clock) | day | night
   const duels = useDuels();
   const startDuels = duels.start;
 
@@ -45,13 +47,18 @@ export default function App() {
 
   return (
     <div className={"app" + (phase === "setup" ? " app--setup" : "")}>
-      <PlanetScene mission={mission} focus={focus} agents={duels.active} canEnter={phase === "live"} onEnter={() => setFocus("zooming")} />
+      <PlanetScene mode={mode} mission={mission} focus={focus} agents={duels.active} canEnter={phase === "live"} onEnter={() => setFocus("zooming")} />
       {phase === "setup" ? (
         <SetupPanel step={step} setStep={setStep} onMissionSaved={setMission} onStart={startProject} />
       ) : (
         <LiveHUD mission={mission} duels={duels} focus={focus} onEnter={() => setFocus("zooming")}
           onBackToPlanet={() => setFocus("planet")} onEditMission={() => { setPhase("setup"); setStep(0); setFocus("planet"); }} />
       )}
+      <div className="toolbar">
+        <button onClick={() => setMode((m) => (skyLight(m).isDay ? "night" : "day"))} aria-label="Toggle day and night" title="Day / night">
+          {skyLight(mode).isDay ? "☾" : "☀"}
+        </button>
+      </div>
       {!loaderDone && <Loader ready={ready} onDone={onDone} />}
     </div>
   );

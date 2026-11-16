@@ -7,6 +7,7 @@ import { OrbitControls, Stars } from "@react-three/drei";
 import * as THREE from "three";
 import Planet, { DOME_DIR, DOME_POS, R, SkyBody, planetKind } from "./Planet.jsx";
 import { Boulders } from "./Scenery.jsx";
+import Foliage from "./Foliage.jsx";
 import Habitat3D from "./Habitat3D.jsx";
 import Ship from "./Ship.jsx";
 import { skyLight } from "./dayNight.js";
@@ -37,24 +38,25 @@ function CameraRig({ focus, controls }) {
   return null;
 }
 
-export default function PlanetScene({ mission, focus, onEnter, agents, canEnter = true }) {
+export default function PlanetScene({ mission, focus, onEnter, agents, canEnter = true, mode = "auto" }) {
   const kind = planetKind(mission);
-  const sky = useMemo(() => skyLight(), []);
+  const sky = useMemo(() => skyLight(mode), [mode]);
   const controls = useRef();
   const [hover, setHover] = useState(false);
   const still = useMemo(() => window.matchMedia?.("(prefers-reduced-motion: reduce)").matches, []);
   const station = mission && (mission.habitat === "iss" || mission.habitat === "spacecraft");
   return (
     <div className="stage" aria-hidden="true">
-      <Canvas camera={{ position: HOME.toArray(), fov: 45 }} dpr={[1, 1.75]}>
-        <color attach="background" args={[sky.background]} />
+      <div className="stage-bg" style={{ background: sky.background }} />
+      <Canvas camera={{ position: HOME.toArray(), fov: 45 }} dpr={[1, 1.75]} gl={{ alpha: true }}>
         <ambientLight intensity={sky.ambient} />
         <directionalLight position={[5, 3, 4]} intensity={sky.sunIntensity} color={sky.sunColor} />
         <hemisphereLight args={["#c9d6ff", "#241a14", 0.32]} />
-        <Stars radius={70} depth={30} count={1400} factor={2.2} fade speed={0.3} />
+        {!sky.isDay && <Stars radius={70} depth={30} count={1400} factor={2.2} fade speed={0.3} />}
         <SkyBody kind={kind} />
         <Planet kind={kind} />
         <Boulders kind={kind} />
+        <Foliage kind={kind} isDay={sky.isDay} />
         {station && <Station />}
         <Habitat3D onHover={setHover} onEnter={onEnter} interactive={canEnter && focus === "planet"} agents={agents} />
         <Ship />
@@ -78,7 +80,7 @@ function Station() {
       </mesh>
       <mesh position={[R + 1.1, 0, 0]}>
         <boxGeometry args={[0.5, 0.02, 0.07]} />
-        <meshStandardMaterial color="#ff7a3d" flatShading />
+        <meshStandardMaterial color="#17806d" flatShading />
       </mesh>
     </group>
   );

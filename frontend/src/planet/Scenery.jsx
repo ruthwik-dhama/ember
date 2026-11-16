@@ -8,7 +8,7 @@ import { DOME_DIR, R, heightAt } from "./Planet.jsx";
 
 const rand = (n) => { const x = Math.sin(n * 91.7 + 17.3) * 43758.5453; return x - Math.floor(x); };
 const ROCK = { moon: "#6f7078", mars: "#7a3b24", earth: "#5d6a5a" };
-const HULL = "#e9e5db", HULL_DARK = "#b9b5aa", EMBER = "#c2471a", STEEL = "#4b5059";
+const HULL = "#e9e5db", HULL_DARK = "#b9b5aa", EMBER = "#17806d", STEEL = "#4b5059";
 
 export function Boulders({ kind, count = 170 }) {
   const ref = useRef();

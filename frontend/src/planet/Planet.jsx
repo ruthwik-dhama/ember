@@ -9,9 +9,9 @@ export const DOME_DIR = new THREE.Vector3(0.32, 0.5, 0.8).normalize();
 export const DOME_POS = DOME_DIR.clone().multiplyScalar(R + 0.02);
 
 const PALETTES = {
-  moon: { low: "#4a4b52", mid: "#8b8c93", high: "#cfcfd2", glow: "#aab4c8", haze: 0.035, seed: 1.3, craters: 26 },
-  mars: { low: "#5f2b1c", mid: "#a8522f", high: "#d99a6c", glow: "#f0a070", haze: 0.08, seed: 4.1, craters: 12 },
-  earth: { low: "#1b4d7c", mid: "#2f7d4f", high: "#d4dccb", glow: "#6fb3ff", haze: 0.1, seed: 7.7, water: "#1f5f9e", craters: 0 },
+  moon: { low: "#7f7b76", mid: "#b9b4ab", high: "#e5e0d6", glow: "#ffffff", haze: 0.05, seed: 1.3, craters: 26 },
+  mars: { low: "#9a4f33", mid: "#c97e55", high: "#ecb892", glow: "#ffd9c0", haze: 0.08, seed: 4.1, craters: 12 },
+  earth: { low: "#d9cba5", mid: "#9fb371", high: "#6d8f4e", glow: "#ffffff", haze: 0.1, seed: 7.7, water: "#72aea6", craters: 0 },
 };
 
 // Mission gravity decides the world: 0.165 g Moon, 0.38 g Mars, 0 g / 1 g Earth (the ISS gets a ring station).
