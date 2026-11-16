@@ -1,8 +1,20 @@
 # EMBER
 
+## Run EMBER: [https://ember-murex-gamma.vercel.app/](https://ember-murex-gamma.vercel.app/)
+
+**Open the link above in any modern browser.** There is nothing to download or install, and nothing to run on your own computer.
+
+1. Pick a habitat (try **Moon base**), step through **Experiment explorer** and **Ranking**, then press **Start project**.
+2. The Red vs Blue duel and the Ghost Flame scenario run on their own; watch the agents feed and the progress bar.
+3. When the bar finishes, open **Insights / Report**. Ask EMBER a question at any time, and use **Go inside the habitat** for the 3D smoke view.
+
+If nobody has used the site for a while, the first load can take about a minute while its server wakes up. After that it responds normally.
+
+---
+
 **Exploration Multi-agent Burn Evaluation Range.** A fire-safety dashboard and adversarial simulator for crewed lunar and Martian habitats, built on NASA Physical Sciences Informatics (PSI) combustion data.
 
-NASA Space Apps Challenge 2026. **Live demo: https://ember-murex-gamma.vercel.app**
+NASA Space Apps Challenge 2026.
 
 EMBER does two things:
 
@@ -16,16 +28,6 @@ One rule runs through all of it: **every number shows how much real data backs i
 | 🟢 Measured | Inside conditions a PSI experiment actually tested |
 | 🟡 Interpolated | Between tested conditions. This includes **every** result at lunar or Martian gravity |
 | 🔴 Extrapolated | Outside every tested condition |
-
-## Try it now
-
-**Open https://ember-murex-gamma.vercel.app** in any modern browser. Nothing to install, nothing to run on your own computer.
-
-1. Pick a habitat (try **Moon base**), step through **Experiment explorer** and **Ranking**, then press **Start project**.
-2. The Red vs Blue duel and the Ghost Flame scenario run on their own; watch the agents feed and the progress bar.
-3. When the bar finishes, open **Insights / Report**. Ask EMBER a question at any time, and use **Go inside the habitat** for the 3D smoke view.
-
-The site is hosted on Vercel, with its backend on Render's free tier. If nobody has used it for a while, the backend is asleep and the first load can take about a minute. After that it responds normally.
 
 ---
 
@@ -165,62 +167,6 @@ What EMBER does not yet show:
 
 ---
 
-## Run it locally
-
-Only needed for development; to use EMBER, open the [live demo](https://ember-murex-gamma.vercel.app). Requires Python 3.9 or later and Node 18 or later.
-
-```bash
-git clone https://github.com/ruthwik-dhama/ember.git
-```
-
-```bash
-cd ember
-```
-
-One-time setup:
-
-```bash
-python3 -m venv backend/.venv
-```
-
-```bash
-backend/.venv/bin/pip install -r backend/requirements.txt
-```
-
-```bash
-cd frontend && npm install && cd ..
-```
-
-Start both servers and open the app (macOS and Linux):
-
-```bash
-./start-ember.sh
-```
-
-Or run them separately: `.venv/bin/python -m uvicorn ember.api:app --port 8000` from `backend/`, and `npm run dev` from `frontend/`, then open http://localhost:5173.
-
-Tests:
-
-```bash
-backend/.venv/bin/python -m pytest backend/tests -q
-```
-
-EMBER runs fully offline; without a connection the interface uses its bundled fonts. The duels for the preset missions are precomputed and committed, so the demo loads instantly; a custom mission runs a fresh duel in about a minute. Setting the `ANTHROPIC_API_KEY` environment variable is optional and lets Claude suggest Red's starting scenarios and phrase witness answers.
-
-## Host your own copy
-
-The live demo runs the frontend on **Vercel** and the FastAPI backend on **Render**, both on free plans. The backend runs as one long-lived server rather than serverless functions, because it keeps the current mission in memory, caches duels on disk and streams duels that run up to about a minute.
-
-1. **Backend on Render.** Create a Web Service from this repository with:
-   - Root Directory: `backend`
-   - Build Command: `pip install -r requirements.txt`
-   - Start Command: `uvicorn ember.api:app --host 0.0.0.0 --port $PORT`
-   - Environment variable: `PYTHON_VERSION` = `3.11.9`
-
-   When it is live, `https://<your-service>.onrender.com/api/health` returns `{"ok": true, ...}`.
-2. **Point the frontend at it.** In `frontend/vercel.json`, change the rewrite destination to your Render URL. This forwards `/api/*` from the Vercel site to the backend, so the app keeps using relative API paths and needs no CORS setup.
-3. **Frontend on Vercel.** Import the repository, set Root Directory to `frontend`, and keep the detected Vite preset. Vercel redeploys on every push; Render's free tier needs a manual deploy for backend changes unless you connect the repository through GitHub.
-
 ## Repository layout
 
 ```
@@ -262,6 +208,62 @@ deck_numbers.json   generated results
 | **Sibi** | NASA data, verification, Envelope Guard, Witnesses |
 | **Kishan** | API, ranking, report, metrics, integration |
 | **Kavin** | Pitch and demo |
+
+## For developers: run it locally
+
+Not needed to use EMBER; just open [https://ember-murex-gamma.vercel.app/](https://ember-murex-gamma.vercel.app/). Requires Python 3.9 or later and Node 18 or later.
+
+```bash
+git clone https://github.com/ruthwik-dhama/ember.git
+```
+
+```bash
+cd ember
+```
+
+One-time setup:
+
+```bash
+python3 -m venv backend/.venv
+```
+
+```bash
+backend/.venv/bin/pip install -r backend/requirements.txt
+```
+
+```bash
+cd frontend && npm install && cd ..
+```
+
+Start both servers and open the app (macOS and Linux):
+
+```bash
+./start-ember.sh
+```
+
+Or run them separately: `.venv/bin/python -m uvicorn ember.api:app --port 8000` from `backend/`, and `npm run dev` from `frontend/`, then open http://localhost:5173.
+
+Tests:
+
+```bash
+backend/.venv/bin/python -m pytest backend/tests -q
+```
+
+EMBER runs fully offline; without a connection the interface uses its bundled fonts. The duels for the preset missions are precomputed and committed, so the demo loads instantly; a custom mission runs a fresh duel in about a minute. Setting the `ANTHROPIC_API_KEY` environment variable is optional and lets Claude suggest Red's starting scenarios and phrase witness answers.
+
+## For developers: host your own copy
+
+The live demo runs the frontend on **Vercel** and the FastAPI backend on **Render**, both on free plans. The backend runs as one long-lived server rather than serverless functions, because it keeps the current mission in memory, caches duels on disk and streams duels that run up to about a minute.
+
+1. **Backend on Render.** Create a Web Service from this repository with:
+   - Root Directory: `backend`
+   - Build Command: `pip install -r requirements.txt`
+   - Start Command: `uvicorn ember.api:app --host 0.0.0.0 --port $PORT`
+   - Environment variable: `PYTHON_VERSION` = `3.11.9`
+
+   When it is live, `https://<your-service>.onrender.com/api/health` returns `{"ok": true, ...}`.
+2. **Point the frontend at it.** In `frontend/vercel.json`, change the rewrite destination to your Render URL. This forwards `/api/*` from the Vercel site to the backend, so the app keeps using relative API paths and needs no CORS setup.
+3. **Frontend on Vercel.** Import the repository, set Root Directory to `frontend`, and keep the detected Vite preset. Vercel redeploys on every push; Render's free tier needs a manual deploy for backend changes unless you connect the repository through GitHub.
 
 ## Built with
 
