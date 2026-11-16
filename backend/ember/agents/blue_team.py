@@ -15,7 +15,7 @@ import numpy as np
 from ..config import ROOM_M, Detector, DustEvent, SimConfig
 from ..sim.engine import simulate
 from .ghost_flame import ghost_flame_check, ghost_params
-from .red_team import fixed_red, red_objective, run_red, to_cfg
+from .red_team import cma_seed, fixed_red, red_objective, run_red, to_cfg
 
 SUPPRESSANTS = ["none", "co2", "he"]
 N_DETECTORS = 2
@@ -55,7 +55,7 @@ def run_blue(red_worst: dict, base_cfg: SimConfig, budget: int, seed: int, keep_
 
     red_cfg = to_cfg(base_cfg, red_worst["scenario"])
     centre = [ROOM_M[0] / 2, ROOM_M[1] / 2, ROOM_M[2] - 0.1] * N_DETECTORS + [60.0, 1.0]
-    es = cma.CMAEvolutionStrategy(centre, 0.3, {"seed": seed, "maxfevals": budget, "popsize": 6, "verbose": -9,
+    es = cma.CMAEvolutionStrategy(centre, 0.3, {"seed": cma_seed(seed), "maxfevals": budget, "popsize": 6, "verbose": -9,
                                                 "bounds": [_LO.tolist(), _HI.tolist()],
                                                 "CMA_stds": list(_HI - _LO)})
     best_x, best = None, float("inf")
