@@ -26,7 +26,7 @@ from ember.sim.metrics import physics_metrics
 
 OUT = Path(__file__).resolve().parents[2] / "deck_numbers.json"
 
-SEEDS = [0, 1, 2, 3, 4]              # "5+ seeds" fairness rule
+SEEDS = [1, 2, 3, 4, 5]              # "5+ seeds" fairness rule. Not 0: cma treats seed=0 as "random seed"
 RED_BLUE_BUDGET = 60                 # matches blue_team.run_duel's own default: same budget everywhere
 T_MAX = 300.0                        # red_team.T_MAX; undetected trials count as this for mean/worst-case
 PHYSICS_STATUS = "fitted"  # reduced-order model calibrated to PSI data; see README > Physics in one paragraph
