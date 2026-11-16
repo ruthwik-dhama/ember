@@ -72,3 +72,10 @@ def test_red_vs_random_shape_and_equal_budget():
     from ember.agents.compare import red_vs_random
     r = red_vs_random(SimConfig(detectors=[Detector("c", 3, 2, 2.4)]), budget=12, seeds=[0])
     assert len(r["red_scores"]) == len(r["random_scores"]) == 1 and r["red_median"] >= 300 - 1
+
+
+def test_seed_zero_is_reproducible():
+    # cma treats seed=0 as "random"; cma_seed maps it to a fixed value, so two runs must match exactly.
+    cfg = SimConfig(detectors=[Detector("c", 3, 2, 2.4)])
+    a, b = run_red(cfg, budget=16, seed=0), run_red(cfg, budget=16, seed=0)
+    assert a["worst"]["scenario"] == b["worst"]["scenario"] and a["worst"]["score"] == b["worst"]["score"]

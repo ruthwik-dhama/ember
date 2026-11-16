@@ -26,6 +26,12 @@ FALLBACK_SEEDS = [
 ]
 
 
+def cma_seed(seed: int) -> int:
+    """cma treats seed=0 as "random seed". Map 0 to a fixed value so every run is reproducible; seeds >= 1
+    pass through unchanged, so already-cached duels stay valid."""
+    return seed or 10**6
+
+
 def red_objective(result: dict) -> float:
     """Higher = worse fire. Undetected fires get a tiebreak so search still has a gradient."""
     if result["detected"]:
@@ -134,7 +140,7 @@ def run_red(base_cfg: SimConfig, budget: int, seed: int, llm_cache=None, top_k: 
                      for m in MATERIALS for x, y, z in ((0.5, 0.5, 0.2), (ROOM_M[0] - 0.5, ROOM_M[1] - 0.5, 0.3))]
     seeds = seeds[:max(1, budget // 4)]
     best_seed = max(seeds, key=evaluate)
-    es = cma.CMAEvolutionStrategy(encode(best_seed), 0.3, {"seed": seed, "maxfevals": max(budget - len(seeds), 1),
+    es = cma.CMAEvolutionStrategy(encode(best_seed), 0.3, {"seed": cma_seed(seed), "maxfevals": max(budget - len(seeds), 1),
                                                            "bounds": [_LO.tolist(), _HI.tolist()],
                                                            "CMA_stds": [*(_HI - _LO)[:3], 0.02, *(_HI - _LO)[4:]],  # axes differ in units; material stays put
                                                            "popsize": 6, "verbose": -9})
