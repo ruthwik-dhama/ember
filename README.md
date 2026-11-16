@@ -1,5 +1,7 @@
 # EMBER
 
+A fire-safety dashboard and adversarial simulator for Moon and Mars habitats, built on NASA ISS combustion data.
+
 ## Run EMBER: [https://ember-murex-gamma.vercel.app/](https://ember-murex-gamma.vercel.app/)
 
 **Open the link above in any modern browser.** There is nothing to download or install, and nothing to run on your own computer.
