@@ -15,12 +15,12 @@
     "calibration_status": "fitted"
   },
   "blue_mean_delay_s": {
-    "value": 37.8,
+    "value": 2.8,
     "badge": "yellow",
     "calibration_status": "fitted"
   },
   "blue_worst_case_delay_s": {
-    "value": 52.0,
+    "value": 6.3,
     "badge": "yellow",
     "calibration_status": "fitted"
   },
