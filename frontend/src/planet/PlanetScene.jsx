@@ -59,7 +59,7 @@ export default function PlanetScene({ mission, focus, onEnter, agents, canEnter 
         <Foliage kind={kind} isDay={sky.isDay} />
         {station && <Station />}
         <Habitat3D onHover={setHover} onEnter={onEnter} interactive={canEnter && focus === "planet"} agents={agents} />
-        <Ship enabled={focus === "planet"} />
+        <Ship />
         <CameraRig focus={focus} controls={controls} />
         <OrbitControls ref={controls} enablePan={false} minDistance={4.2} maxDistance={11} autoRotate={!still && !hover && focus === "planet"} autoRotateSpeed={0.5}
           rotateSpeed={0.6} dampingFactor={0.08} />

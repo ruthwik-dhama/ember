@@ -97,7 +97,8 @@ export default function AskEmber() {
             {ex.answers.length === 0 ? (
               <p style={{ color: "var(--muted)", fontStyle: "italic" }}>{ex.note}</p>
             ) : (
-              ex.answers.map((a, j) => <Answer key={a.witness} a={a} exchangeIdx={i} answerIdx={j} />)
+              // The backend ranks witnesses best first; show only the one that answers best.
+              <Answer a={ex.answers[0]} exchangeIdx={i} answerIdx={0} />
             )}
           </div>
         ))}
