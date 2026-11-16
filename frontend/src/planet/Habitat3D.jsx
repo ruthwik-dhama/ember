@@ -106,12 +106,12 @@ export default function Habitat3D({ onEnter, interactive, agents, onHover }) {
 
       {interactive && !ghost && (
         <Html position={[0, 0.34, 0]} center distanceFactor={7} zIndexRange={[4, 0]} style={{ pointerEvents: "none" }}>
-          <div className="scene-label">{hover ? "Enter the habitat" : "Habitat"}</div>
+          <div className="scene-label" data-n="01">{hover ? "Go inside" : "Habitat"}</div>
         </Html>
       )}
       {ghost && (
         <Html position={[0, 0.5, 0]} center distanceFactor={7} zIndexRange={[4, 0]} style={{ pointerEvents: "none" }}>
-          <div className="scene-label scene-label--ghost">Ghost flame: false all-clear</div>
+          <div className="scene-label scene-label--ghost">Cool flame still burning</div>
         </Html>
       )}
     </group>

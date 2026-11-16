@@ -11,14 +11,14 @@ export default function SetupPanel({ step, setStep, onStart, onMissionSaved }) {
   return (
     <aside className="panel setup" aria-label="Project setup">
       <header className="setup__head">
-        <span className="brand">EMBER</span>
-        <span className="muted small">Fire safety for the Moon and Mars</span>
+        <span className="brand">Ember</span>
+        <span className="small">Fire safety for the Moon and Mars</span>
       </header>
       <ol className="steps">
         {STEPS.map((name, i) => (
           <li key={name}>
             <button className={i === step ? "on" : i < step ? "done" : ""} onClick={() => setStep(i)} aria-current={i === step ? "step" : undefined}>
-              <span>{i + 1}</span>{name}
+              <span>0{i + 1}</span>{name}
             </button>
           </li>
         ))}
@@ -32,7 +32,7 @@ export default function SetupPanel({ step, setStep, onStart, onMissionSaved }) {
         <button className="btn" disabled={step === 0} onClick={() => setStep(step - 1)}>Back</button>
         {step < STEPS.length - 1
           ? <button className="primary" onClick={() => setStep(step + 1)}>Next</button>
-          : <button className="primary" onClick={onStart}>Start project</button>}
+          : <button className="primary cta" onClick={onStart}>Start project</button>}
       </footer>
     </aside>
   );

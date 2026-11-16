@@ -29,7 +29,7 @@ function reduce(s, e) {
                  ? (e.false_all_clear ? "Camera could report 'out' while a cool flame still burns (false all-clear)" : "No cool-flame risk in this regime")
                  : e.note)] };
     case "round_done":
-      return { ...s, log: [...s.log, entry("system", `Time to alarm: ${delay(e.before_delay_s)} → ${delay(e.after_delay_s)}`)] };
+      return { ...s, log: [...s.log, entry("system", `Time to alarm: ${delay(e.before_delay_s)} to ${delay(e.after_delay_s)}`)] };
     case "done": return { ...s, status: "done", run: e.run };
     case "error": return { ...s, status: "error", error: e.message };
     case "fail": return { ...s, status: "error", error: e.message };

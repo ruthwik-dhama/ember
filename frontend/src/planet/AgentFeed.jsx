@@ -2,7 +2,7 @@
 // What the agents are doing right now, as a scrolling feed.
 import React, { useEffect, useRef } from "react";
 
-const LABEL = { red: "Red", blue: "Blue", ghost: "Ghost Flame", system: "·" };
+const LABEL = { red: "Red", blue: "Blue", ghost: "Ghost Flame", system: "" };
 
 function Live({ duel }) {
   if (duel.status !== "running") return null;
@@ -17,7 +17,7 @@ export default function AgentFeed({ duel }) {
   useEffect(() => { end.current?.scrollIntoView({ block: "nearest" }); }, [duel.log.length]);
   return (
     <div className="feed" aria-live="polite">
-      {duel.status === "idle" && <p className="muted small">Run a duel to watch Red and Blue work on the habitat in real time.</p>}
+      {duel.status === "idle" && <p className="muted small">Nothing running yet. Run a duel and each move by Red and Blue shows up here as it happens.</p>}
       {duel.log.map((e) => (
         <p key={e.id} className={"feed__item feed__item--" + e.agent}>
           <b>{LABEL[e.agent]}</b> {e.text}
