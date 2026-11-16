@@ -3,10 +3,10 @@
 import React from "react";
 
 export default function Badge({ status, source, nearest }) {
-  const icon = { green: "🟢", yellow: "🟡", red: "🔴" }[status] ?? "⚪";
+  const word = { green: "Measured", yellow: "Interpolated", red: "Extrapolated" }[status] ?? "Unknown";
   return (
-    <span className="badge" title={`Source: ${source ?? "?"}\nNearest test: ${nearest ?? "?"}`}>
-      {icon}
+    <span className={"badge badge--" + (status ?? "none")} title={`${word}\nSource: ${source ?? "?"}\nNearest test: ${nearest ?? "?"}`}>
+      {word}
     </span>
   );
 }

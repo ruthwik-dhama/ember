@@ -89,7 +89,7 @@ export default function Report() {
                   <div className="muted">
                     Ghost Flame check: {f.ghost_flame.applicable === false
                       ? f.ghost_flame.note
-                      : f.ghost_flame.false_all_clear ? "⚠️ possible cool flame after suppression (false all-clear risk)" : "no cool-flame risk"}
+                      : f.ghost_flame.false_all_clear ? "Warning: possible cool flame after suppression (false all-clear risk)" : "no cool-flame risk"}
                   </div>
                 )}
               </li>

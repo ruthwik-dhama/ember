@@ -21,18 +21,16 @@ const DEFAULT_SCENE = {
 const T_MAX_S = 300; // SimConfig.t_max_s default
 
 const s = {
-  panel: { border: "1px solid var(--line)", borderRadius: 8, padding: 16 },
+  panel: {},
   head: { display: "flex", flexWrap: "wrap", gap: 8, alignItems: "center", justifyContent: "space-between" },
-  h3: { margin: 0, fontSize: 17 },
+  h3: { display: "none" },
   muted: { color: "var(--muted)", fontSize: 13, margin: "6px 0 12px" },
-  row: { display: "grid", gridTemplateColumns: "88px 1fr 150px", gap: 10, alignItems: "center", margin: "8px 0" },
-  track: { height: 18, background: "#161920", borderRadius: 4, overflow: "hidden" },
-  bar: { height: "100%", background: "var(--accent)", borderRadius: 4 },
-  never: { height: "100%", width: "100%", borderRadius: 4,
-           background: "repeating-linear-gradient(45deg, #2a2e35 0 6px, #161920 6px 12px)" },
+  row: { display: "grid", gridTemplateColumns: "96px 1fr 190px", gap: 10, alignItems: "center", margin: "8px 0" },
+  track: { height: 10, background: "var(--paper-3)", borderRadius: 2, overflow: "hidden" },
+  bar: { height: "100%", background: "var(--fg)", borderRadius: 2 },
+  never: { height: "100%", width: "100%", borderRadius: 2,
+           background: "repeating-linear-gradient(135deg, var(--accent) 0 1px, transparent 1px 6px)" },
   value: { fontVariantNumeric: "tabular-nums", fontSize: 14 },
-  toggle: (on) => ({ background: "none", color: on ? "var(--fg)" : "var(--muted)", border: `1px solid ${on ? "var(--accent)" : "var(--line)"}`,
-                     borderRadius: 6, padding: "6px 10px", cursor: "pointer" }),
 };
 
 export default function GravityPanel({ scene = DEFAULT_SCENE }) {
@@ -63,15 +61,15 @@ export default function GravityPanel({ scene = DEFAULT_SCENE }) {
       <div style={s.head}>
         <h3 style={s.h3}>Gravity comparison</h3>
         <div style={{ display: "flex", gap: 6, alignItems: "center" }}>
-          <button style={s.toggle(ventOn)} onClick={() => setVentOn(true)} aria-pressed={ventOn}>Vents on</button>
-          <button style={s.toggle(!ventOn)} onClick={() => setVentOn(false)} aria-pressed={!ventOn}>Vents off</button>
+          <button className={"btn" + (ventOn ? " on" : "")} onClick={() => setVentOn(true)} aria-pressed={ventOn}>Vents on</button>
+          <button className={"btn" + (!ventOn ? " on" : "")} onClick={() => setVentOn(false)} aria-pressed={!ventOn}>Vents off</button>
           <button className="primary" onClick={run} disabled={busy}>{busy ? "Running…" : "Compare gravity"}</button>
         </div>
       </div>
       <p style={s.muted}>
         Same fire and ceiling detector at four gravity levels: time from ignition to first alarm. Badges come from the
         Envelope Guard (hover for the nearest tested condition). PSI only has 0 g and 1 g data, so Moon and Mars are
-        always at least 🟡. With vents off at 0 g there is no flow to feed the flame: BASS-II saw no spread below 0.6 cm/s.
+        always interpolated at best. With vents off at 0 g there is no flow to feed the flame: BASS-II saw no spread below 0.6 cm/s.
       </p>
       {err && <p role="alert">{err}</p>}
       {rows?.some((r) => r.stub) && <p><b>STUB DATA</b>: the engine is a placeholder.</p>}
@@ -84,7 +82,7 @@ export default function GravityPanel({ scene = DEFAULT_SCENE }) {
               : <div style={s.never} />}
           </div>
           <span style={s.value}>
-            {r.detected ? `${r.delay.toFixed(1)} s` : `none in ${T_MAX_S} s`}{" "}
+            {r.detected ? `${r.delay.toFixed(1)} s` : `not detected in ${T_MAX_S} s`}{" "}
             <Badge status={r.envelope?.badge} source={`Envelope Guard; material calibration: ${r.calib ?? "?"}`}
                    nearest={r.envelope?.nearest} />
             <br />

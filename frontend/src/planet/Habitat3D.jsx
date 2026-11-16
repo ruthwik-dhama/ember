@@ -7,6 +7,7 @@ import { Html } from "@react-three/drei";
 import * as THREE from "three";
 import { DOME_DIR, DOME_POS } from "./Planet.jsx";
 import { ROOM_M } from "../habitat/room.js";
+import { Base } from "./Scenery.jsx";
 
 const [L, W, H] = ROOM_M;
 // Room metres -> dome-local coordinates (y is up from the pad).
@@ -68,9 +69,10 @@ export default function Habitat3D({ onEnter, interactive, agents, onHover }) {
 
   return (
     <group position={DOME_POS} quaternion={quat} scale={1.6}>
+      <Base />
       <mesh position={[0, 0.012, 0]}>
         <cylinderGeometry args={[0.27, 0.3, 0.025, 24]} />
-        <meshStandardMaterial color="#4a5160" roughness={0.9} flatShading />
+        <meshStandardMaterial color="#55585f" roughness={0.9} flatShading />
       </mesh>
       <mesh
         onClick={(e) => { if (!interactive || e.delta > 4) return; e.stopPropagation(); onEnter(); }}
@@ -106,12 +108,12 @@ export default function Habitat3D({ onEnter, interactive, agents, onHover }) {
 
       {interactive && !ghost && (
         <Html position={[0, 0.34, 0]} center distanceFactor={7} zIndexRange={[4, 0]} style={{ pointerEvents: "none" }}>
-          <div className="scene-label">{hover ? "Enter the habitat" : "Habitat"}</div>
+          <div className="scene-label" data-n="01">{hover ? "Go inside" : "Habitat"}</div>
         </Html>
       )}
       {ghost && (
         <Html position={[0, 0.5, 0]} center distanceFactor={7} zIndexRange={[4, 0]} style={{ pointerEvents: "none" }}>
-          <div className="scene-label scene-label--ghost">Ghost flame: false all-clear</div>
+          <div className="scene-label scene-label--ghost">Cool flame still burning</div>
         </Html>
       )}
     </group>

@@ -44,7 +44,7 @@ function Smoke({ frame }) {
 export default function HabitatView({ height = 380, frames, t = 0, detectors = [], fires = [], alarmed = new Set(), onPlaceFire }) {
   const frame = frameAt(frames, t);
   return (
-    <div style={{ height, border: "1px solid var(--line)", borderRadius: 8 }}>
+    <div className="viewport3d" style={{ height }}>
       <Canvas camera={{ position: [L * 0.62, H * 0.95, W * 1.0] }}>
         <ambientLight intensity={0.8} />
         <mesh position={[0, H / 2, 0]}>
