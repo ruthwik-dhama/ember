@@ -9,12 +9,12 @@ __pycache__/
 backend/ember/agents/cache/duel_*.json
 # Precomputed demo duels (scripts/precompute_duels.py) ARE committed so a fresh clone runs the demo instantly.
 # Re-run the script after any calibration/engine change, then update this list.
-!backend/ember/agents/cache/duel_251827848b1c.json
-!backend/ember/agents/cache/duel_34a34d7d24c2.json
-!backend/ember/agents/cache/duel_106359a1fd6c.json
-!backend/ember/agents/cache/duel_51bb7f6e8e09.json
-!backend/ember/agents/cache/duel_eb942bf1b9dd.json
-!backend/ember/agents/cache/duel_7f3e795d58f8.json
-!backend/ember/agents/cache/duel_2d45f945541c.json
-!backend/ember/agents/cache/duel_2fec723cc0d2.json
-!backend/ember/agents/cache/duel_7caec13ea409.json
+!backend/ember/agents/cache/duel_b2d05e93c628.json
+!backend/ember/agents/cache/duel_ab183e07ea6b.json
+!backend/ember/agents/cache/duel_9615296a67f5.json
+!backend/ember/agents/cache/duel_7596fff069b9.json
+!backend/ember/agents/cache/duel_b6d4042bb4d2.json
+!backend/ember/agents/cache/duel_88192b6f835e.json
+!backend/ember/agents/cache/duel_87e1528fb50c.json
+!backend/ember/agents/cache/duel_ef5ab9d74a9a.json
+!backend/ember/agents/cache/duel_ab8c2d44a6a9.json

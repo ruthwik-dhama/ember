@@ -19,7 +19,7 @@ EARTH_APPLICATIONS = [
 ]
 
 DUEL_ROUNDS = 3
-DUEL_SEED = 0
+DUEL_SEED = 1  # not 0: cma treats seed=0 as "random seed", which made duels non-reproducible
 
 
 def _unavailable(reason: str) -> dict:
