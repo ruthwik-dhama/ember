@@ -40,10 +40,10 @@ The oxygen *partial pressure* is almost the same as on Earth, so breathing feels
 1. **Set up a mission.** Pick a habitat (spacecraft, ISS, Moon base, Mars base, pressurized rover) and adjust gravity, oxygen, pressure, materials on board and ventilation. The planet on screen changes with it, and the sky follows your local time of day (with a day/night toggle).
 2. **Explore the experiments.** A summary card for each investigation (objective, hardware, fuel, conditions, what was varied, sensors, key findings, sources), with side-by-side compare.
 3. **Rank them for your mission.** Investigations are scored by how close their real test conditions are to yours, filterable by prevention, detection and suppression, each with a one-line reason.
-4. **Run the Red vs Blue duel.** Watch both agents work in a live feed while their moves appear on the habitat. A second scenario shows the **Ghost Flame Auditor** flagging a liquid-fuel fire that a camera would report as out.
+4. **Watch the agents.** As soon as setup is done, the Red vs Blue duel runs on its own, followed by a liquid-fuel scenario where the **Ghost Flame Auditor** flags a fire that a camera would report as out. A live feed shows each move while it appears on the habitat, and a progress bar shows how far along both runs are.
 5. **Go inside the habitat.** A 3D room view plays the smoke simulation. Click the floor to move the fire and run it again.
-6. **Ask EMBER.** Witness agents answer questions about the investigations, citing every fact.
-7. **Read the insights report.** Top risks, recommended fixes, a gravity comparison, a map of untested conditions, and Earth applications. Export as JSON or print to PDF.
+6. **Ask EMBER.** The witness for the investigation that best matches your question answers it, citing every fact.
+7. **Read the insights report.** It opens once both runs finish: top risks, recommended fixes, the duel and the Ghost Flame results, a gravity comparison, a map of untested conditions, and Earth applications. Export as JSON or print to PDF.
 
 ## Challenge alignment
 
