@@ -78,5 +78,10 @@ Every value gets a badge, generated from the data, never hand-labelled:
   - "How clean is the ISS cabin air?" (DAFT)
   - "Below what oxygen concentration do BRE flames put themselves out?" (ACME)
   - "Can a droplet keep burning invisibly after the visible flame goes out?" (FLEX)
+- **Red picks methanol fires, even on cotton/PMMA missions.** The report header lists the mission's materials, but Red
+  searches every material in the PSI data, so its top risks are methanol fires. Don't hide it; say it as a choice:
+  > "Red isn't limited to what's on the packing list. It stress-tests every fuel the PSI experiments burned, because
+  > the fire you didn't plan for is the dangerous one. Here, a low methanol fire is never detected in 300 seconds."
+  If a judge asks: restricting Red to the mission's materials is a small change (pass the materials into the duel) that we held back so the demo build stayed frozen.
 - Duels and reports for the presets are precomputed and committed, so they load instantly with no network.
   A **custom** mission or fire triggers a fresh duel (about a minute).
