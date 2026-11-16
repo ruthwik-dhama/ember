@@ -4,6 +4,8 @@
 
 NASA Space Apps Challenge 2026.
 
+**Live demo: https://ember-murex-gamma.vercel.app** (the backend runs on a free tier and sleeps when idle, so the first load after a quiet period can take about a minute).
+
 EMBER does two things:
 
 1. **Dashboard.** It summarizes the PSI combustion investigations that matter for fire safety, ranks them for your habitat, compares them side by side, answers questions with citations, and writes an insights report.
@@ -196,6 +198,10 @@ backend/.venv/bin/python -m pytest backend/tests -q
 ```
 
 EMBER runs fully offline; without a connection the interface uses its bundled fonts. The duels for the preset missions are precomputed and committed, so the demo loads instantly; a custom mission runs a fresh duel in about a minute. Setting the `ANTHROPIC_API_KEY` environment variable is optional and lets Claude suggest Red's starting scenarios and phrase witness answers.
+
+### Deployment
+
+The live demo runs the frontend on Vercel and the FastAPI backend on Render. `frontend/vercel.json` forwards `/api/*` from the Vercel site to the Render service, so the app keeps using relative API paths. The backend runs as a normal long-lived server rather than serverless functions, because it keeps the current mission in memory, caches duels on disk and streams duels that run up to about a minute.
 
 ## Repository layout
 
