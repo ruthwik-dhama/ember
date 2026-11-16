@@ -1,7 +1,7 @@
 // AI-assisted: drafted with Claude (Anthropic); see README "Use of AI".
 // Mission setup: habitat, gravity, O2, pressure, materials, ventilation. Owner: Kishan (built by Sibi with his OK).
 // POSTs to /api/mission; every other screen (ranking, report, gap map) reads the mission from the backend.
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { getMission, setMission } from "../api.js";
 import Badge from "../components/Badge.jsx";
 
@@ -19,11 +19,14 @@ const KPA_PER_PSI = 6.89476;
 // Same rule as the Envelope Guard: only 0 g and 1 g have PSI data.
 const gravityBadge = (g) => (g === 0 || g === 1 ? "green" : g > 0 && g < 1 ? "yellow" : "red");
 
-export default function MissionSetup() {
+// onSaved(mission): optional, lets the planet view follow the mission. Edits autosave (and flush on leaving the step).
+export default function MissionSetup({ onSaved }) {
   const [m, setM] = useState(null);
   const [materials, setMaterials] = useState({});
   const [status, setStatus] = useState(null);
   const [error, setError] = useState(null);
+  const dirty = useRef(false);
+  const latest = useRef(null);
 
   useEffect(() => {
     getMission()
@@ -31,10 +34,19 @@ export default function MissionSetup() {
       .catch((e) => setError(e.message));
   }, []);
 
+  latest.current = m && { ...m, fuel_phases: [...new Set(m.materials.map((x) => materials[x]).filter(Boolean))] };
+  useEffect(() => {
+    if (!m || !dirty.current) return;
+    const t = setTimeout(() => { dirty.current = false; setMission(latest.current).then((saved) => { setStatus("saved"); onSaved?.(saved); }).catch(() => {}); }, 700);
+    return () => clearTimeout(t);
+  }, [m]); // eslint-disable-line react-hooks/exhaustive-deps
+  // Leaving the step with unsaved edits (Next / Start project) still saves them.
+  useEffect(() => () => { if (dirty.current && latest.current) setMission(latest.current).then((saved) => onSaved?.(saved)).catch(() => {}); }, []); // eslint-disable-line react-hooks/exhaustive-deps
+
   if (error) return <section className="screen"><h2>Mission setup</h2><p className="muted">Backend not reachable: {error}</p></section>;
   if (!m) return <section className="screen"><h2>Mission setup</h2><p className="muted">Loading…</p></section>;
 
-  const update = (patch) => { setM({ ...m, ...patch }); setStatus(null); };
+  const update = (patch) => { setM({ ...m, ...patch }); setStatus(null); dirty.current = true; };
   const choosePreset = (key) => {
     const { g, o2_frac, pressure_kpa } = PRESETS[key];
     update({ habitat: key, g, o2_frac, pressure_kpa });
@@ -49,9 +61,11 @@ export default function MissionSetup() {
   async function save() {
     setStatus("saving");
     try {
+      dirty.current = false;
       const saved = await setMission({ ...m, fuel_phases: fuelPhases });
       setM(saved);
       setStatus("saved");
+      onSaved?.(saved);
     } catch (e) {
       setStatus(`error: ${e.message}`);
     }

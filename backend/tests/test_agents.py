@@ -79,3 +79,43 @@ def test_seed_zero_is_reproducible():
     cfg = SimConfig(detectors=[Detector("c", 3, 2, 2.4)])
     a, b = run_red(cfg, budget=16, seed=0), run_red(cfg, budget=16, seed=0)
     assert a["worst"]["scenario"] == b["worst"]["scenario"] and a["worst"]["score"] == b["worst"]["score"]
+
+
+# ---- live duel stream -------------------------------------------------------
+def _types(events):
+    return [e["type"] for e in events]
+
+
+def test_iter_duel_event_order_and_same_result_as_run_duel(tmp_path, monkeypatch):
+    from ember.agents import blue_team
+    monkeypatch.setattr(blue_team, "DUEL_CACHE", tmp_path)  # force an uncached run
+    cfg = SimConfig(o2_frac=0.25)
+    events = list(blue_team.iter_duel(cfg, rounds=1, seed=1, red_budget=16, blue_budget=16))
+    t = _types(events)
+    assert t[0] == "round_start" and t[-1] == "done"
+    assert "red_step" in t and "red_done" in t and "blue_step" in t and "blue_done" in t and "ghost" in t
+    assert t.index("red_done") < t.index("blue_done") < t.index("round_done") < t.index("done")
+    assert all(e["evals"] > 0 for e in events if e["type"] in ("red_step", "blue_step"))
+    # run_duel on the same inputs now hits the cache that the stream wrote, and is the identical run
+    assert blue_team.run_duel(cfg, 1, 1, 16, 16) == events[-1]["run"]
+
+
+def test_cached_duel_replays_the_same_round_events(tmp_path, monkeypatch):
+    from ember.agents import blue_team
+    monkeypatch.setattr(blue_team, "DUEL_CACHE", tmp_path)
+    cfg = SimConfig(o2_frac=0.26)
+    live = [e for e in blue_team.iter_duel(cfg, 1, 1, 16, 16) if e["type"] not in ("red_step", "blue_step", "done")]
+    replay = [e for e in blue_team.iter_duel(cfg, 1, 1, 16, 16) if e["type"] not in ("red_step", "blue_step", "done")]
+    assert [e["type"] for e in live] == [e["type"] for e in replay]
+
+
+def test_stream_route_returns_ndjson_events():
+    import json
+    from fastapi.testclient import TestClient
+    from ember.api import app
+    body = {"fires": [{"material": "n-heptane", "phase": "liquid", "x": 3, "y": 2, "z": 0.1, "droplet_d_mm": 3.0}],
+            "o2_frac": 0.21, "pressure_kpa": 101.3, "suppressant": "co2"}
+    r = TestClient(app).post("/api/duel/stream", json=body)
+    events = [json.loads(line) for line in r.text.splitlines()]
+    assert r.headers["content-type"].startswith("application/x-ndjson")
+    assert events[0]["type"] == "round_start" and events[-1]["type"] == "done" and events[-1]["run"]["rounds"]

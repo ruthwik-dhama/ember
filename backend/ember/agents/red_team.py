@@ -117,8 +117,11 @@ def why_dangerous(scenario: dict, result: dict, cfg: SimConfig) -> str:
             f"{where} in the room at {cfg.o2_frac:.0%} O2 and {cfg.g} g: {outcome}.")
 
 
-def run_red(base_cfg: SimConfig, budget: int, seed: int, llm_cache=None, top_k: int = 5) -> dict:
+def run_red(base_cfg: SimConfig, budget: int, seed: int, llm_cache=None, top_k: int = 5, on_step=None) -> dict:
     """LLM seeds (cached) -> CMA-ES over scenarios maximizing red_objective(simulate(cfg, frames=False)).
+
+    on_step(evals, score, scenario): optional progress callback (best-so-far), called after the seed pass and
+    after every CMA-ES generation. Used by the live duel stream; never changes the result.
 
     Returns {"worst": {...}, "top": [...], "evals": n_simulations} where each entry is {scenario, score, result, why}.
     """
@@ -140,6 +143,13 @@ def run_red(base_cfg: SimConfig, budget: int, seed: int, llm_cache=None, top_k: 
                      for m in MATERIALS for x, y, z in ((0.5, 0.5, 0.2), (ROOM_M[0] - 0.5, ROOM_M[1] - 0.5, 0.3))]
     seeds = seeds[:max(1, budget // 4)]
     best_seed = max(seeds, key=evaluate)
+
+    def progress():
+        if on_step:
+            score, s, _ = max(seen, key=lambda t: t[0])
+            on_step(len(seen), score, s)
+
+    progress()
     es = cma.CMAEvolutionStrategy(encode(best_seed), 0.3, {"seed": cma_seed(seed), "maxfevals": max(budget - len(seeds), 1),
                                                            "bounds": [_LO.tolist(), _HI.tolist()],
                                                            "CMA_stds": [*(_HI - _LO)[:3], 0.02, *(_HI - _LO)[4:]],  # axes differ in units; material stays put
@@ -147,6 +157,7 @@ def run_red(base_cfg: SimConfig, budget: int, seed: int, llm_cache=None, top_k: 
     while not es.stop():
         xs = es.ask()
         es.tell(xs, [-evaluate(decode(x)) for x in xs])
+        progress()
 
     ranked, picked = [], set()
     for score, s, r in sorted(seen, key=lambda t: -t[0]):
