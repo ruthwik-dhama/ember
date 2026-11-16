@@ -7,6 +7,9 @@ from __future__ import annotations
 
 import hashlib
 import json
+import queue
+import threading
+import time
 from dataclasses import asdict, replace
 from pathlib import Path
 
@@ -46,10 +49,12 @@ def _score(cfg: SimConfig) -> float:
     return s + (DUST_FALSE_ALARM_PENALTY if simulate(dust_only, frames=False)["detected"] else 0.0)
 
 
-def run_blue(red_worst: dict, base_cfg: SimConfig, budget: int, seed: int, keep_suppressant: bool = False) -> dict:
+def run_blue(red_worst: dict, base_cfg: SimConfig, budget: int, seed: int, keep_suppressant: bool = False,
+             on_step=None) -> dict:
     """CMA-ES over detector positions, vent shutoff time, suppressant against Red's worst scenario.
 
     keep_suppressant: use base_cfg.suppressant as given instead of optimizing it (Ghost Flame demo).
+    on_step(evals, score, cfg): optional best-so-far callback after every CMA-ES generation (live duel stream).
     """
     import cma
 
@@ -66,6 +71,8 @@ def run_blue(red_worst: dict, base_cfg: SimConfig, budget: int, seed: int, keep_
             if s < best:
                 best_x, best = x, s
         es.tell(xs, scores)
+        if on_step:
+            on_step(es.countevals, best, apply_blue(red_cfg, best_x, keep_suppressant))
     cfg = apply_blue(red_cfg, best_x, keep_suppressant)
     return {"cfg": cfg, "score": best, "detectors": [asdict(d) for d in cfg.detectors],
             "vent_off_at_s": cfg.vent_off_at_s, "suppressant": cfg.suppressant}
@@ -76,30 +83,49 @@ def _plain(obj):
     return json.loads(json.dumps(obj, default=lambda o: asdict(o) if hasattr(o, "__dataclass_fields__") else float(o)))
 
 
-def run_duel(base_cfg: SimConfig, rounds: int, seed: int, red_budget: int = 60, blue_budget: int = 60) -> dict:
+def run_duel(base_cfg: SimConfig, rounds: int, seed: int, red_budget: int = 60, blue_budget: int = 60,
+             on_event=None, pause: float = 0.0) -> dict:
     """Red -> simulate -> Blue -> simulate -> Envelope Guard / Ghost Flame -> score, per round.
 
     Each round Red attacks the layout Blue left behind. Only the last round carries voxel frames.
     Witness citations are attached by Sibi's /api/ask path, not here.
+
+    on_event(dict): optional live progress (round_start, red_step, red_done, blue_step, blue_done, ghost,
+    round_done). A cached duel replays its stored rounds as the same events, `pause` seconds apart.
     """
     from ..envelope.guard import EnvelopeGuard
 
     # Deterministic id = precomputed duel: the same inputs return the cached run (report/API call this often).
     run_id = hashlib.sha1(json.dumps([asdict(base_cfg), rounds, seed, red_budget, blue_budget],
                                      sort_keys=True).encode()).hexdigest()[:12]
+    emit = (lambda e: on_event(_plain(e))) if on_event else (lambda e: None)
     try:
-        return load_duel(run_id)
+        cached = load_duel(run_id)
     except KeyError:
-        pass
+        cached = None
+    if cached:
+        for r in cached["rounds"]:
+            for e in _round_events(r):
+                emit(e)
+                time.sleep(pause)
+        return cached
     guard = EnvelopeGuard()
     cfg = default_cfg(base_cfg)
     fixed = bool(base_cfg.fires)  # the request names the fire: Red doesn't search, Blue defends against it
     keep = fixed and base_cfg.suppressant != "none"
     out = []
     for n in range(rounds):
-        red = fixed_red(cfg) if fixed else run_red(cfg, red_budget, seed + n)
+        emit({"type": "round_start", "round": n + 1, "rounds": rounds})
+        red = (fixed_red(cfg) if fixed else
+               run_red(cfg, red_budget, seed + n, on_step=lambda ev, sc, s, n=n: emit(
+                   {"type": "red_step", "round": n + 1, "evals": ev, "score": sc, "scenario": s})))
         before = red["worst"]["result"]
-        blue = run_blue(red["worst"], cfg, blue_budget, seed + n, keep_suppressant=keep)
+        emit({"type": "red_done", "round": n + 1, "scenario": red["worst"]["scenario"], "why": red["worst"]["why"],
+              "score": red["worst"]["score"]})
+        blue = run_blue(red["worst"], cfg, blue_budget, seed + n, keep_suppressant=keep,
+                        on_step=lambda ev, sc, c, n=n: emit(
+                            {"type": "blue_step", "round": n + 1, "evals": ev, "score": sc,
+                             "detectors": [asdict(d) for d in c.detectors], "suppressant": c.suppressant}))
         after = simulate(blue["cfg"], frames=(n == rounds - 1))
         fire = blue["cfg"].fires[0]
         ghost = (ghost_flame_check(fire, after["conditions"], ghost_params()) if blue["cfg"].suppressant != "none"
@@ -109,6 +135,8 @@ def run_duel(base_cfg: SimConfig, rounds: int, seed: int, red_budget: int = 60, 
                            "before": {k: v for k, v in before.items() if k != "frames"},
                            "blue": {k: v for k, v in blue.items() if k != "cfg"},
                            "after": after, "ghost": ghost, "envelope": guard.check(after["conditions"])}))
+        for e in _round_events(out[-1])[2:]:  # red_done was already emitted live
+            emit(e)
         cfg = blue["cfg"] if fixed else replace(blue["cfg"], fires=[])  # next round Red searches against Blue's layout
     last = out[-1]
     badge = last["envelope"]["badge"]
@@ -123,6 +151,43 @@ def run_duel(base_cfg: SimConfig, rounds: int, seed: int, red_budget: int = 60, 
                                   "badge": r["envelope"]["badge"], "ghost_flame": r["ghost"]} for r in out]}
     save_duel(run)
     return run
+
+
+def _round_events(r: dict) -> list:
+    """The per-round progress events, rebuilt from a finished round (used for cache replay and live tail)."""
+    n = r["round"]
+    return [
+        {"type": "round_start", "round": n},
+        {"type": "red_done", "round": n, "scenario": r["red"]["worst"]["scenario"], "why": r["red"]["worst"]["why"],
+         "score": r["red"]["worst"]["score"]},
+        {"type": "blue_done", "round": n, "detectors": r["blue"]["detectors"], "vent_off_at_s": r["blue"]["vent_off_at_s"],
+         "suppressant": r["blue"]["suppressant"]},
+        {"type": "ghost", "round": n, **r["ghost"]},
+        {"type": "round_done", "round": n, "before_delay_s": r["before"]["delay_s"], "after_delay_s": r["after"]["delay_s"],
+         "badge": r["envelope"]["badge"]},
+    ]
+
+
+def iter_duel(base_cfg: SimConfig, rounds: int, seed: int, red_budget: int = 60, blue_budget: int = 60,
+              pause: float = 0.0):
+    """Generator of live duel events ending with {"type": "done", "run": <full run>} (or {"type": "error"}).
+
+    run_duel does the work on a worker thread and pushes events through a queue; the worker finishes (and caches
+    the run) even if the client disconnects.
+    """
+    q, end = queue.Queue(), object()
+
+    def work():
+        try:
+            run = run_duel(base_cfg, rounds, seed, red_budget, blue_budget, on_event=q.put, pause=pause)
+            q.put(_plain({"type": "done", "run": run}))
+        except Exception as e:  # surface to the client instead of hanging the stream
+            q.put({"type": "error", "message": str(e)})
+        q.put(end)
+
+    threading.Thread(target=work, daemon=True).start()
+    while (e := q.get()) is not end:
+        yield e
 
 
 def save_duel(run: dict) -> None:

@@ -5,12 +5,14 @@ Routes that aren't built yet return HTTP 501 naming the lane that owns them.
 """
 from __future__ import annotations
 
+import json
 from dataclasses import asdict
 from typing import Optional
 
 from fastapi import FastAPI, HTTPException
+from fastapi.responses import StreamingResponse
 
-from .agents.blue_team import load_duel, run_duel
+from .agents.blue_team import iter_duel, load_duel, run_duel
 from .agents.witness import ask_ember
 from .config import GRAVITY_PRESETS, ROOM_M, Mission, SimConfig
 from .data_io import load_investigations
@@ -79,6 +81,15 @@ def api_simulate(cfg: SimConfig):
 @app.post("/api/duel/run")
 def api_duel_run(cfg: SimConfig):
     return run_duel(cfg, DUEL_ROUNDS, DUEL_SEED)  # cached by input, so repeat calls are instant
+
+
+@app.post("/api/duel/stream")
+def api_duel_stream(cfg: SimConfig):
+    """Live duel as newline-delimited JSON events (see agents.blue_team.iter_duel). A cached duel replays."""
+    def lines():
+        for e in iter_duel(cfg, DUEL_ROUNDS, DUEL_SEED, pause=0.6):
+            yield json.dumps(e) + "\n"
+    return StreamingResponse(lines(), media_type="application/x-ndjson")
 
 
 @app.get("/api/duel/{run_id}")

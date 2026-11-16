@@ -4,9 +4,7 @@ import React, { useEffect, useMemo, useState } from "react";
 import { simulate } from "../api.js";
 import Badge from "../components/Badge.jsx";
 import HabitatView from "./HabitatView.jsx";
-import AgentsPanel from "../panels/agents/AgentsPanel.jsx";
-import GravityPanel from "../panels/gravity/GravityPanel.jsx";
-import GapMap from "../panels/data/GapMap.jsx";
+import { duelScene } from "../planet/duelScene.js";
 
 const GRAVITY = { iss: 0, moon: 0.165, mars: 0.38, earth: 1 }; // mirrors config.py GRAVITY_PRESETS
 const DEMO_SCENE = {
@@ -14,10 +12,13 @@ const DEMO_SCENE = {
   detectors: [{ id: "ceil", x: 3, y: 2, z: 2.4 }],
 };
 
-export default function HabitatScreen() {
+// Room view. `duel` (a finished duel run) replays the last round; `mission` picks the starting gravity preset.
+const nearestPreset = (g) => Object.keys(GRAVITY).reduce((a, k) => (Math.abs(GRAVITY[k] - g) < Math.abs(GRAVITY[a] - g) ? k : a), "moon");
+
+export default function HabitatScreen({ duel, mission }) {
   const [r, setR] = useState(null);
   const [scene, setScene] = useState(DEMO_SCENE);
-  const [g, setG] = useState("moon");
+  const [g, setG] = useState(mission ? nearestPreset(mission.g) : "moon");
   const [t, setT] = useState(0);
   const [playing, setPlaying] = useState(false);
   const [err, setErr] = useState(null);
@@ -33,6 +34,13 @@ export default function HabitatScreen() {
   };
 
   useEffect(() => {
+    if (!duel) return;
+    const d = duelScene(duel);
+    setScene(d.scene);
+    show(d.result);
+  }, [duel]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  useEffect(() => {
     if (!playing) return;
     const id = setInterval(() => setT((v) => (v + 2 >= tMax ? (setPlaying(false), tMax) : v + 2)), 100);
     return () => clearInterval(id);
@@ -42,7 +50,7 @@ export default function HabitatScreen() {
 
   return (
     <div style={{ display: "grid", gap: 16 }}>
-      <HabitatView frames={r?.frames} t={t} detectors={scene.detectors} fires={scene.fires} alarmed={alarmed} onPlaceFire={placeFire} />
+      <HabitatView height="min(56vh, 560px)" frames={r?.frames} t={t} detectors={scene.detectors} fires={scene.fires} alarmed={alarmed} onPlaceFire={placeFire} />
       {r && (
         <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
           <button onClick={() => setPlaying((p) => !p)}>{playing ? "Pause" : "Play"}</button>
@@ -70,9 +78,6 @@ export default function HabitatScreen() {
           </p>
         )}
       </div>
-      <AgentsPanel onDuel={(res, nextScene) => { setScene(nextScene); show(res); }} gravity={GRAVITY[g]} />
-      <GravityPanel />
-      <GapMap />
     </div>
   );
 }
