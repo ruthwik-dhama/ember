@@ -49,7 +49,7 @@ export default function HabitatView({ height = 380, frames, t = 0, detectors = [
         <ambientLight intensity={0.8} />
         <mesh position={[0, H / 2, 0]}>
           <boxGeometry args={[L, H, W]} />
-          <meshBasicMaterial color="#ff7a3d" wireframe />
+          <meshBasicMaterial color="#6ee0c4" wireframe />
         </mesh>
         <gridHelper args={[Math.max(L, W), 12, "#444", "#2a2e35"]} />
         {/* click the floor to place the fire; ignore drags (those orbit the camera) */}
@@ -57,7 +57,7 @@ export default function HabitatView({ height = 380, frames, t = 0, detectors = [
           <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, 0.01, 0]}
             onClick={(e) => { if (e.delta > 4) return; e.stopPropagation(); onPlaceFire(e.point.x + L / 2, e.point.z + W / 2); }}>
             <planeGeometry args={[L, W]} />
-            <meshBasicMaterial color="#ff7a3d" transparent opacity={0.08} />
+            <meshBasicMaterial color="#6ee0c4" transparent opacity={0.08} />
           </mesh>
         )}
         {fires.map((f, n) => (

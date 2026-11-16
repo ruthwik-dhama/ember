@@ -39,7 +39,7 @@ export default function Loader({ ready, onDone }) {
         <span>Scale 1 : 200 000</span>
         <span>89.9° S · Shackleton rim</span>
       </div>
-      <svg className="loader__globe" viewBox="-70 -70 140 140" fill="none" stroke="#16181b" strokeLinecap="round">
+      <svg className="loader__globe" viewBox="-70 -70 140 140" fill="none" stroke="#141619" strokeLinecap="round">
         <line x1="-66" y1="0" x2="66" y2="0" strokeWidth="0.25" strokeDasharray="3 1.5 0.6 1.5" opacity="0.5" />
         <line x1="0" y1="-66" x2="0" y2="66" strokeWidth="0.25" strokeDasharray="3 1.5 0.6 1.5" opacity="0.5" />
         <g transform="rotate(-18)">
@@ -51,15 +51,15 @@ export default function Loader({ ready, onDone }) {
             <ellipse rx="20" ry="50" />
             <ellipse rx="38" ry="50" />
           </g>
-          <ellipse rx="68" ry="20" stroke="#c2471a" strokeWidth="0.5" strokeDasharray={`${(pct / 100) * 290} 400`} transform="rotate(-8)" />
-          <circle cx="31" cy="-12" r="1.6" fill="#c2471a" stroke="none" />
-          <circle cx="31" cy="-12" r="3.6" stroke="#c2471a" strokeWidth="0.35" />
+          <ellipse rx="68" ry="20" stroke="#17806d" strokeWidth="0.5" strokeDasharray={`${(pct / 100) * 290} 400`} transform="rotate(-8)" />
+          <circle cx="31" cy="-12" r="1.6" fill="#17806d" stroke="none" />
+          <circle cx="31" cy="-12" r="3.6" stroke="#17806d" strokeWidth="0.35" />
         </g>
         <g strokeWidth="0.3" opacity="0.7">
           <line x1="-50" y1="62" x2="50" y2="62" />
           <line x1="-50" y1="60" x2="-50" y2="64" /><line x1="50" y1="60" x2="50" y2="64" />
         </g>
-        <text x="0" y="60.4" textAnchor="middle" fontSize="3.4" fill="#16181b" stroke="#ebe8e1" strokeWidth="2.4" paintOrder="stroke"
+        <text x="0" y="60.4" textAnchor="middle" fontSize="3.4" fill="#141619" stroke="#eeebe4" strokeWidth="2.4" paintOrder="stroke"
           fontFamily="inherit">habitat · 6 × 4 × 2.5 m</text>
       </svg>
       <div className="loader__bl">

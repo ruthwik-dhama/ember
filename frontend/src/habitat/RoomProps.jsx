@@ -8,7 +8,7 @@ import { ROOM_M, AIRLOCK_M } from "./room.js";
 const [L, W, H] = ROOM_M;
 const toThree = (x, y, z) => [x - L / 2, z, y - W / 2];
 
-const label = { fontSize: 11, color: "#ddd", background: "#0008", padding: "1px 5px", borderRadius: 3, whiteSpace: "nowrap" };
+const label = { fontSize: 11, color: "#141619", background: "rgba(255,255,255,0.86)", padding: "1px 8px", borderRadius: 999, whiteSpace: "nowrap" };
 
 function Vent({ x, name, color }) {
   return (
@@ -31,18 +31,18 @@ export default function RoomProps() {
   }
   return (
     <group>
-      <Vent x={0} name="inlet (clean air)" color="#3ddc84" />
-      <Vent x={L} name="return" color="#4aa3ff" />
+      <Vent x={0} name="inlet (clean air)" color="#17806d" />
+      <Vent x={L} name="return" color="#2b6cb0" />
       {arrows.map((p, i) => (
         // cone default tip is +y; rotate so it points +x (along the airflow)
         <mesh key={i} position={toThree(...p)} rotation={[0, 0, -Math.PI / 2]}>
           <coneGeometry args={[0.06, 0.2, 8]} />
-          <meshBasicMaterial color="#6fb3ff" transparent opacity={0.45} />
+          <meshBasicMaterial color="#2b6cb0" transparent opacity={0.45} />
         </mesh>
       ))}
       <mesh position={toThree(...AIRLOCK_M)}>
         <boxGeometry args={[0.3, 0.3, 0.3]} />
-        <meshBasicMaterial color="#c08a4a" wireframe />
+        <meshBasicMaterial color="#b88a4a" wireframe />
       </mesh>
       <Html position={toThree(AIRLOCK_M[0], AIRLOCK_M[1], AIRLOCK_M[2] + 0.8)} center>
         <div style={label}>airlock (dust)</div>

@@ -41,15 +41,15 @@ export default function Ship({ enabled }) {
     <group ref={ref}>
       <mesh rotation={[-Math.PI / 2, 0, 0]}>
         <coneGeometry args={[0.05, 0.2, 5]} />
-        <meshStandardMaterial color="#e8e6e3" flatShading emissive="#334" />
+        <meshStandardMaterial color="#f4f1ea" flatShading emissive="#3a3d44" />
       </mesh>
       <mesh position={[0, 0, 0.05]}>
         <boxGeometry args={[0.2, 0.012, 0.07]} />
-        <meshStandardMaterial color="#ff7a3d" flatShading emissive="#552200" />
+        <meshStandardMaterial color="#17806d" flatShading emissive="#0b3f35" />
       </mesh>
       <mesh position={[0, 0, 0.12]}>
         <sphereGeometry args={[0.022, 8, 6]} />
-        <meshBasicMaterial color="#ffb27a" />
+        <meshBasicMaterial color="#9ff0dc" />
       </mesh>
     </group>
   );
